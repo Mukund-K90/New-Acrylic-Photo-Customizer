@@ -94,6 +94,18 @@ const Home = () => {
       path: "/fridge-magnets",
       image: "https://s.omgs.in/wp-content/uploads/2023/10/3-800x800.jpg",
     },
+    {
+      title: "Acrylic Wall Clock",
+      description: "Get the best acrylic wall clock for your home.",
+      path: "/acrylic-wall-clock",
+      image: "https://omgs.in/wp-content/uploads/2022/05/round.jpg"
+    },
+    {
+      title: "Collage Acrylic Photo",
+      description: "Create a beautiful collage with acrylic photo frames.",
+      path: "/collage-acrylic-photo",
+      image: "https://s.omgs.in/wp-content/uploads/2021/10/8-Collage-Portrait-Acrylic-Wall-Photo-min-768x768.jpg"
+    }
   ];
 
   return (
@@ -117,7 +129,7 @@ const Home = () => {
               style={buttonStyle(hoveredIndex === index)}
               onClick={() => handleClick(card.path)}
             >
-              Shop Now
+              {index == 4 ? "Coming Soon..." : "Shop Now"}
             </button>
           </div>
         ))}
