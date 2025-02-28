@@ -6,6 +6,7 @@ import MainHome from "./components/Fridge Maganet/MainHome";
 import CustomizePage from "./components/Fridge Maganet/CustomizePage";
 import ClockCustomizer from "./components/AcrylicWallClock";
 import CollagePhoto from "./components/CollagePhoto";
+import AcrylicCollageHome from "./components/CollageHome";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route path="/fridge-magnets" element={<MainHome />} />
         <Route path="/customize/:type" element={<CustomizePage />} />
         <Route path="/acrylic-wall-clock" element={<ClockCustomizer />} />
-        <Route path="/collage-acrylic-photo" element={<CollagePhoto />} />
+        <Route path="/collage-acrylic-photo" element={<AcrylicCollageHome />} />
       </Routes>
     </>
   );
