@@ -22,6 +22,7 @@ const textElements = document.querySelectorAll('.acp-text-box');
 const fontStyleSelect = document.getElementById('fontStyleSelect');
 const allTextData = [];
 
+const BASE_URL = window.BASE_URL;
 
 let scale = 1;
 
@@ -140,7 +141,7 @@ allSizeBtn.forEach(btn => {
 async function removeBackgroundAPI(base64Image) {
     const base64String = base64Image.split(',')[1];
     try {
-        const response = await fetch(`http://192.168.1.5:3000/change-bg`, {
+        const response = await fetch(`${BASE_URL}/change-bg`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -402,7 +403,7 @@ shareBtn.addEventListener('click', () => {
             formData.append('details', JSON.stringify(imageData));
             formData.append('subject', `Clear Acrylic Photo Order - ${formattedDate}`);
 
-            fetch(`http://192.168.1.5:3000/send-email`, {
+            fetch(`${BASE_URL}/send-email`, {
                 method: 'POST',
                 body: formData
             })

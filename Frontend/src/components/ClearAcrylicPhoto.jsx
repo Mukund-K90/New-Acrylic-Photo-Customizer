@@ -1,11 +1,17 @@
 import { useEffect } from "react";
-import "../../public/css/ClearAcrylic.css";
+import "../assets/css/ClearAcrylic.css";
 import { FaImages, FaShareAlt } from "react-icons/fa";
 import { FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
 
 const ClearAcrylic = () => {
     useEffect(() => {
+        const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
+
+        if (newPage) {
+            sessionStorage.setItem("newPage", JSON.stringify(false));
+            window.location.reload();
+        }
         // Load html2canvas first
         const scriptHtml2Canvas = document.createElement("script");
         scriptHtml2Canvas.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
@@ -15,7 +21,7 @@ const ClearAcrylic = () => {
         // Load main.js after html2canvas is loaded
         scriptHtml2Canvas.onload = () => {
             const scriptMain = document.createElement("script");
-            scriptMain.src = "../../public/js/ClearAcrylic.js";
+            scriptMain.src = "/js/ClearAcrylic.js";
             scriptMain.defer = true;
             document.body.appendChild(scriptMain);
 

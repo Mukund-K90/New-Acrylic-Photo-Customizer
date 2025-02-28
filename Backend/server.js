@@ -7,7 +7,7 @@ const multer = require('multer');
 const upload = multer();
 const dotenv = require('dotenv');
 dotenv.config();
-const key = process.env.RBG_KEY || "6Lu6WfjPB2PVE7rw3tu3JaR2";
+const key = process.env.RBG_KEY || "M8mXZ4i6yPodao2fBhhr5gdF";
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 app.use(cors({
@@ -22,7 +22,6 @@ app.use('/src', express.static(path.join(__dirname, 'src')));
 app.use(bodyParser.json({ limit: "10mb" }));
 
 async function removeBg(imageBlob, backgroundUrl) {
-
     const formData = new URLSearchParams();
     formData.append("size", "auto");
     formData.append("image_file_b64", imageBlob);

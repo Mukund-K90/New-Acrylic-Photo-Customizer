@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "../../../public/css/FridgeMagnet.css"; // Make sure this file exists
+import "../../assets/css/FridgeMagnet.css"; // Make sure this file exists
 import { FaCameraRetro, FaShareAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 
@@ -7,12 +7,13 @@ const CustomizePage = () => {
   const { type } = useParams();
 
   useEffect(() => {
-    const previousType = sessionStorage.getItem("previousType");
+    const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
 
-    if (previousType !== type) {
-      sessionStorage.setItem("previousType", type);
-      window.location.reload(); // Refresh page when type changes
-    }    const scriptHtml2Canvas = document.createElement("script");
+    if (newPage) {
+      sessionStorage.setItem("newPage", JSON.stringify(false));
+      window.location.reload();
+    }
+    const scriptHtml2Canvas = document.createElement("script");
     scriptHtml2Canvas.src =
       "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
     scriptHtml2Canvas.defer = true;
@@ -20,7 +21,7 @@ const CustomizePage = () => {
 
     scriptHtml2Canvas.onload = () => {
       const scriptMain = document.createElement("script");
-      scriptMain.src = "../../public/js/FridgeMagnet.js";
+      scriptMain.src = "/js/FridgeMagnet.js";
       scriptMain.defer = true;
       document.body.appendChild(scriptMain);
 

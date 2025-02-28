@@ -3,15 +3,21 @@ import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
-
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   const containerStyle = {
     display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
-    backgroundColor: "#f4f4f4",
+    textAlign: "center",
+  };
+
+  const titleStyle = {
+    fontSize: "40px",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "20px",
   };
 
   const cardContainerStyle = {
@@ -35,13 +41,6 @@ const Home = () => {
     cursor: "pointer",
     transform: isHovered ? "translateY(-10px)" : "translateY(0)",
   });
-
-  const titleStyle = {
-    fontSize: "22px",
-    fontWeight: "bold",
-    marginBottom: "10px",
-    color: "#333",
-  };
 
   const descriptionStyle = {
     fontSize: "14px",
@@ -69,10 +68,11 @@ const Home = () => {
     height: "250px",
     objectFit: "cover",
     borderRadius: "10px",
+  };
 
-  }
   const handleClick = (path) => {
     navigate(path);
+    sessionStorage.setItem("newPage", JSON.stringify(true));
   };
 
   const cards = [
@@ -80,24 +80,28 @@ const Home = () => {
       title: "Acrylic Products",
       description: "Explore our premium quality acrylic products.",
       path: "/acrylic",
-      image: "https://s.omgs.in/wp-content/uploads/2023/05/OMGS-wall-acryllic-min.jpg"
+      image: "https://s.omgs.in/wp-content/uploads/2023/05/OMGS-wall-acryllic-min.jpg",
     },
     {
       title: "Clear Acrylic",
       description: "Get the best transparent acrylic products.",
       path: "/clear-acrylic",
-      image: "	https://omgs.in/wp-content/uploads/2022/12/transparent-framed-premium-acrylic-photo00001.jpg"
+      image: "https://omgs.in/wp-content/uploads/2022/12/transparent-framed-premium-acrylic-photo00001.jpg",
     },
     {
       title: "Fridge Magnets",
       description: "Customize fridge magnets with unique designs.",
       path: "/fridge-magnets",
-      image: "https://s.omgs.in/wp-content/uploads/2023/10/3-800x800.jpg"
+      image: "https://s.omgs.in/wp-content/uploads/2023/10/3-800x800.jpg",
     },
   ];
 
   return (
     <div style={containerStyle}>
+      {/* Big Title */}
+      <h1 style={titleStyle}>Acrylic Image Customizer</h1>
+
+      {/* Card Section */}
       <div style={cardContainerStyle}>
         {cards.map((card, index) => (
           <div
@@ -107,8 +111,8 @@ const Home = () => {
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <img src={card.image} alt="" style={imageStyle} />
-            <div style={titleStyle}>{card.title}</div>
-            <div style={descriptionStyle}>{card.description}</div>
+            <h3>{card.title}</h3>
+            <p style={descriptionStyle}>{card.description}</p>
             <button
               style={buttonStyle(hoveredIndex === index)}
               onClick={() => handleClick(card.path)}

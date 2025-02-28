@@ -1,11 +1,17 @@
 import { useEffect } from "react";
-import "../../public/css/AcrylicPhoto.css";
+import "../assets/css/AcrylicPhoto.css";
 import { FaImage, FaShareAlt } from "react-icons/fa";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
 
 const AcrylicPhoto = () => {
   useEffect(() => {
+    const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
+
+    if (newPage) {
+      sessionStorage.setItem("newPage", JSON.stringify(false));
+      window.location.reload();
+    }
     const scriptHtml2Canvas = document.createElement("script");
     scriptHtml2Canvas.src =
       "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
@@ -15,8 +21,9 @@ const AcrylicPhoto = () => {
     // Load main.js after html2canvas is loaded
     scriptHtml2Canvas.onload = () => {
       const scriptMain = document.createElement("script");
-      scriptMain.src = "../../public/js/AcrylicPhoto.js";
+      scriptMain.src = "/js/AcrylicPhoto.js";
       scriptMain.defer = true;
+      scriptMain.type = "module";
       document.body.appendChild(scriptMain);
 
       return () => {

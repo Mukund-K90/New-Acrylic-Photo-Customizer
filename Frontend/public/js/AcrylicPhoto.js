@@ -13,6 +13,8 @@ const backgroundUrls = [
     "https://i.pinimg.com/736x/33/92/a6/3392a60bb7a4c4ec72f8bef181a9f556.jpg"
 ];
 
+const BASE_URL = window.BASE_URL;
+
 const imageContainer = document.querySelector('.ap-image-container');
 const previewImage = document.getElementById('previewImage');
 const fileInput = document.getElementById('fileInput');
@@ -269,7 +271,7 @@ async function changeBackgroundAPI(backgroundUrl, originalImageUrl) {
     reader.onloadend = async () => {
         const base64String = reader.result.split(',')[1];
         try {
-            const response = await fetch('http://192.168.1.7:3000/change-bg', {
+            const response = await fetch(`${BASE_URL}/change-bg`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -500,7 +502,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
             const subject = `Acrylic Photo Order - ${formattedDate}`;
             formData.append('subject', JSON.stringify(subject));
 
-            fetch('http://192.168.1.7:3000/send-email', {
+            fetch(`${BASE_URL}/send-email`, {
                 method: 'POST',
                 body: formData
             })
