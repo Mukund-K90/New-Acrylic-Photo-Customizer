@@ -9,12 +9,12 @@ const AcrylicCollageHome = () => {
         item3: { image: "https://s.omgs.in/wp-content/uploads/2021/10/2-Photo-Collage-Acrylic-min-500x500.jpg", description: "2 Photo Collage Acrylic Wall Photo", type: "2-pics" },
     };
     return (
-        <div className="container">
+        <div className="acol-container">
             {Object.keys(dictionary).map((key, index) => (
-                <Link to={`/colllage/${dictionary[key].type}`} className="card-link" key={index} onClick={sessionStorage.setItem("newPage", JSON.stringify(true))}>
-                    <div className="card">
+                <Link to={`/colllage/${dictionary[key].type}`} className="acol-card-link" key={index} onClick={sessionStorage.setItem("newPage", JSON.stringify(true))}>
+                    <div className="acol-card">
                         <img src={dictionary[key].image} alt={key} />
-                        <div className="description">{dictionary[key].description}</div>
+                        <div className="acol-description">{dictionary[key].description}</div>
                     </div>
                 </Link>
             ))}

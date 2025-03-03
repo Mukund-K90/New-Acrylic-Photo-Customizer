@@ -1,11 +1,4 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    user-select: none;
-}
-
-.container {
+.acol-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -14,13 +7,13 @@ body {
     justify-content: space-around;
 }
 
-.card-link {
+.acol-card-link {
     text-decoration: none;
     color: inherit;
     width: 30%;
 }
 
-.card {
+.acol-card {
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -31,25 +24,25 @@ body {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card:hover {
+.acol-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.card img {
+.acol-card img {
     max-width: 100%;
     height: auto;
     border-bottom: 1px solid #ddd;
 }
 
-.description {
+.acol-description {
     margin: 10px 0;
     font-size: 1rem;
 }
 
 
 /* ===================5 Pics ===================== */
-.content {
+.acol-content {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -57,7 +50,7 @@ body {
     align-items: center;
 }
 
-.collage-frame {
+.acol-collage-frame {
     width: 500px;
     height: 400px;
     background: white;
@@ -67,7 +60,7 @@ body {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.small-img {
+.acol-small-img {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -76,7 +69,7 @@ body {
     position: relative;
 }
 
-.big-img {
+.acol-big-img {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,21 +80,21 @@ body {
     position: relative;
 }
 
-.small-img,
-.big-img {
+.acol-small-img,
+.acol-big-img {
     cursor: pointer;
     position: relative;
     overflow: hidden;
     font-size: 1rem;
 }
 
-.small-img img,
-.big-img img {
+.acol-small-img img,
+.acol-big-img img {
     object-fit: cover;
     position: relative;
 }
 
-.placeholderText {
+.acol-placeholderText {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -112,26 +105,26 @@ body {
     border-radius: 10px;
 }
 
-.previewImage {
+.acol-previewImage {
     width: 100%;
     display: none;
     position: absolute;
 }
 
-.row {
+.acol-row {
     display: flex;
     gap: 1rem;
     align-items: center;
     height: 50px;
 }
 
-#reset {
+#acol-reset {
     color: #FF0000;
     font-size: 2rem;
 }
 
-#iminus,
-#iplus {
+#acol-iminus,
+#acol-iplus {
     border: 1px solid #a7a3a3;
     border-radius: 10px;
     width: 25px;
@@ -142,15 +135,16 @@ body {
     padding: 0;
 }
 
-#iminus,
-#iplus,
-#textColor,
-#addTextBtn,
-#reset {
+#acol-iminus,
+#acol-iplus,
+#acol-textColor,
+#acol-addTextBtn,
+#acol-deleteTextBtn,
+#acol-reset {
     cursor: pointer;
 }
 
-#addTextBtn {
+#acol-addTextBtn {
     border-color: rgba(0, 0, 0, .05);
     color: #fff;
     background: #49484A;
@@ -160,23 +154,31 @@ body {
     border-radius: 10px;
 }
 
-#addTextBtn:hover {
+#acol-deleteTextBtn {
+    color: rgb(193, 3, 3);
+}
+
+#acol-addTextBtn:hover {
     background: #171719;
 }
 
-.textModal {
-    display: flex;
-    flex-direction: column;
-}
-
-#textInput {
+.acol-textModal {
     position: relative;
     width: 300px;
+    align-items: center;
+    gap: 1%;
     display: none;
-    height: 20px;
 }
 
-#closeText {
+#acol-textInput {
+    position: relative;
+    width: 300px;
+    height: 35px;
+    align-items: center;
+    gap: 1%;
+}
+
+#acol-closeText {
     font-size: 1.4rem;
     position: absolute;
     right: 0;
@@ -187,7 +189,7 @@ body {
     cursor: pointer;
 }
 
-.text-box {
+.acol-text-box {
     position: absolute;
     top: 50%;
     left: 30%;
@@ -199,7 +201,7 @@ body {
     overflow: hidden;
 }
 
-.resize-handle {
+.acol-resize-handle {
     width: 20px;
     height: 20px;
     text-align: center;
@@ -208,14 +210,14 @@ body {
     color: #000;
 }
 
-.rotate-handle {
+.acol-rotate-handle {
     background-color: transparent;
     color: #000;
     font-size: 24px;
     display: none;
 }
 
-.resize {
+.acol-resize {
     position: absolute;
     right: 0;
     bottom: -5%;
@@ -227,7 +229,7 @@ body {
     font-weight: bold;
 }
 
-.rotate {
+.acol-rotate {
     position: absolute;
     top: -6%;
     left: 50%;
@@ -240,13 +242,12 @@ body {
     font-weight: bold;
 }
 
-.resize,
-.rotate {
+.acol-resize,
+.acol-rotate {
     display: none;
 }
 
-
-.size-btn {
+.acol-size-btn {
     padding: 8px 8px;
     background-color: #fff;
     cursor: pointer;
@@ -257,13 +258,13 @@ body {
     height: 2rem;
 }
 
-.size-btn.active {
+.acol-size-btn.acol-active {
     background-color: #212529;
     font-weight: bold;
     color: #f0f0f0;
 }
 
-.thickness-btn {
+.acol-thickness-btn {
     padding: 8px 8px;
     background-color: #fff;
     cursor: pointer;
@@ -273,13 +274,13 @@ body {
     border: 1px solid #212529;
 }
 
-.thickness-btn.active {
+.acol-thickness-btn.acol-active {
     background-color: #212529;
     font-weight: bold;
     color: #f0f0f0;
 }
 
-.download {
+.acol-download {
     background: #03A9F4;
     font-size: 25px;
     border: 1px solid #f0f0f0;
@@ -288,14 +289,14 @@ body {
     display: none;
 }
 
-.download:hover {
+.acol-download:hover {
     background: #f0f0f0;
     font-size: 20px;
     color: #03A9F4;
     border: 1px solid #03A9F4;
 }
 
-.upload-btn {
+.acol-upload-btn {
     background: #FF5722;
     color: white;
     border: none;
@@ -304,19 +305,18 @@ body {
     cursor: pointer;
 }
 
-.share {
+.acol-share {
     display: none;
     background: #012e43;
     font-size: 20px;
     border: 1px solid #f0f0f0;
 }
 
-#fontStyleSelect {
+#acol-fontStyleSelect {
     display: none;
 }
 
-
-.main-content {
+.acol-main-content {
     width: 100%;
     display: flex;
     justify-content: center;

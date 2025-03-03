@@ -1,46 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../../assets/css/CollagePhoto.css";
-import { FaDownload, FaImage } from 'react-icons/fa6'
+import { FaDownload, FaImage, FaTrash } from 'react-icons/fa6'
 import { IoClose } from 'react-icons/io5'
 import { VscDebugRestart, VscTextSize } from 'react-icons/vsc'
 import { HiPencilSquare } from "react-icons/hi2";
 import { FaShareAlt } from "react-icons/fa";
 
-
 const collageLayouts = {
     "2-pics": {
         style: { gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr", border: "1px solid #000" },
         images: [
-            { id: 1, type: "small-img" },
-            { id: 2, type: "small-img" },
+            { id: 1, type: "acol-small-img" },
+            { id: 2, type: "acol-small-img" },
         ],
     },
     "5-pics": {
         style: { gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "1fr 1fr", border: "1px solid #000" },
         images: [
-            { id: 1, type: "big-img" },
-            { id: 2, type: "small-img" },
-            { id: 3, type: "small-img" },
-            { id: 4, type: "small-img" },
-            { id: 5, type: "small-img" },
+            { id: 1, type: "acol-big-img" },
+            { id: 2, type: "acol-small-img" },
+            { id: 3, type: "acol-small-img" },
+            { id: 4, type: "acol-small-img" },
+            { id: 5, type: "acol-small-img" },
         ],
     },
     "8-pics": {
         style: { gridTemplateColumns: "1fr 1fr 1fr 1fr", gridTemplateRows: "1fr 1fr", border: "1px solid #000" },
         images: [
-            { id: 1, type: "small-img" },
-            { id: 2, type: "small-img" },
-            { id: 3, type: "small-img" },
-            { id: 4, type: "small-img" },
-            { id: 5, type: "small-img" },
-            { id: 6, type: "small-img" },
-            { id: 7, type: "small-img" },
-            { id: 8, type: "small-img" },
+            { id: 1, type: "acol-small-img" },
+            { id: 2, type: "acol-small-img" },
+            { id: 3, type: "acol-small-img" },
+            { id: 4, type: "acol-small-img" },
+            { id: 5, type: "acol-small-img" },
+            { id: 6, type: "acol-small-img" },
+            { id: 7, type: "acol-small-img" },
+            { id: 8, type: "acol-small-img" },
         ],
     },
 };
-
 
 const CollageAcrylicPhoto = () => {
     const { type } = useParams();
@@ -77,15 +75,15 @@ const CollageAcrylicPhoto = () => {
     if (!layout) return <h2>Invalid collage type</h2>;
 
     return (
-        <div className="content">
+        <div className="acol-content">
             <h2>{type ? type.replace("-", " ") : "2-pic"} Collage</h2>
-            <div className="main-content">
-                <div className="collage-frame" style={layout.style}>
+            <div className="acol-main-content">
+                <div className="acol-collage-frame" style={layout.style}>
                     {layout.images.map((img) => (
                         <div className={img.type} data-slot={img.id} key={img.id} style={{ border: "1px solid #000" }}>
-                            <img className="previewImage" id={`previewImage${img.id}`} alt="Click to upload" style={{ display: "none" }} />
-                            <input type="file" id={`fileInput${img.id}`} accept="image/*" style={{ display: "none" }} />
-                            <p className="placeholderText">
+                            <img className="acol-previewImage" id={`acol-previewImage${img.id}`} alt="Click to upload" style={{ display: "none" }} />
+                            <input type="file" id={`acol-fileInput${img.id}`} accept="image/*" style={{ display: "none" }} />
+                            <p className="acol-placeholderText">
                                 <FaImage />
                                 Upload
                             </p>
@@ -94,8 +92,8 @@ const CollageAcrylicPhoto = () => {
                 </div>
 
                 <div>
-                    <div className="row">
-                        <select id="fontStyleSelect" style={{ width: "100%", marginBottom: "10px" }} onChange={() => window.changeFontFamily()}>
+                    <div className="acol-row">
+                        <select id="acol-fontStyleSelect" style={{ width: "100%", marginBottom: "10px" }} onChange={() => window.changeFontFamily()}>
                             <option value="Arial" style={{ fontFamily: "Arial" }}>Arial</option>
                             <option value="Times New Roman" style={{ fontFamily: "Times New Roman" }}>Times New Roman</option>
                             <option value="Courier New" style={{ fontFamily: "Courier New" }}>Courier New</option>
@@ -108,42 +106,44 @@ const CollageAcrylicPhoto = () => {
                             <option value="Impact" style={{ fontFamily: "Impact" }}>Impact</option>
                             <option value="Georgia" style={{ fontFamily: "Georgia" }}>Georgia</option>
                         </select>
-                        <input type="color" id="textColor" defaultValue="#000000" onInput={() => window.updatePreview()} />
-                        <div className="row">
-                            <button id="iminus">-</button> <VscTextSize style={{ fontSize: '2rem' }} />
-                            <button id="iplus">+</button>
-                            <p id="reset" title="Reset the collage"><VscDebugRestart /></p>
-                            <button id="addTextBtn"><HiPencilSquare /></button>
+                        <input type="color" id="acol-textColor" defaultValue="#000000" onInput={() => window.updatePreview()} />
+                        <div className="acol-row">
+                            <button id="acol-iminus">-</button> <VscTextSize style={{ fontSize: '2rem' }} />
+                            <button id="acol-iplus">+</button>
+                            <p id="acol-reset" title="Reset the collage"><VscDebugRestart /></p>
+                            <button id="acol-addTextBtn">
+                                <HiPencilSquare />
+                            </button>
+
                         </div>
                     </div>
 
-                    <div className="textModal">
-                        <input type="text" id="textInput" placeholder="Enter text" onInput={() => window.updatePreview()} />
-                        <a id="closeText"><IoClose /></a>
+                    <div className="acol-textModal">
+                        <input type="text" id="acol-textInput" placeholder="Enter text" onInput={() => window.updatePreview()} />
+                        <a id="acol-deleteTextBtn">
+                            <FaTrash />
+                        </a>
                     </div>
 
-                    <div className="row">
+                    <div className="acol-row">
                         <h3>Size (Inch)</h3>
-                        <button className="size-btn active" data-ratio="12/9">12x9</button>
-                        <button className="size-btn" data-ratio="11/11">16x12</button>
-                        <button className="size-btn" data-ratio="11/11">21x15</button>
-                        <button className="size-btn" data-ratio="11/11">35x23</button>
-                        <button className="size-btn" data-ratio="11/11">48x36</button>
+                        <button className="acol-size-btn acol-active" data-ratio="12/9">12x9</button>
+                        <button className="acol-size-btn" data-ratio="11/11">16x12</button>
+                        <button className="acol-size-btn" data-ratio="11/11">21x15</button>
+                        <button className="acol-size-btn" data-ratio="11/11">35x23</button>
+                        <button className="acol-size-btn" data-ratio="11/11">48x36</button>
                     </div>
 
-                    <div className="row">
+                    <div className="acol-row">
                         <h3>Thickness (mm)</h3>
-                        <button className="thickness-btn active">5 MM</button>
-                        <button className="thickness-btn">5 MM</button>
-                        <button className="thickness-btn">8 MM (Premium)</button>
+                        <button className="acol-thickness-btn acol-active">5 MM</button>
+                        <button className="acol-thickness-btn">5 MM</button>
+                        <button className="acol-thickness-btn">8 MM (Premium)</button>
                     </div>
-                    <button className="upload-btn download" id="downloadBtn"><FaDownload /></button>
-                    <button className="upload-btn share" id="shareBtn"><FaShareAlt /></button>
+                    <button className="acol-upload-btn acol-download" id="acol-downloadBtn"><FaDownload /></button>
+                    <button className="acol-upload-btn acol-share" id="acol-shareBtn"><FaShareAlt /></button>
                 </div>
-            </div>
-
-            {/* =================== */}
-
+            </div >
         </div >
     );
 };

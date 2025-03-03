@@ -1,22 +1,23 @@
-const textInput = document.getElementById('textInput');
-const closeInputBtn = document.getElementById('closeText');
-const addTextBtn = document.getElementById('addTextBtn');
-const resteBtn = document.getElementById('reset');
-const allSizeBtn = document.querySelectorAll('.size-btn');
-const allThicknessBtn = document.querySelectorAll('.thickness-btn');
-const downloadBtn = document.getElementById('downloadBtn');
-const collagePhoto = document.querySelector('.collage-frame');
-const iminus = document.getElementById('iminus');
-const iplus = document.getElementById('iplus');
-const fontFamilyOptions = document.getElementById('fontStyleSelect');
+const textInput = document.getElementById('acol-textInput');
+const addTextBtn = document.getElementById('acol-addTextBtn');
+const deleteTextBtn = document.getElementById('acol-deleteTextBtn');
+const resteBtn = document.getElementById('acol-reset');
+const allSizeBtn = document.querySelectorAll('.acol-size-btn');
+const allThicknessBtn = document.querySelectorAll('.acol-thickness-btn');
+const downloadBtn = document.getElementById('acol-downloadBtn');
+const collagePhoto = document.querySelector('.acol-collage-frame');
+const iminus = document.getElementById('acol-iminus');
+const iplus = document.getElementById('acol-iplus');
+const fontFamilyOptions = document.getElementById('acol-fontStyleSelect');
 let uploadedImagesCount = 0;
 let totalImages = 0;
 let activeTextBox = null;
-const shareBtn = document.getElementById('shareBtn');
+const shareBtn = document.getElementById('acol-shareBtn');
+const handles = document.querySelectorAll(".acol-resize, .acol-rotate");
+const textModal = document.querySelector('.acol-textModal');
 
-
-document.querySelectorAll(".small-img, .big-img").forEach((slot) => {
-    totalImages = document.querySelectorAll(".small-img, .big-img").length;
+document.querySelectorAll(".acol-small-img, .acol-big-img").forEach((slot) => {
+    totalImages = document.querySelectorAll(".acol-small-img, .acol-big-img").length;
 
     const input = slot.querySelector("input");
     const placeholder = slot.querySelector("p");
@@ -58,18 +59,18 @@ function incrementUploadedImages() {
 
 function setActiveImage(imageElement) {
     removeExistingHandles();
-    makeDraggable(imageElement, { resize: 'resize', rotate: 'rotate' });
+    makeDraggable(imageElement, { resize: 'acol-resize', rotate: 'acol-rotate' });
     addResizeHandle(imageElement);
     addRotateHandle(imageElement);
 }
 
 function removeExistingHandles() {
-    document.querySelectorAll(".resize, .rotate").forEach((handle) => handle.remove());
+    document.querySelectorAll(".acol-resize, .acol-rotate").forEach((handle) => handle.remove());
 }
 
 function addResizeHandle(imageElement) {
     const resizeHandle = document.createElement('div');
-    resizeHandle.className = 'resize';
+    resizeHandle.className = 'acol-resize';
     resizeHandle.innerHTML = '+';
 
     collagePhoto.style.position = 'relative';
@@ -97,7 +98,7 @@ function addResizeHandle(imageElement) {
 
 function addRotateHandle(imageElement) {
     const rotateHandle = document.createElement('div');
-    rotateHandle.className = 'rotate';
+    rotateHandle.className = 'acol-rotate';
     rotateHandle.innerHTML = '&#8635;';
 
     collagePhoto.style.position = 'relative';
@@ -131,8 +132,8 @@ function addRotateHandle(imageElement) {
 
 function updatePreview() {
     if (activeTextBox) {
-        const text = document.getElementById('textInput').value || 'New Custom Text';
-        const textColor = document.getElementById('textColor').value;
+        const text = document.getElementById('acol-textInput').value || 'New Custom Text';
+        const textColor = document.getElementById('acol-textColor').value;
 
         activeTextBox.innerText = text;
         activeTextBox.style.color = textColor;
@@ -144,9 +145,9 @@ function updatePreview() {
 }
 
 function attachHandles(element) {
-    if (!element.querySelector('.resize-handle')) {
+    if (!element.querySelector('.acol-resize-handle')) {
         const resizeHandle = document.createElement('div');
-        resizeHandle.className = 'resize-handle';
+        resizeHandle.className = 'acol-resize-handle';
         resizeHandle.style.position = 'absolute';
         resizeHandle.style.right = '-11.3px';
         resizeHandle.style.bottom = '-6.5px';
@@ -181,9 +182,9 @@ function attachHandles(element) {
         });
     }
 
-    if (!element.querySelector('.rotate-handle')) {
+    if (!element.querySelector('.acol-rotate-handle')) {
         const rotateHandle = document.createElement('div');
-        rotateHandle.className = 'rotate-handle';
+        rotateHandle.className = 'acol-rotate-handle';
         rotateHandle.style.position = 'absolute';
         rotateHandle.style.top = '-30px';
         rotateHandle.style.left = '50%';
@@ -273,50 +274,52 @@ function makeDraggable(element, handle) {
     });
 }
 
-document.getElementById('addTextBtn').addEventListener('click', function () {
-    textInput.style.display = 'block';
-    closeInputBtn.style.display = 'block';
+addTextBtn.addEventListener('click', function () {
+    textModal.style.display = 'flex';
     fontFamilyOptions.style.display = 'block';
-    if (!activeTextBox) {
-        const textColor = document.getElementById('textColor').value;
 
-        activeTextBox = document.createElement('div');
-        activeTextBox.className = 'text-box';
-        activeTextBox.innerText = 'New Custom Text';
-        activeTextBox.style.color = textColor;
-        document.querySelector('.collage-frame').appendChild(activeTextBox);
+    // Always create a new text box when clicking "Add Text"
+    const textColor = document.getElementById('acol-textColor').value;
+    const newTextBox = document.createElement('div');
+    newTextBox.className = 'acol-text-box';
+    newTextBox.innerText = 'New Custom Text';
+    newTextBox.style.color = textColor;
 
-        attachHandles(activeTextBox);
-        makeDraggable(activeTextBox, { resize: 'resize-handle', rotate: 'rotate-handle' });
-    }
+    document.querySelector('.acol-collage-frame').appendChild(newTextBox);
+
+    attachHandles(newTextBox);
+    makeDraggable(newTextBox, { resize: 'acol-resize-handle', rotate: 'acol-rotate-handle' });
+
+    // Update activeTextBox reference to the new one
+    activeTextBox = newTextBox;
 });
 
-document.getElementById('closeText').addEventListener('click', function () {
-    const previewText = document.querySelector('.text-box.preview');
+
+deleteTextBtn.addEventListener('click', function () {
+    const previewText = document.querySelector('.acol-text-box.preview');
     if (previewText) previewText.remove();
-    document.getElementById('textInput').value = '';
+    document.getElementById('acol-textInput').value = '';
     if (activeTextBox) {
         activeTextBox.remove();
         activeTextBox = null;
-        document.getElementById('textInput').value = '';
+        document.getElementById('acol-textInput').value = '';
     }
-    textInput.style.display = 'none';
-    closeInputBtn.style.display = 'none';
+    textModal.style.display = 'none';
     fontFamilyOptions.style.display = 'none';
-    document.getElementById('textColor').value = "#000";
+    document.getElementById('acol-textColor').value = "#000000";
 });
 
 allSizeBtn.forEach(btn => {
     btn.addEventListener('click', function () {
-        allSizeBtn.forEach(button => button.classList.remove('active'));
-        this.classList.add('active');
+        allSizeBtn.forEach(button => button.classList.remove('acol-active'));
+        this.classList.add('acol-active');
     });
 });
 
 allThicknessBtn.forEach(btn => {
     btn.addEventListener('click', function () {
-        allThicknessBtn.forEach(button => button.classList.remove('active'));
-        this.classList.add('active');
+        allThicknessBtn.forEach(button => button.classList.remove('acol-active'));
+        this.classList.add('acol-active');
     });
 });
 
@@ -346,7 +349,7 @@ iplus.addEventListener('click', function () {
 });
 
 function changeFontFamily() {
-    const selectedFont = document.getElementById('fontStyleSelect').value;
+    const selectedFont = document.getElementById('acol-fontStyleSelect').value;
     if (activeTextBox) {
         activeTextBox.style.fontFamily = selectedFont;
     }
@@ -358,16 +361,16 @@ resteBtn.addEventListener('click', () => {
 
 
 function getImageDetails() {
-    const imageContainers = document.querySelectorAll('.small-img');
-    const selectedBorder = document.querySelector('.color-btn.active');
-    const selectedShape = document.querySelector('.shape-btn.active');
-    const selectedSize = document.querySelector('.size-btn.active');
-    const textElement = document.querySelector('.text-box');
+    const imageContainers = document.querySelectorAll('.acol-small-img');
+    const selectedBorder = document.querySelector('.acol-color-btn.active');
+    const selectedShape = document.querySelector('.sacol-hape-btn.active');
+    const selectedSize = document.querySelector('.acol-size-btn.active');
+    const textElement = document.querySelector('.acol-text-box');
 
     let imagesData = [];
 
     imageContainers.forEach(container => {
-        const imageElement = container.querySelector('.previewImage');
+        const imageElement = container.querySelector('.acol-previewImage');
         const fileInput = container.querySelector('input[type="file"]');
         const imageDetails = {
             name: imageElement.src ? imageElement.src.split('/').pop() : 'No image selected',
@@ -392,11 +395,11 @@ function getImageDetails() {
 }
 
 
-document.getElementById('shareBtn').addEventListener('click', () => {
+document.getElementById('acol-shareBtn').addEventListener('click', () => {
     shareBtn.disabled = true;
     shareBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
-    document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
+    document.querySelectorAll('.acol-resize-handle, .acol-rotate-handle').forEach(handle => {
         handle.style.display = 'none';
     });
 
