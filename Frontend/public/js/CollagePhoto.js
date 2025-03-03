@@ -291,7 +291,7 @@ document.getElementById('addTextBtn').addEventListener('click', function () {
     }
 });
 
-document.getElementById('closeText').addEventListener('click', function () {
+closeInputBtn.addEventListener('click', function () {
     const previewText = document.querySelector('.text-box.preview');
     if (previewText) previewText.remove();
     document.getElementById('textInput').value = '';
@@ -302,6 +302,8 @@ document.getElementById('closeText').addEventListener('click', function () {
     }
     textInput.style.display = 'none';
     closeInputBtn.style.display = 'none';
+    fontFamilyOptions.style.display = 'none';
+
 });
 
 allSizeBtn.forEach(btn => {
@@ -429,3 +431,6 @@ document.getElementById('shareBtn').addEventListener('click', () => {
         });
     });
 });
+
+window.updatePreview=updatePreview;
+window.changeFontFamily=changeFontFamily;

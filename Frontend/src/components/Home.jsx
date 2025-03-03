@@ -129,7 +129,7 @@ const Home = () => {
               style={buttonStyle(hoveredIndex === index)}
               onClick={() => handleClick(card.path)}
             >
-              {index == 4 ? "Coming Soon..." : "Shop Now"}
+              Shop Now
             </button>
           </div>
         ))}

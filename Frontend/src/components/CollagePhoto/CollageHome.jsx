@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../assets/css/CollagePhoto.css"; // Ensure correct path
+import "../../assets/css/CollagePhoto.css"; // Ensure correct path
 
 const AcrylicCollageHome = () => {
     const dictionary = {
@@ -11,7 +11,7 @@ const AcrylicCollageHome = () => {
     return (
         <div className="container">
             {Object.keys(dictionary).map((key, index) => (
-                <Link to={`/customize/${dictionary[key].type}`} className="card-link" key={index}>
+                <Link to={`/colllage/${dictionary[key].type}`} className="card-link" key={index} onClick={sessionStorage.setItem("newPage", JSON.stringify(true))}>
                     <div className="card">
                         <img src={dictionary[key].image} alt={key} />
                         <div className="description">{dictionary[key].description}</div>

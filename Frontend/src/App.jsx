@@ -5,8 +5,8 @@ import { Routes, Route } from 'react-router-dom'
 import MainHome from "./components/Fridge Maganet/MainHome";
 import CustomizePage from "./components/Fridge Maganet/CustomizePage";
 import ClockCustomizer from "./components/AcrylicWallClock";
-import CollagePhoto from "./components/CollagePhoto";
-import AcrylicCollageHome from "./components/CollageHome";
+import AcrylicCollageHome from "./components/CollagePhoto/CollageHome";
+import CollageAcrylicPhoto from "./components/CollagePhoto/Collage2PicsPhoto";
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
         <Route path="/customize/:type" element={<CustomizePage />} />
         <Route path="/acrylic-wall-clock" element={<ClockCustomizer />} />
         <Route path="/collage-acrylic-photo" element={<AcrylicCollageHome />} />
+        <Route path="/colllage/:type" element={<CollageAcrylicPhoto />} />
       </Routes>
     </>
   );
