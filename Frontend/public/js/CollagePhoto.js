@@ -159,23 +159,23 @@ function attachHandles(element) {
 
         resizeHandle.addEventListener('mousedown', function (e) {
             e.stopPropagation();
-            const initialFontSize = parseFloat(window.getComputedStyle(element).fontSize); 
+            const initialFontSize = parseFloat(window.getComputedStyle(element).fontSize);
             const initialMouseX = e.clientX;
-    
+
             function resize(e) {
-                const scaleFactor = 0.2; 
+                const scaleFactor = 0.2;
                 const newSize = initialFontSize + (e.clientX - initialMouseX) * scaleFactor;
-    
-                if (newSize > 10) { 
+
+                if (newSize > 10) {
                     element.style.fontSize = newSize + 'px';
                 }
             }
-    
+
             function stopResizing() {
                 document.removeEventListener('mousemove', resize);
                 document.removeEventListener('mouseup', stopResizing);
             }
-    
+
             document.addEventListener('mousemove', resize);
             document.addEventListener('mouseup', stopResizing);
         });
@@ -291,7 +291,7 @@ document.getElementById('addTextBtn').addEventListener('click', function () {
     }
 });
 
-closeInputBtn.addEventListener('click', function () {
+document.getElementById('closeText').addEventListener('click', function () {
     const previewText = document.querySelector('.text-box.preview');
     if (previewText) previewText.remove();
     document.getElementById('textInput').value = '';
@@ -303,7 +303,7 @@ closeInputBtn.addEventListener('click', function () {
     textInput.style.display = 'none';
     closeInputBtn.style.display = 'none';
     fontFamilyOptions.style.display = 'none';
-
+    document.getElementById('textColor').value = "#000";
 });
 
 allSizeBtn.forEach(btn => {
@@ -363,9 +363,9 @@ function getImageDetails() {
     const selectedShape = document.querySelector('.shape-btn.active');
     const selectedSize = document.querySelector('.size-btn.active');
     const textElement = document.querySelector('.text-box');
-    
+
     let imagesData = [];
-    
+
     imageContainers.forEach(container => {
         const imageElement = container.querySelector('.previewImage');
         const fileInput = container.querySelector('input[type="file"]');
@@ -394,7 +394,7 @@ function getImageDetails() {
 
 document.getElementById('shareBtn').addEventListener('click', () => {
     shareBtn.disabled = true;
-    shareBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
+    shareBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
         handle.style.display = 'none';
@@ -413,24 +413,24 @@ document.getElementById('shareBtn').addEventListener('click', () => {
             const subject = `Collage Acrylic Photo Order - ${formattedDate}`;
             formData.append('subject', JSON.stringify(subject));
 
-            fetch('http://192.168.1.2:1818/send-email', {
+            fetch('http://192.168.1.7:3000/send-email', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-            })
-            .catch(error => {
-                alert('Error: ' + error.message);
-            })
-            .finally(() => {
-                shareBtn.disabled = false;
-                shareBtn.innerHTML = '<i class="fa-solid fa-share-nodes"></i>'; 
-            });
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                })
+                .finally(() => {
+                    shareBtn.disabled = false;
+                    shareBtn.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
+                });
         });
     });
 });
 
-window.updatePreview=updatePreview;
-window.changeFontFamily=changeFontFamily;
+window.updatePreview = updatePreview;
+window.changeFontFamily = changeFontFamily;

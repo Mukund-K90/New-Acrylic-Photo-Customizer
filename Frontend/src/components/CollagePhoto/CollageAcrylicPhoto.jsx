@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../../assets/css/CollagePhoto.css";
-import { FaImage } from 'react-icons/fa6'
+import { FaDownload, FaImage } from 'react-icons/fa6'
 import { IoClose } from 'react-icons/io5'
 import { VscDebugRestart, VscTextSize } from 'react-icons/vsc'
 import { HiPencilSquare } from "react-icons/hi2";
+import { FaShareAlt } from "react-icons/fa";
+
 
 const collageLayouts = {
     "2-pics": {
@@ -135,8 +137,8 @@ const CollageAcrylicPhoto = () => {
                         <button className="thickness-btn">5 MM</button>
                         <button className="thickness-btn">8 MM (Premium)</button>
                     </div>
-                    <button className="upload-btn download" id="downloadBtn"><i className="fa-solid fa-download"></i></button>
-                    <button className="upload-btn share" id="shareBtn"><i className="fa-solid fa-share-nodes"></i></button>
+                    <button className="upload-btn download" id="downloadBtn"><FaDownload /></button>
+                    <button className="upload-btn share" id="shareBtn"><FaShareAlt /></button>
                 </div>
             </div>
 

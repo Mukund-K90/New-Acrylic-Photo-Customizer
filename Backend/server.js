@@ -94,9 +94,8 @@ app.post('/send-email', upload.single('image'), async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to send email' });
     }
 });
+
+app.get('/home',(req,res)=>{
+    res.send('Hello World!')
+})
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
-
-
-
-
-

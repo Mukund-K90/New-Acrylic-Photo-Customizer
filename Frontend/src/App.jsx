@@ -6,7 +6,7 @@ import MainHome from "./components/Fridge Maganet/MainHome";
 import CustomizePage from "./components/Fridge Maganet/CustomizePage";
 import ClockCustomizer from "./components/AcrylicWallClock";
 import AcrylicCollageHome from "./components/CollagePhoto/CollageHome";
-import CollageAcrylicPhoto from "./components/CollagePhoto/Collage2PicsPhoto";
+import CollageAcrylicPhoto from "./components/CollagePhoto/CollageAcrylicPhoto";
 
 function App() {
   return (
