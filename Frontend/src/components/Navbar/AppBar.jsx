@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppBar,
@@ -17,6 +17,11 @@ import {
 } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { ListItemIcon } from "@mui/material";
+import CropSquareIcon from "@mui/icons-material/CropSquare"; // Square
+import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye"; // Round
+import RoundedCornerIcon from "@mui/icons-material/RoundedCorner"; // Round Corners
+import SpaIcon from "@mui/icons-material/Spa"; // Leaf (Best match for a natural shape)
 
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -35,10 +40,11 @@ export default function MenuAppBar() {
   });
 
   // Example Cart State
-  const [cart, setCart] = useState([
-    { id: 1, name: "Acrylic Photo", price: 20, quantity: 1 },
-    { id: 2, name: "Fridge Magnet", price: 10, quantity: 2 },
-  ]);
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,22 +67,39 @@ export default function MenuAppBar() {
 
   const isActive = (path) => location.pathname === path;
 
-  // Cart Functions
+  const updateLocalStorageCart = (updatedCart) => {
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    setCart(updatedCart);
+  };
+
+  // Increase Quantity
   const increaseQuantity = (id) => {
-    setCart(cart.map((item) => (item.id === id ? { ...item, quantity: item.quantity + 1 } : item)));
-  };
-
-  const decreaseQuantity = (id) => {
-    setCart(
-      cart.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 } : item
-      )
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
     );
+    updateLocalStorageCart(updatedCart);
   };
 
-  const removeItem = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+  // Decrease Quantity
+  const decreaseQuantity = (id) => {
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
+    );
+    updateLocalStorageCart(updatedCart);
   };
+
+  // Remove Item
+  const removeItem = (id) => {
+    const updatedCart = cart.filter((item) => item.id !== id);
+    updateLocalStorageCart(updatedCart);
+  };
+
+  // Load Cart from Local Storage on Component Mount
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(storedCart);
+  }, []);
+
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const handleMenu = (event) => {
@@ -86,6 +109,14 @@ export default function MenuAppBar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const shapeData = {
+    "round-corners": { label: "Round Corners", icon: <RoundedCornerIcon sx={{ color: "#007BFF" }} /> },
+    "round": { label: "Round", icon: <PanoramaFishEyeIcon sx={{ color: "#007BFF" }} /> },
+    "leaf": { label: "Leaf", icon: <SpaIcon sx={{ color: "#007BFF" }} /> },
+    "square": { label: "Square", icon: <CropSquareIcon sx={{ color: "#007BFF" }} /> },
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       {/* App Bar */}
@@ -166,6 +197,7 @@ export default function MenuAppBar() {
               }}
             >
               <ListItemText primary="Home" />
+              {/* <ListItemIcon><ImHome </ListItemIcon> */}
             </ListItemButton>
             {/* Sidebar Items */}
             <ListItemButton
@@ -202,7 +234,7 @@ export default function MenuAppBar() {
             </ListItemButton>
             <Collapse in={submenuOpen.fridge} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                {["round-corners", "round", "leaf", "square"].map((type) => (
+                {Object.entries(shapeData).map(([type, { label, icon }]) => (
                   <ListItemButton
                     key={type}
                     sx={{
@@ -213,7 +245,8 @@ export default function MenuAppBar() {
                     }}
                     onClick={() => handleNavigate(`/customize/${type}`)}
                   >
-                    <ListItemText primary={type.replace("-", " ")} />
+                    <ListItemIcon>{icon}</ListItemIcon>
+                    <ListItemText primary={label} />
                   </ListItemButton>
                 ))}
               </List>
@@ -265,9 +298,9 @@ export default function MenuAppBar() {
 
       {/* Cart Drawer */}
       <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)}>
-        <Box sx={{ width: 300, display: "flex", flexDirection: "column", height: "100%" }}>
+        <Box sx={{ width: 500, display: "flex", flexDirection: "column", height: "100%" }}>
           {/* Drawer Header with Close Icon */}
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 2, bgcolor: "#222", color: "white" }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 2, bgcolor: "#0056B3", color: "white" }}>
             <Typography variant="h6">Your Cart</Typography>
             <IconButton onClick={toggleCart(false)} sx={{ color: "white" }}>
               <CloseIcon />
@@ -283,24 +316,53 @@ export default function MenuAppBar() {
           ) : (
             <List sx={{ flexGrow: 1, overflowY: "auto" }}>
               {cart.map((item) => (
-                <Box key={item.id} sx={{ p: 2, borderBottom: "1px solid #ddd" }}>
-                  <Typography variant="body1">{item.name}</Typography>
-                  <Typography variant="body2" color="textSecondary">${item.price.toFixed(2)}</Typography>
-                  <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                    <IconButton size="small" onClick={() => decreaseQuantity(item.id)}>
-                      <Remove />
-                    </IconButton>
-                    <Typography variant="body1" sx={{ mx: 1 }}>{item.quantity}</Typography>
-                    <IconButton size="small" onClick={() => increaseQuantity(item.id)}>
-                      <Add />
-                    </IconButton>
-                    <IconButton size="small" sx={{ ml: "auto" }} onClick={() => removeItem(item.id)}>
-                      <Delete color="error" />
-                    </IconButton>
+                <Box key={item.id} sx={{ display: "flex", alignItems: "flex-start", padding: "16px", borderBottom: "1px solid #ddd" }}>
+
+                  {/* 🖼 Product Image */}
+                  <Box sx={{ width: "100px", height: "100px", borderRadius: "8px", overflow: "hidden", border: "1px solid #ddd" }}>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  </Box>
+
+                  {/* 📄 Product Details */}
+                  <Box sx={{ flex: 1, marginLeft: "16px" }}>
+                    <Typography variant="body1" sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {item.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "green", fontWeight: "500", marginTop: "4px" }}>
+                      In stock
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#888", marginTop: "4px" }}>
+                      Eligible for FREE Shipping
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#555", marginTop: "4px" }}>
+                      Price: ₹{item.price.toLocaleString()}
+                    </Typography>
+
+                    {/* 🟨 Quantity + Delete Options */}
+                    <Box sx={{ display: "flex", justifyContent: 'flex-start' }}>
+                      <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px", padding: "4px 12px", border: "1px solid #ddd", borderRadius: "20px", width: "100px", justifyContent: "space-between" }}>
+                        <IconButton size="small" onClick={() => decreaseQuantity(item.id)}>
+                          <Remove />
+                        </IconButton>
+                        <Typography variant="body1">{item.quantity}</Typography>
+                        <IconButton size="small" onClick={() => increaseQuantity(item.id)}>
+                          <Add />
+                        </IconButton>
+                      </Box>
+                      <IconButton size="small" onClick={() => removeItem(item.id)}>
+                        <Delete color="error" />
+                      </IconButton>
+                    </Box>
                   </Box>
                 </Box>
               ))}
             </List>
+
+
           )}
 
           {/* Total Price */}

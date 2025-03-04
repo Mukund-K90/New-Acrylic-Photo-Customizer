@@ -7,12 +7,12 @@ import CustomizePage from "./components/Fridge Maganet/CustomizePage";
 import ClockCustomizer from "./components/AcrylicWallClock";
 import AcrylicCollageHome from "./components/CollagePhoto/CollageHome";
 import CollageAcrylicPhoto from "./components/CollagePhoto/CollageAcrylicPhoto";
-import MenuAppBar from "./components/Navbar/Appbar";
+import Navbar from "./components/Navbar/Appbar";
 
 function App() {
   return (
     <>
-      <MenuAppBar />
+      <Navbar />
       <div style={{marginTop:"6%"}}>
         <Routes>
           <Route path="/" element={<Home />} />

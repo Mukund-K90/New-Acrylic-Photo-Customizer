@@ -33,6 +33,41 @@ const AcrylicPhoto = () => {
     };
   }, []);
 
+  // Function to add the customized image to the cart
+  const addToCart = async () => {
+    const imageContainer = document.getElementById("imageContainer");
+
+    if (!imageContainer) {
+      console.error("Image container not found!");
+      return;
+    }
+
+    try {
+      // Capture the customized preview using html2canvas
+      const canvas = await html2canvas(imageContainer, { useCORS: true });
+      const imageUrl = canvas.toDataURL("image/jpeg", 0.8); // Convert to JPEG format
+
+      // Create a cart item
+      const newItem = {
+        id: Date.now(),
+        image: imageUrl,
+        name: "Customized Acrylic Photo",
+        price: 20.99,
+        quantity: 1,
+      };
+
+      // Get existing cart or initialize a new one
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.push(newItem);
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      console.log("Added to Cart:", newItem);
+    } catch (error) {
+      console.error("Error capturing image:", error);
+    }
+  };
+
+
   return (
     <div className="ap-container">
       <div className="ap-border-colors">
@@ -261,6 +296,10 @@ const AcrylicPhoto = () => {
           </button>
         </div>
       </div>
+      {/* 🔥 Add to Cart Button */}
+      <button className="ap-upload-btn ap-add-to-cart" onClick={addToCart}>
+        Add to Cart
+      </button>
     </div>
   );
 };
