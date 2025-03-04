@@ -159,7 +159,7 @@ body {
 }
 
 .ap-add-to-cart {
-    /* display: none; */
+    display: none;
     background: #026593;
     font-size: 20px;
     border: 1px solid #f0f0f0;

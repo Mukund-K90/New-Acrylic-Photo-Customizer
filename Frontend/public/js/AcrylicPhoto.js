@@ -20,8 +20,9 @@ const previewImage = document.getElementById('previewImage');
 const fileInput = document.getElementById('fileInput');
 const widthInd = document.getElementById('width');
 const heightInd = document.getElementById('height');
-const downloadBtn = document.getElementById('downloadBtn');
+// const downloadBtn = document.getElementById('downloadBtn');
 const shareBtn = document.getElementById('shareBtn');
+const cartBtn = document.getElementById('cartBtn');
 imageContainer.addEventListener('dblclick', dragStart);
 imageContainer.addEventListener('mousemove', drag);
 document.addEventListener('mouseup', dragEnd);
@@ -52,6 +53,7 @@ fileInput.addEventListener('change', function (e) {
         reader.readAsDataURL(file);
         downloadBtn.style.display = "block";
         shareBtn.style.display = "block";
+        cartBtn.style.display="block";
     }
 });
 
@@ -131,17 +133,17 @@ zoomRange.addEventListener('input', function () {
     updateImagePosition();
 });
 
-downloadBtn.addEventListener('click', () => {
-    document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
-        handle.style.display = 'none';
-    });
-    html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
-        const link = document.createElement('a');
-        link.download = 'customized-image.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-});
+// downloadBtn.addEventListener('click', () => {
+//     document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
+//         handle.style.display = 'none';
+//     });
+//     html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
+//         const link = document.createElement('a');
+//         link.download = 'customized-image.png';
+//         link.href = canvas.toDataURL('image/png');
+//         link.click();
+//     });
+// });
 
 document.querySelectorAll('.ap-size-btn').forEach(btn => {
     btn.addEventListener('click', function () {

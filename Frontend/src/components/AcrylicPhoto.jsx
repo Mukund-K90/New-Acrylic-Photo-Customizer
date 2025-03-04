@@ -4,6 +4,7 @@ import { FaImage, FaShareAlt } from "react-icons/fa";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
 import { useCartUtils } from "../utils/cartUtils";
+import { MdAddShoppingCart } from "react-icons/md";
 
 const AcrylicPhoto = () => {
   const { addToCartWithImage } = useCartUtils(); // Call the hook here
@@ -39,7 +40,7 @@ const AcrylicPhoto = () => {
   const handleAddToCart = () => {
     const customizationDetails = window.getImageDetails();
     console.log(customizationDetails);
-     
+
     addToCartWithImage("ap-image-container", "Customized Acrylic Photo", 20.99);
   };
 
@@ -123,11 +124,14 @@ const AcrylicPhoto = () => {
           defaultValue="1"
           style={{ width: "200px" }}
         />
-        <button className="ap-upload-btn ap-download" id="downloadBtn">
+        {/* <button className="ap-upload-btn ap-download" id="downloadBtn">
           <FaDownload />
-        </button>
+        </button> */}
         <button className="ap-upload-btn ap-share" id="shareBtn">
           <FaShareAlt />
+        </button>
+        <button className="ap-upload-btn ap-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+        <MdAddShoppingCart />
         </button>
 
         <p>Size:</p>
@@ -272,10 +276,6 @@ const AcrylicPhoto = () => {
           </button>
         </div>
       </div>
-      {/* 🔥 Add to Cart Button */}
-      <button className="ap-upload-btn ap-add-to-cart" onClick={handleAddToCart}>
-        Add to Cart
-      </button>
     </div>
   );
 };
