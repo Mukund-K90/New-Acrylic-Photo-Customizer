@@ -397,8 +397,6 @@ function getImageDetails() {
 
 document.getElementById('acol-shareBtn').addEventListener('click', () => {
     shareBtn.disabled = true;
-    shareBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
     document.querySelectorAll('.acol-resize-handle, .acol-rotate-handle').forEach(handle => {
         handle.style.display = 'none';
     });
@@ -426,10 +424,6 @@ document.getElementById('acol-shareBtn').addEventListener('click', () => {
                 })
                 .catch(error => {
                     alert('Error: ' + error.message);
-                })
-                .finally(() => {
-                    shareBtn.disabled = false;
-                    shareBtn.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
                 });
         });
     });
