@@ -51,7 +51,7 @@ fileInput.addEventListener('change', function (e) {
             previewImage.style.transform = 'translate(0px, 0px) scale(1)';
         };
         reader.readAsDataURL(file);
-        downloadBtn.style.display = "block";
+        // downloadBtn.style.display = "block";
         shareBtn.style.display = "block";
         cartBtn.style.display="block";
     }

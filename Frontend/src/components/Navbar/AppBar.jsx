@@ -275,7 +275,7 @@ export default function MenuAppBar() {
 
       {/* Cart Drawer */}
       <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)}>
-        <Box sx={{ width: 500, display: "flex", flexDirection: "column", height: "100%" }}>
+        <Box sx={{ width: 400, display: "flex", flexDirection: "column", height: "100%" }}>
           {/* Drawer Header with Close Icon */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 2, bgcolor: "#0056B3", color: "white" }}>
             <Typography variant="h6">Your Cart</Typography>
