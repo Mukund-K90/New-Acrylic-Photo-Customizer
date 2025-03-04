@@ -523,3 +523,5 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 // window.updatePreview = updatePreview;
 window.closeBgModal = closeBgModal;
 window.closeTextModal = closeTextModal;
+window.getImageDetails=getImageDetails;
+

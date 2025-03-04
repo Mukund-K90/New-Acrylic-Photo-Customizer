@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppBar,
@@ -29,6 +29,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { ExpandLess, ExpandMore, Add, Remove, Delete } from "@mui/icons-material";
 import { FaOpencart } from "react-icons/fa6";
+import { CartContext } from "../CartContext";
 
 export default function MenuAppBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,11 +40,8 @@ export default function MenuAppBar() {
     collage: false,
   });
 
-  // Example Cart State
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const { cart, increaseQuantity, decreaseQuantity, removeItem } = useContext(CartContext);
+
 
 
   const navigate = useNavigate();
@@ -72,32 +70,11 @@ export default function MenuAppBar() {
     setCart(updatedCart);
   };
 
-  // Increase Quantity
-  const increaseQuantity = (id) => {
-    const updatedCart = cart.map((item) =>
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    updateLocalStorageCart(updatedCart);
-  };
-
-  // Decrease Quantity
-  const decreaseQuantity = (id) => {
-    const updatedCart = cart.map((item) =>
-      item.id === id ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
-    );
-    updateLocalStorageCart(updatedCart);
-  };
-
-  // Remove Item
-  const removeItem = (id) => {
-    const updatedCart = cart.filter((item) => item.id !== id);
-    updateLocalStorageCart(updatedCart);
-  };
 
   // Load Cart from Local Storage on Component Mount
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(storedCart);
+    // setCart(storedCart);
   }, []);
 
 
@@ -319,13 +296,30 @@ export default function MenuAppBar() {
                 <Box key={item.id} sx={{ display: "flex", alignItems: "flex-start", padding: "16px", borderBottom: "1px solid #ddd" }}>
 
                   {/* 🖼 Product Image */}
-                  <Box sx={{ width: "100px", height: "100px", borderRadius: "8px", overflow: "hidden", border: "1px solid #ddd" }}>
+                  <Box
+                    sx={{
+                      width: "100px",
+                      height: "100px",
+                      borderRadius: "8px",
+                      overflow: "hidden",
+                      border: "1px solid #ddd",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "#fff",
+                    }}
+                  >
                     <img
                       src={item.image}
                       alt={item.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        objectFit: "contain",
+                      }}
                     />
                   </Box>
+
 
                   {/* 📄 Product Details */}
                   <Box sx={{ flex: 1, marginLeft: "16px" }}>

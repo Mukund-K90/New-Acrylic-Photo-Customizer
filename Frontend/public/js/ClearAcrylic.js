@@ -418,6 +418,5 @@ shareBtn.addEventListener('click', () => {
 });
 
 
-
-
 window.updatePreview = updatePreview;
+window.getImageDetails=getImageDetails;

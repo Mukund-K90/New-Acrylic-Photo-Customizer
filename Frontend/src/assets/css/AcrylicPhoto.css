@@ -1,7 +1,6 @@
-body{
+body {
     user-select: none;
 }
-
 
 .ap-container {
     max-width: 70%;
@@ -155,6 +154,13 @@ body{
 .ap-share {
     display: none;
     background: #012e43;
+    font-size: 20px;
+    border: 1px solid #f0f0f0;
+}
+
+.ap-add-to-cart {
+    /* display: none; */
+    background: #026593;
     font-size: 20px;
     border: 1px solid #f0f0f0;
 }
