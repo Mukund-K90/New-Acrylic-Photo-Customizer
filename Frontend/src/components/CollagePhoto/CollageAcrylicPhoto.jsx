@@ -82,7 +82,7 @@ const CollageAcrylicPhoto = () => {
         const customizationDetails = window.getImageDetails();
         console.log(customizationDetails);
 
-        addToCartWithImage("acol-collage-frame", "Customized Collage Acrylic", 699,customizationDetails);
+        addToCartWithImage("acol-collage-frame", "Customized Collage Acrylic", 699, customizationDetails);
     };
     return (
         <div className="acol-content">
@@ -138,17 +138,16 @@ const CollageAcrylicPhoto = () => {
                     <div className="acol-row">
                         <h3>Size (Inch)</h3>
                         <button className="acol-size-btn acol-active" data-ratio="12/9">12x9</button>
-                        <button className="acol-size-btn" data-ratio="11/11">16x12</button>
-                        <button className="acol-size-btn" data-ratio="11/11">21x15</button>
-                        <button className="acol-size-btn" data-ratio="11/11">35x23</button>
-                        <button className="acol-size-btn" data-ratio="11/11">48x36</button>
+                        <button className="acol-size-btn" data-ratio="16x12">16x12</button>
+                        <button className="acol-size-btn" data-ratio="21x15">21x15</button>
+                        <button className="acol-size-btn" data-ratio="35x23">35x23</button>
+                        <button className="acol-size-btn" data-ratio="48x36">48x36</button>
                     </div>
 
                     <div className="acol-row">
                         <h3>Thickness (mm)</h3>
-                        <button className="acol-thickness-btn acol-active">5 MM</button>
-                        <button className="acol-thickness-btn">5 MM</button>
-                        <button className="acol-thickness-btn">8 MM (Premium)</button>
+                        <button className="acol-thickness-btn acol-active" data-thickness="5 MM">5 MM</button>
+                        <button className="acol-thickness-btn" data-thickness="8 MM">8 MM (Premium)</button>
                     </div>
                     {/* <button className="acol-upload-btn acol-download" id="acol-downloadBtn"><FaDownload /></button> */}
                     <button className="acol-upload-btn acol-share" id="acol-shareBtn"><FaShareAlt /></button>

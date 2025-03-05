@@ -385,7 +385,7 @@ export default function MenuAppBar() {
         </Drawer>
       </Box>
 
-      <ProductDetailsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} item={selectedItem} />
+      <ProductDetailsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} productDetails={selectedItem} />
 
     </>
   );

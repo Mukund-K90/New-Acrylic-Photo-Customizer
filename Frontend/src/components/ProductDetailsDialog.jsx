@@ -8,14 +8,16 @@ import {
     Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import StraightenIcon from "@mui/icons-material/Straighten"; // Size Icon
-import CropSquareIcon from "@mui/icons-material/CropSquare"; // Shape Icon
-import BorderColorIcon from "@mui/icons-material/BorderColor"; // Border Icon
-import HeightIcon from "@mui/icons-material/Height"; // Height Icon
-import WidthIcon from "@mui/icons-material/WidthFull"; // Width Icon
+import { MdStraighten } from "react-icons/md";
+import { FaShapes } from "react-icons/fa";
+import { MdOutlineHeight } from "react-icons/md";
+import { RxWidth } from "react-icons/rx";
+import { RxBorderWidth } from "react-icons/rx";
 
-const ProductDetailsDialog = ({ open, onClose, item }) => {
-    if (!item) return null;
+
+const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
+    if (!productDetails) return null;
+    console.log(productDetails.imageDetails?.border.split("solid ")[1]);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -24,14 +26,13 @@ const ProductDetailsDialog = ({ open, onClose, item }) => {
                 sx={{
                     bgcolor: "#0056B3",
                     color: "white",
-                    textAlign: "center",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "12px 24px",
                 }}
             >
-                {item.name} ({item.imageDetails.size})
+                {productDetails.name} ({productDetails?.imageDetails?.size || "N/A"})
                 <IconButton onClick={onClose} sx={{ color: "white" }}>
                     <CloseIcon />
                 </IconButton>
@@ -56,8 +57,8 @@ const ProductDetailsDialog = ({ open, onClose, item }) => {
                         }}
                     >
                         <img
-                            src={item.image}
-                            alt={item.name}
+                            src={productDetails.image}
+                            alt={productDetails.name}
                             style={{
                                 maxWidth: "100%",
                                 maxHeight: "400px",
@@ -72,84 +73,82 @@ const ProductDetailsDialog = ({ open, onClose, item }) => {
 
                     {/* Product Info */}
                     <Box sx={{ flex: "1", textAlign: "left" }}>
-                        {/* <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
-                            {item.name} ({item.imageDetails.size})
-                        </Typography> */}
-
-                        <Typography
-                            variant="h6"
-                            sx={{ color: "#D32F2F", fontWeight: "bold", mb: 2 }}
-                        >
-                            Price: ₹{item.price.toLocaleString()}/unit
+                        <Typography variant="h6" sx={{ color: "#D32F2F", fontWeight: "bold", mb: 2 }}>
+                            Price: ₹{productDetails.price?.toLocaleString() || "N/A"} / unit
                         </Typography>
 
-                        <Typography
-                            variant="h6"
-                            sx={{ color: "#D32F2F", fontWeight: "bold", mb: 2 }}
-                        >
-                            Quty.: {item.quantity}
+                        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+                            Quantity: {productDetails.quantity || "N/A"}
                         </Typography>
-
 
                         <Divider sx={{ mb: 2 }} />
 
-                        {/* Product Details with Icons */}
-                        <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
-                            <WidthIcon sx={{ color: "#1976D2" }} />
-                            <Typography variant="body1">
-                                <strong>Width:</strong> {item.imageDetails.width}
-                            </Typography>
-                        </Box>
-
-                        <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
-                            <HeightIcon sx={{ color: "#1976D2" }} />
-                            <Typography variant="body1">
-                                <strong>Height:</strong> {item.imageDetails.height}
-                            </Typography>
-                        </Box>
-
-                        <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
-                            <CropSquareIcon sx={{ color: "#1976D2" }} />
-                            <Typography variant="body1">
-                                <strong>Shape:</strong> {item.imageDetails.shape}
-                            </Typography>
-                        </Box>
-
-                        <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
-                            <StraightenIcon sx={{ color: "#1976D2" }} />
-                            <Typography variant="body1">
-                                <strong>Size:</strong> {item.imageDetails.size}
-                            </Typography>
-                        </Box>
-
-                        {item.imageDetails.border && (
+                        {/* Dynamic Product Fields */}
+                        {productDetails.imageDetails?.width && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
-                                <BorderColorIcon sx={{ color: "#1976D2" }} />
-                                {/* <Typography variant="body1">
-                                <strong>Border:</strong> {item.imageDetails.border}
-                            </Typography> */}
+                                <RxWidth style={{ color: "#1976D2" }} />
+                                <Typography variant="body1">
+                                    <strong>Width:</strong> {productDetails.imageDetails.width}
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {productDetails.imageDetails?.height && (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
+                                <MdOutlineHeight style={{ color: "#1976D2" }} />
+                                <Typography variant="body1">
+                                    <strong>Height:</strong> {productDetails.imageDetails.height}
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {productDetails.imageDetails?.shape && (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
+                                <FaShapes style={{ color: "#1976D2" }} />
+                                <Typography variant="body1">
+                                    <strong>Shape:</strong> {productDetails.imageDetails.shape}
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {productDetails.imageDetails?.size && (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
+                                <MdStraighten style={{ color: "#1976D2" }} />
+                                <Typography variant="body1">
+                                    <strong>Size:</strong> {productDetails.imageDetails.size}
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {/* Display Border Color Box if Border Exists */}
+                        {productDetails.imageDetails?.border && productDetails.imageDetails.border !== "" && (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
+                                <RxBorderWidth style={{ color: "#1976D2" }} />
+                                <Typography variant="body1">
+                                    <strong>Border:</strong>
+                                </Typography>
                                 <Box
                                     sx={{
-                                        width: "5px",
-                                        height: "5px",
-                                        border: item.imageDetails.border,
-                                        borderRadius: "4px",
+                                        width: "20%",
+                                        height: "10px",
+                                        backgroundColor: productDetails.imageDetails?.border.split("solid ")[1],
                                     }}
                                 />
                             </Box>
                         )}
 
-
-                        {/* Added Text */}
-                        {item.addedText?.length > 0 && (
-                            <Typography variant="body1" sx={{ mt: 1 }}>
-                                <strong>Added Text:</strong>{" "}
-                                {item.addedText.map((textItem, index) => (
-                                    <span key={index} style={{ color: textItem.color }}>
-                                        {textItem.text}{" "}
-                                    </span>
+                        {/* Added Text Section (Only if exists) */}
+                        {Array.isArray(productDetails.addedText) && productDetails.addedText.length > 0 && (
+                            <Box sx={{ mt: 2 }}>
+                                <Typography variant="body1">
+                                    <strong>Added Text:</strong>
+                                </Typography>
+                                {productDetails.addedText.map((textItem, index) => (
+                                    <Typography key={index} variant="body1" sx={{ color: textItem.color }}>
+                                        - {textItem.text}
+                                    </Typography>
                                 ))}
-                            </Typography>
+                            </Box>
                         )}
                     </Box>
                 </Box>

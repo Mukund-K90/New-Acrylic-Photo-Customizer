@@ -53,7 +53,7 @@ fileInput.addEventListener('change', function (e) {
         reader.readAsDataURL(file);
         // downloadBtn.style.display = "block";
         shareBtn.style.display = "block";
-        cartBtn.style.display="block";
+        cartBtn.style.display = "block";
     }
 });
 
@@ -166,7 +166,7 @@ document.querySelectorAll('.ap-size-btn').forEach(btn => {
 
         if (aspectWidth === "default") {
             console.log("yes");
-            
+
             imageContainer.style.width = '';
             imageContainer.style.height = '';
             widthInd.innerText = `Width 12 inch (30.48 cm)`;
@@ -462,6 +462,7 @@ function getImageDetails() {
     console.log(imageContainer);
 
     const imageDetails = {
+        name: 'Acrylic Photo',
         image: {
             name: file.name,
             lastModified: file.lastModified,
@@ -535,5 +536,5 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 // window.updatePreview = updatePreview;
 window.closeBgModal = closeBgModal;
 window.closeTextModal = closeTextModal;
-window.getImageDetails=getImageDetails;
+window.getImageDetails = getImageDetails;
 
