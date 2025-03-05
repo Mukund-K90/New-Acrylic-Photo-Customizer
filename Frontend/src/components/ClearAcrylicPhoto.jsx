@@ -39,7 +39,7 @@ const ClearAcrylic = () => {
         const customizationDetails = window.getImageDetails();
         console.log(customizationDetails);
 
-        addToCartWithImage("acp-image-container", "Customized Acrylic Clear Photo", 699,customizationDetails);
+        addToCartWithImage("acp-image-container", `Customized Acrylic Clear Photo (${customizationDetails.size?customizationDetails.size:''})`, 699,customizationDetails);
     };
     return (
         <div className="acp-container">

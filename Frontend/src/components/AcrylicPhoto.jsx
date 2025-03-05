@@ -41,7 +41,7 @@ const AcrylicPhoto = () => {
     const customizationDetails = window.getImageDetails();
     console.log(customizationDetails);
 
-    addToCartWithImage("ap-image-container", "Customized Acrylic Photo", 699,customizationDetails);
+    addToCartWithImage("ap-image-container", `Customized Acrylic Photo (${customizationDetails.size?customizationDetails.size:''})`, 699, customizationDetails);
   };
 
 
@@ -131,7 +131,7 @@ const AcrylicPhoto = () => {
           <FaShareAlt />
         </button>
         <button className="ap-upload-btn ap-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
-        <MdAddShoppingCart />
+          <MdAddShoppingCart />
         </button>
 
         <p>Size:</p>

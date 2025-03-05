@@ -28,9 +28,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { ExpandLess, ExpandMore, Add, Remove, Delete } from "@mui/icons-material";
-import { FaOpencart } from "react-icons/fa6";
 import { CartContext } from "../CartContext";
 import ProductDetailsDialog from "../ProductDetailsDialog";
+import { IoCloseCircle } from "react-icons/io5";
+import { BsBagX } from "react-icons/bs";
+
 
 export default function MenuAppBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -277,38 +279,34 @@ export default function MenuAppBar() {
 
         {/* Cart Drawer */}
         <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)}>
-          <Box sx={{ width: 400, display: "flex", flexDirection: "column", height: "100%" }}>
-            {/* Drawer Header with Close Icon */}
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 2, bgcolor: "#0056B3", color: "white" }}>
-              <Typography variant="h6">Your Cart</Typography>
-              <IconButton onClick={toggleCart(false)} sx={{ color: "white" }}>
-                <CloseIcon />
+          <Box sx={{ width: 450, display: "flex", flexDirection: "column", height: "100%" }}>
+
+            {/* Cart Header */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 2, bgcolor: "white", borderBottom: "1px solid #ddd" }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>Your Cart</Typography>
+              <IconButton onClick={toggleCart(false)}>
+                <BsBagX />
               </IconButton>
             </Box>
 
-            <Divider />
-
+            {/* Cart Items */}
             {cart.length === 0 ? (
-              <Typography variant="body1" sx={{ textAlign: "center", mt: 4 }}>
-                Your cart is empty.
-              </Typography>
+              <Typography variant="body1" sx={{ textAlign: "center", mt: 4 }}>Your cart is empty.</Typography>
             ) : (
               <List sx={{ flexGrow: 1, overflowY: "auto" }}>
                 {cart.map((item) => (
-                  <Box key={item.id} sx={{ display: "flex", alignItems: "flex-start", padding: "16px", borderBottom: "1px solid #ddd" }}>
+                  <Box key={item.id} sx={{ display: "flex", alignItems: "center", padding: "16px", borderBottom: "1px solid #ddd", position: "relative" }}>
 
-                    {/* 🖼 Product Image */}
+                    {/* Product Image */}
                     <Box
                       sx={{
                         width: "100px",
                         height: "100px",
                         borderRadius: "8px",
                         overflow: "hidden",
-                        border: "1px solid #ddd",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: "#fff",
                       }}
                     >
                       <img
@@ -322,67 +320,56 @@ export default function MenuAppBar() {
                       />
                     </Box>
 
-
-                    {/* 📄 Product Details */}
+                    {/* Product Details */}
                     <Box sx={{ flex: 1, marginLeft: "16px" }}>
-                      <Typography variant="body1" sx={{ fontWeight: "bold", fontSize: "16px" }}>
-                        {item.name}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "green", fontWeight: "500", marginTop: "4px" }}>
-                        In stock
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#888", marginTop: "4px" }}>
-                        Eligible for FREE Shipping
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#555", marginTop: "4px" }}>
-                        Price: ₹{item.price.toLocaleString()}
-                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "bold" }}>{item.name}</Typography>
+                      <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                        <Typography variant="body3" sx={{ color: "#0056B3", fontWeight: "bold", ml: 1 }}>
+                          Rs. {item.price.toLocaleString()}.00
+                        </Typography>
+                      </Box>
 
-                      {/* 🟨 Quantity + Delete Options */}
-                      <Box sx={{ display: "flex", justifyContent: 'flex-start' }}>
-                        <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px", padding: "4px 12px", border: "1px solid #ddd", borderRadius: "20px", width: "100px", justifyContent: "space-between" }}>
-                          <IconButton size="small" onClick={() => decreaseQuantity(item.id)}>
-                            <Remove />
-                          </IconButton>
-                          <Typography variant="body1">{item.quantity}</Typography>
-                          <IconButton size="small" onClick={() => increaseQuantity(item.id)}>
-                            <Add />
-                          </IconButton>
-                        </Box>
-                        <IconButton size="small" onClick={() => removeItem(item.id)}>
-                          <Delete color="error" />
+                      {/* Quantity Controls */}
+                      <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                        <IconButton size="small" onClick={() => decreaseQuantity(item.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
+                          <Remove />
+                        </IconButton>
+                        <Typography sx={{ mx: 1 }}>{item.quantity}</Typography>
+                        <IconButton size="small" onClick={() => increaseQuantity(item.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
+                          <Add />
                         </IconButton>
                       </Box>
-                      <Typography
-                        variant="outlined"
-                        sx={{ borderBottom: '1px solid', cursor: 'pointer', marginTop: "8px", width: "100%", color: "#0056B3", borderColor: "#0056B3" }}
-                        onClick={() => handleViewDetails(item)}
-                      >
-                        View Details
-                      </Typography>
                     </Box>
+                    {/* Delete Button (X) */}
+                    <IconButton size="small" onClick={() => removeItem(item.id)}>
+                      <IoCloseCircle style={{ fontSize: "1.5rem" }} />
+                    </IconButton>
+
                   </Box>
                 ))}
               </List>
-
-
             )}
 
-            {/* Total Price */}
-            <Box sx={{ p: 2, bgcolor: "#f8f8f8", textAlign: "center" }}>
-              <Typography variant="h6">Total: ₹{totalPrice.toFixed(2)}</Typography>
-            </Box>
+            {/* Subtotal Section */}
+            {cart.length > 0 && (
+              <Box sx={{ p: 2, borderTop: "1px solid #ddd", textAlign: "left" }}>
+                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                  Subtotal: <span style={{ fontWeight: 'bold', color: "#0056B3" }}>Rs. {totalPrice.toLocaleString()}.00</span>
+                </Typography>
+              </Box>
+            )}
 
             {/* Checkout Button */}
             {cart.length > 0 && (
-              <Box sx={{ p: 2, textAlign: "center" }}>
-                <Button style={{ width: "100%" }} variant="contained" startIcon={<FaOpencart />}>
+              <Box sx={{ p: 2 }}>
+                <Button variant="contained" sx={{ width: "100%", bgcolor: "#0056B3", color: "white", fontWeight: "bold" }}>
                   Checkout
                 </Button>
               </Box>
             )}
           </Box>
         </Drawer>
+
       </Box>
 
       <ProductDetailsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} productDetails={selectedItem} />

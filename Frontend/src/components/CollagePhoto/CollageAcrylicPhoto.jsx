@@ -82,7 +82,7 @@ const CollageAcrylicPhoto = () => {
         const customizationDetails = window.getImageDetails();
         console.log(customizationDetails);
 
-        addToCartWithImage("acol-collage-frame", "Customized Collage Acrylic", 699, customizationDetails);
+        addToCartWithImage("acol-collage-frame", `Customized Collage Acrylic (${customizationDetails.size?customizationDetails.size:''})`, 699, customizationDetails);
     };
     return (
         <div className="acol-content">

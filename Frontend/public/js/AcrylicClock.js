@@ -26,6 +26,7 @@ imageContainer.addEventListener('mousemove', drag);
 document.addEventListener('mouseup', dragEnd);
 const allShapeBtn = document.querySelectorAll('.shape-btn');
 const cartBtn = document.getElementById('cartBtn');
+const shareBtn = document.getElementById('shareBtn');
 
 const allSizeBtn = document.querySelectorAll('.size-btn');
 const BASE_URL = window.BASE_URL;
@@ -50,6 +51,8 @@ fileInput.addEventListener('change', function (e) {
         };
         reader.readAsDataURL(file);
         zoomRange.value = 1;
+        shareBtn.style.display = 'block';
+        cartBtn.style.display = 'block';
     }
 
 });
@@ -60,17 +63,14 @@ allShapeBtn.forEach(btn => {
         this.classList.add('active');
         const shape = this.dataset.shape;
         imageContainer.classList.remove(
-            'circle-shape', 'square-shape', 'oval-shape',
-            'rect-shape', 'potrait-shape',
-            'custom-shape', 'custom2-shape',
+            'circle-shape', 'square-shape', 'custom2-shape',
             'custom3-shape', 'custom4-shape'
         );
-        imageContainer.classList.remove('circle-shape', 'square-shape', 'oval-shape', 'rect-shape', 'potrait-shape', 'custom-shape', 'custom2-shape', 'custom3-shape', 'custom4-shape');
-
+        imageContainer.classList.remove('circle-shape', 'square-shape', 'custom2-shape', 'custom3-shape', 'custom4-shape');
         if (shape) {
             imageContainer.classList.add(`${shape}-shape`)
+            createClockNumbers();
         }
-        createClockNumbers();
     });
 });
 
@@ -138,12 +138,16 @@ document.querySelectorAll('.size-btn').forEach(btn => {
         const heightInd = document.getElementById('height');
 
         if (aspectWidth == 11 && aspectHeight == 11) {
+            console.log("!!", width, height);
+
             imageContainer.style.width = '';
             imageContainer.style.height = '';
             widthInd.innerText = `Width 12 inch (30.48 cm)`;
             heightInd.innerText = `Height 9 inch (22.86 cm)`;
         }
         else {
+            console.log('@@', width, height);
+
             imageContainer.style.width = `${Math.round(width)}px`;
             imageContainer.style.height = `${Math.round(height)}px`;
             widthInd.innerText = `Width ${aspectWidth} inch (${aspectWidth * 2.54} cm)`;
@@ -413,7 +417,7 @@ function updateClock() {
     secondHand.style.transform = `rotate(${secondDeg}deg)`;
 }
 
-function createClockNumbers(type) {
+function createClockNumbers(type) {    
     const clockNumbers = document.querySelectorAll('.clock-number');
     const clockFace = document.querySelector('.clock-face');
 
@@ -434,15 +438,14 @@ function createClockNumbers(type) {
     if (imageContainer.classList.contains('custom2-shape')) {
         radius -= 20;
         centerX += 10;
-        centerY += 10;
+        centerY += 15;
     }
     if (containerWidth == 500 && containerHeight == 450) {
         centerX = containerWidth / 2.5;
         centerY = containerHeight / 2.6;
         if (imageContainer.classList.contains('custom2-shape')) {
-            console.log("YES");
             radius += 8;
-            centerX += 25;
+            centerX += 24;
             centerY += 15;
         }
     }
@@ -577,7 +580,6 @@ function getImageDetails() {
     const previewImage = document.getElementById('previewImage');
     const fileInput = document.getElementById('fileInput');
     const selectedSize = document.querySelector('.size-btn.active');
-    const selectedThickness = document.querySelector('.thickness-btn.active');
     const textElements = document.querySelectorAll('.text-box');
 
     if (!previewImage || !previewImage.src) {
@@ -619,7 +621,6 @@ function getImageDetails() {
             height: previewImage.naturalHeight + 'px',
         },
         size: selectedSize ? selectedSize.dataset.ratio : "default",
-        thickness: selectedThickness ? selectedThickness.innerText.trim() : "default",
         addedText: allTextData.length ? allTextData : "No text added"
     };
 
@@ -627,11 +628,10 @@ function getImageDetails() {
 }
 
 
-document.getElementById('shareBtn').addEventListener('click', () => {
+shareBtn.addEventListener('click', () => {
     document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
         el.classList.add("hidden");
     });
-    const shareBtn = document.getElementById('shareBtn');
     if (!imageContainer) {
         alert("Error: Image container not found!");
         return;

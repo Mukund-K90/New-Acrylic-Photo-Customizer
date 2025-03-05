@@ -13,11 +13,12 @@ import { FaShapes } from "react-icons/fa";
 import { MdOutlineHeight } from "react-icons/md";
 import { RxWidth } from "react-icons/rx";
 import { RxBorderWidth } from "react-icons/rx";
-
+import { TbBrandDatabricks } from "react-icons/tb";
 
 const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
     if (!productDetails) return null;
-    console.log(productDetails.imageDetails?.border.split("solid ")[1]);
+    console.log(productDetails);
+    // const isCollagePhoto = productDetails.imageDetails?.name == "Acrylic Collage";
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -121,7 +122,7 @@ const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
                         )}
 
                         {/* Display Border Color Box if Border Exists */}
-                        {productDetails.imageDetails?.border && productDetails.imageDetails.border !== "" && (
+                        {productDetails.imageDetails?.border && productDetails.imageDetails.border !== "none" && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
                                 <RxBorderWidth style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
@@ -137,17 +138,12 @@ const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
                             </Box>
                         )}
 
-                        {/* Added Text Section (Only if exists) */}
-                        {Array.isArray(productDetails.addedText) && productDetails.addedText.length > 0 && (
-                            <Box sx={{ mt: 2 }}>
+                        {productDetails.imageDetails?.thickness && productDetails.imageDetails.thickness !== "none" && (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
+                                <TbBrandDatabricks style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
-                                    <strong>Added Text:</strong>
+                                    <strong>Thickness:</strong> {productDetails.imageDetails.thickness}
                                 </Typography>
-                                {productDetails.addedText.map((textItem, index) => (
-                                    <Typography key={index} variant="body1" sx={{ color: textItem.color }}>
-                                        - {textItem.text}
-                                    </Typography>
-                                ))}
                             </Box>
                         )}
                     </Box>

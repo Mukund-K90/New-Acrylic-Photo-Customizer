@@ -365,7 +365,6 @@ resteBtn.addEventListener('click', () => {
 
 function getImageDetails() {
     const imageContainers = document.querySelectorAll('.acol-small-img');
-    const selectedBorder = document.querySelector('.acol-color-btn.acol-active');
     const selectedSize = document.querySelector('.acol-size-btn.acol-active');
     const textElement = document.querySelector('.acol-text-box');
     const selectedThickness = document.querySelector('.acol-thickness-btn.acol-active')
@@ -381,7 +380,6 @@ function getImageDetails() {
             type: fileInput.files.length ? fileInput.files[0].type : 'No file selected',
             width: imageElement ? imageElement.offsetWidth + 'px' : 'No image',
             height: imageElement ? imageElement.offsetHeight + 'px' : 'No image',
-
         };
         imagesData.push(imageDetails);
     });
@@ -389,10 +387,9 @@ function getImageDetails() {
     const imageDetails = {
         name: 'Acrylic Collage',
         images: imagesData,
-        border: selectedBorder ? selectedBorder.style.borderColor : 'none',
         size: selectedSize ? selectedSize.dataset.ratio : 'default',
         addedText: textElement ? textElement.innerText : [],
-        thickness: selectedThickness ? selectedThickness.dataset.thickness : '5 MM'
+        thickness: selectedThickness ? selectedThickness.dataset.thickness : 'none'
     };
 
     return imageDetails;
