@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "./Footer";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -134,6 +135,7 @@ const Home = () => {
           </div>
         ))}
       </div>
+      <Footer/>
     </div>
   );
 };

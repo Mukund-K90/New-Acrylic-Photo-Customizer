@@ -318,10 +318,16 @@ export default function MenuAppBar() {
                           objectFit: "contain",
                         }}
                       />
+
+
                     </Box>
 
                     {/* Product Details */}
-                    <Box sx={{ flex: 1, marginLeft: "16px" }}>
+                    <Box sx={{ flex: 1, marginLeft: "16px", cursor: 'pointer' }} onClick={() => {
+                      console.log("Image Clicked!");
+                      setSelectedItem(item);
+                      setDialogOpen(true);
+                    }} >
                       <Typography variant="body2" sx={{ fontWeight: "bold" }}>{item.name}</Typography>
                       <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
                         <Typography variant="body3" sx={{ color: "#0056B3", fontWeight: "bold", ml: 1 }}>
@@ -373,7 +379,6 @@ export default function MenuAppBar() {
       </Box>
 
       <ProductDetailsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} productDetails={selectedItem} />
-
     </>
   );
 }

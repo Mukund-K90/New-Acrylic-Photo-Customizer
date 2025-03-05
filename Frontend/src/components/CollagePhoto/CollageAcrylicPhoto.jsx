@@ -82,7 +82,7 @@ const CollageAcrylicPhoto = () => {
         const customizationDetails = window.getImageDetails();
         console.log(customizationDetails);
 
-        addToCartWithImage("acol-collage-frame", `Customized Collage Acrylic (${customizationDetails.size?customizationDetails.size:''})`, 699, customizationDetails);
+        addToCartWithImage("acol-collage-frame", `Customized Collage Acrylic (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
     };
     return (
         <div className="acol-content">
@@ -135,13 +135,17 @@ const CollageAcrylicPhoto = () => {
                         </a>
                     </div>
 
+
                     <div className="acol-row">
-                        <h3>Size (Inch)</h3>
-                        <button className="acol-size-btn acol-active" data-ratio="12/9">12x9</button>
-                        <button className="acol-size-btn" data-ratio="16x12">16x12</button>
-                        <button className="acol-size-btn" data-ratio="21x15">21x15</button>
-                        <button className="acol-size-btn" data-ratio="35x23">35x23</button>
-                        <button className="acol-size-btn" data-ratio="48x36">48x36</button>
+                        <h3>Size (Inch):</h3>
+                        {[
+                            "12x9",
+                            "21x15",
+                            "35x23",
+                            "48x36"
+                        ].map((s, index) => (
+                            <button key={index} className={`acol-size-btn ${index === 0 ? 'acol-active' : ''}`} data-ratio={s}>{s}</button>
+                        ))}
                     </div>
 
                     <div className="acol-row">
