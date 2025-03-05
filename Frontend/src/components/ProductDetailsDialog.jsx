@@ -80,7 +80,7 @@ const ProductDetailsDialog = ({ open, onClose, item }) => {
                             variant="h6"
                             sx={{ color: "#D32F2F", fontWeight: "bold", mb: 2 }}
                         >
-                            Price: ₹{item.price.toLocaleString()}
+                            Price: ₹{item.price.toLocaleString()}/unit
                         </Typography>
 
                         <Typography

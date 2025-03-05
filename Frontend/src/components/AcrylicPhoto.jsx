@@ -41,7 +41,7 @@ const AcrylicPhoto = () => {
     const customizationDetails = window.getImageDetails();
     console.log(customizationDetails);
 
-    addToCartWithImage("ap-image-container", "Customized Acrylic Photo", 20.99,customizationDetails);
+    addToCartWithImage("ap-image-container", "Customized Acrylic Photo", 699,customizationDetails);
   };
 
 

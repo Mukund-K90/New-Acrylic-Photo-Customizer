@@ -370,7 +370,7 @@ export default function MenuAppBar() {
 
             {/* Total Price */}
             <Box sx={{ p: 2, bgcolor: "#f8f8f8", textAlign: "center" }}>
-              <Typography variant="h6">Total: ${totalPrice.toFixed(2)}</Typography>
+              <Typography variant="h6">Total: ₹{totalPrice.toFixed(2)}</Typography>
             </Box>
 
             {/* Checkout Button */}

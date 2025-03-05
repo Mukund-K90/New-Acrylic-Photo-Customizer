@@ -44,7 +44,7 @@ const ClockCustomizer = () => {
             el.classList.add("hidden");
         });
 
-        addToCartWithImage("image-container", "Customized Acrylic Clock", 20.99,customizationDetails);
+        addToCartWithImage("image-container", "Customized Acrylic Clock", 699,customizationDetails);
 
         setTimeout(() => {
             document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {

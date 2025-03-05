@@ -365,9 +365,9 @@ resteBtn.addEventListener('click', () => {
 
 function getImageDetails() {
     const imageContainers = document.querySelectorAll('.acol-small-img');
-    const selectedBorder = document.querySelector('.acol-color-btn.active');
-    const selectedShape = document.querySelector('.sacol-hape-btn.active');
-    const selectedSize = document.querySelector('.acol-size-btn.active');
+    const selectedBorder = document.querySelector('.acol-color-btn.acol-active');
+    const selectedShape = document.querySelector('.sacol-hape-btn.acol-active');
+    const selectedSize = document.querySelector('.acol-size-btn.acol-active');
     const textElement = document.querySelector('.acol-text-box');
 
     let imagesData = [];

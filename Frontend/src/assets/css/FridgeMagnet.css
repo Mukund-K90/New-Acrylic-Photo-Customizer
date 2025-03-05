@@ -65,9 +65,11 @@
     align-items: center;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    
-    width: 80%; /* Increase width */
-    max-width: 1000px; /* Limit max width */
+
+    width: 80%;
+    /* Increase width */
+    max-width: 1000px;
+    /* Limit max width */
 }
 
 
@@ -259,6 +261,13 @@
 .afm-share {
     display: none;
     background: #012e43;
+    font-size: 20px;
+    border: 1px solid #f0f0f0;
+}
+
+.afm-add-to-cart {
+    display: none;
+    background: #026593;
     font-size: 20px;
     border: 1px solid #f0f0f0;
 }

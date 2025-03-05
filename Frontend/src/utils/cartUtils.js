@@ -21,7 +21,7 @@ export const useCartUtils = () => {
         id: Date.now(),
         image: imageUrl,
         name: name || "Customized Product",
-        price: price || 20.99,
+        price: price || 699,
         quantity: 1,
         imageDetails: imageDetails|| "",
       };

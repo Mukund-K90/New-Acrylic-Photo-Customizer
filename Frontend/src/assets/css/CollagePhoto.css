@@ -311,6 +311,12 @@
     font-size: 20px;
     border: 1px solid #f0f0f0;
 }
+.acol-add-to-cart {
+    display: none;
+    background: #026593;
+    font-size: 20px;
+    border: 1px solid #f0f0f0;
+}
 
 #acol-fontStyleSelect {
     display: none;
