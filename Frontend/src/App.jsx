@@ -2,8 +2,8 @@ import Home from "./components/Home";
 import Acrylic from "./components/AcrylicPhoto";
 import ClearAcrylic from "./components/ClearAcrylicPhoto";
 import { Routes, Route } from 'react-router-dom'
-import MainHome from "./components/Fridge Maganet/MainHome";
-import CustomizePage from "./components/Fridge Maganet/CustomizePage";
+import MainHome from "./components/Fridge Magnet/MainHome";
+import CustomizePage from "./components/Fridge Magnet/CustomizePage";
 import ClockCustomizer from "./components/AcrylicWallClock";
 import AcrylicCollageHome from "./components/CollagePhoto/CollageHome";
 import CollageAcrylicPhoto from "./components/CollagePhoto/CollageAcrylicPhoto";

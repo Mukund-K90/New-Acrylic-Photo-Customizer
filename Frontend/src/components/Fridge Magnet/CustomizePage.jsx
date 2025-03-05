@@ -2,8 +2,12 @@ import React, { useEffect } from "react";
 import "../../assets/css/FridgeMagnet.css"; // Make sure this file exists
 import { FaCameraRetro, FaShareAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
+import { useCartUtils } from "../../utils/cartUtils";
+import { MdAddShoppingCart } from "react-icons/md";
 
 const CustomizePage = () => {
+  const { addToCartWithImage } = useCartUtils(); // Call the hook here
+
   const { type } = useParams();
 
   useEffect(() => {
@@ -32,6 +36,12 @@ const CustomizePage = () => {
     };
   }, []);
 
+  const handleAddToCart = () => {
+    const customizationDetails = window.getImageDetails();
+    console.log(customizationDetails);
+
+    addToCartWithImage("afm-upload-box", "Customized Acrylic Fridge Magnet", 20.99);
+  };
   return (
     <div className={`afm-image-customization-page ${type ? `afm-${type}` : ''}`}>
       <div className="afm-page-container">
@@ -70,6 +80,9 @@ const CustomizePage = () => {
           <br />
           <button className="afm-upload-btn afm-share" id="shareBtn">
             <FaShareAlt />
+          </button>
+          <button className="afm-upload-btn ap-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+            <MdAddShoppingCart />
           </button>
         </div>
       </div>

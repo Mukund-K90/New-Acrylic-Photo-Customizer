@@ -6,8 +6,11 @@ import { IoClose } from 'react-icons/io5'
 import { VscDebugRestart, VscTextSize } from 'react-icons/vsc'
 import { HiPencilSquare } from "react-icons/hi2";
 import { FaShareAlt } from "react-icons/fa";
+import { useCartUtils } from "../../utils/cartUtils";
+import { MdAddShoppingCart } from "react-icons/md";
 
 const collageLayouts = {
+
     "2-pics": {
         style: { gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr", border: "1px solid #000" },
         images: [
@@ -41,6 +44,8 @@ const collageLayouts = {
 };
 
 const CollageAcrylicPhoto = () => {
+    const { addToCartWithImage } = useCartUtils(); // Call the hook here
+
     const { type } = useParams();
     console.log(type);
     const layout = collageLayouts[type];
@@ -73,7 +78,12 @@ const CollageAcrylicPhoto = () => {
         };
     }, [type]);
     if (!layout) return <h2>Invalid collage type</h2>;
+    const handleAddToCart = () => {
+        const customizationDetails = window.getImageDetails();
+        console.log(customizationDetails);
 
+        addToCartWithImage("acol-collage-frame", "Customized Collage Acrylic", 20.99);
+    };
     return (
         <div className="acol-content">
             <h2>{type ? type.replace("-", " ") : "2-pic"} Collage</h2>
@@ -140,8 +150,11 @@ const CollageAcrylicPhoto = () => {
                         <button className="acol-thickness-btn">5 MM</button>
                         <button className="acol-thickness-btn">8 MM (Premium)</button>
                     </div>
-                    <button className="acol-upload-btn acol-download" id="acol-downloadBtn"><FaDownload /></button>
+                    {/* <button className="acol-upload-btn acol-download" id="acol-downloadBtn"><FaDownload /></button> */}
                     <button className="acol-upload-btn acol-share" id="acol-shareBtn"><FaShareAlt /></button>
+                    <button className="acol-upload-btn acol-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+                        <MdAddShoppingCart />
+                    </button>
                 </div>
             </div >
         </div >

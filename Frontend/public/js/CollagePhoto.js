@@ -4,7 +4,8 @@ const deleteTextBtn = document.getElementById('acol-deleteTextBtn');
 const resteBtn = document.getElementById('acol-reset');
 const allSizeBtn = document.querySelectorAll('.acol-size-btn');
 const allThicknessBtn = document.querySelectorAll('.acol-thickness-btn');
-const downloadBtn = document.getElementById('acol-downloadBtn');
+// const downloadBtn = document.getElementById('acol-downloadBtn');
+const cartBtn = document.getElementById('cartBtn');
 const collagePhoto = document.querySelector('.acol-collage-frame');
 const iminus = document.getElementById('acol-iminus');
 const iplus = document.getElementById('acol-iplus');
@@ -15,6 +16,7 @@ let activeTextBox = null;
 const shareBtn = document.getElementById('acol-shareBtn');
 const handles = document.querySelectorAll(".acol-resize, .acol-rotate");
 const textModal = document.querySelector('.acol-textModal');
+const BASE_URL = window.BASE_URL;
 
 document.querySelectorAll(".acol-small-img, .acol-big-img").forEach((slot) => {
     totalImages = document.querySelectorAll(".acol-small-img, .acol-big-img").length;
@@ -52,8 +54,9 @@ document.querySelectorAll(".acol-small-img, .acol-big-img").forEach((slot) => {
 function incrementUploadedImages() {
     uploadedImagesCount++;
     if (totalImages === uploadedImagesCount) {
-        downloadBtn.style.display = "block";
+        // downloadBtn.style.display = "block";
         shareBtn.style.display = "block";
+        cartBtn.style.display = 'block';
     }
 }
 
@@ -323,14 +326,14 @@ allThicknessBtn.forEach(btn => {
     });
 });
 
-downloadBtn.addEventListener('click', () => {
-    html2canvas(collagePhoto, { backgroundColor: null }).then((canvas) => {
-        const link = document.createElement('a');
-        link.download = 'customized-image.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-});
+// downloadBtn.addEventListener('click', () => {
+//     html2canvas(collagePhoto, { backgroundColor: null }).then((canvas) => {
+//         const link = document.createElement('a');
+//         link.download = 'customized-image.png';
+//         link.href = canvas.toDataURL('image/png');
+//         link.click();
+//     });
+// });
 
 iminus.addEventListener('click', function () {
     if (activeTextBox) {
@@ -396,7 +399,14 @@ function getImageDetails() {
 
 
 document.getElementById('acol-shareBtn').addEventListener('click', () => {
+    const shareBtn = document.getElementById('shareBtn');
+    if (!imageContainer) {
+        alert("Error: Image container not found!");
+        return;
+    }
+
     shareBtn.disabled = true;
+    alert("Processing... Please wait!");
     document.querySelectorAll('.acol-resize-handle, .acol-rotate-handle').forEach(handle => {
         handle.style.display = 'none';
     });
@@ -414,7 +424,7 @@ document.getElementById('acol-shareBtn').addEventListener('click', () => {
             const subject = `Collage Acrylic Photo Order - ${formattedDate}`;
             formData.append('subject', JSON.stringify(subject));
 
-            fetch('http://192.168.1.7:3000/send-email', {
+            fetch(`${BASE_URL}/send-email`, {
                 method: 'POST',
                 body: formData
             })
@@ -424,6 +434,8 @@ document.getElementById('acol-shareBtn').addEventListener('click', () => {
                 })
                 .catch(error => {
                     alert('Error: ' + error.message);
+                }).finally(() => {
+                    shareBtn.disabled = false;
                 });
         });
     });
@@ -431,3 +443,4 @@ document.getElementById('acol-shareBtn').addEventListener('click', () => {
 
 window.updatePreview = updatePreview;
 window.changeFontFamily = changeFontFamily;
+window.getImageDetails = getImageDetails;

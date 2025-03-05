@@ -9,6 +9,9 @@ const allSizeBtn = document.querySelectorAll('.afm-size-btn');
 const allThicknessBtn = document.querySelectorAll('.afm-thickness-btn');
 const leftPanel = document.querySelector('.afm-image-customization-page .afm-left');
 const allTextData=[];
+const cartBtn = document.getElementById('cartBtn');
+
+const BASE_URL = window.BASE_URL;
 
 let scale = 1;
 let isImageUploaded = false;
@@ -42,6 +45,7 @@ fileInput.addEventListener("change", function (event) {
             addTextBtn.style.display = 'block';
             addTextBtn.style.display = 'block';
             shareBtn.style.display = 'block';
+            cartBtn.style.display = 'block';
         };
         reader.readAsDataURL(file);
     }
@@ -395,7 +399,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
             const subject = `Acrylic Fridge Magnet Order - ${formattedDate}`;
             formData.append('subject', JSON.stringify(subject));
 
-            fetch('http://192.168.1.7:3000/send-email', {
+            fetch(`${BASE_URL}/send-email`, {
                 method: 'POST',
                 body: formData
             })
@@ -411,3 +415,5 @@ document.getElementById('shareBtn').addEventListener('click', () => {
         });
     });
 });
+
+window.getImageDetails=getImageDetails;

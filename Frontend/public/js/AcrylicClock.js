@@ -25,6 +25,7 @@ imageContainer.addEventListener('dblclick', dragStart);
 imageContainer.addEventListener('mousemove', drag);
 document.addEventListener('mouseup', dragEnd);
 const allShapeBtn = document.querySelectorAll('.shape-btn');
+const cartBtn = document.getElementById('cartBtn');
 
 const allSizeBtn = document.querySelectorAll('.size-btn');
 const BASE_URL = window.BASE_URL;
@@ -53,7 +54,7 @@ fileInput.addEventListener('change', function (e) {
 
 });
 
-document.querySelectorAll('.shape-btn').forEach(btn => {
+allShapeBtn.forEach(btn => {
     btn.addEventListener('click', function () {
         allShapeBtn.forEach(button => button.classList.remove('active'));
         this.classList.add('active');
@@ -627,9 +628,17 @@ function getImageDetails() {
 
 
 document.getElementById('shareBtn').addEventListener('click', () => {
+    document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+        el.classList.add("hidden");
+    });
     const shareBtn = document.getElementById('shareBtn');
+    if (!imageContainer) {
+        alert("Error: Image container not found!");
+        return;
+    }
+
     shareBtn.disabled = true;
-    shareBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    alert("Processing... Please wait!");
 
     document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
         handle.style.display = 'none';
@@ -661,12 +670,18 @@ document.getElementById('shareBtn').addEventListener('click', () => {
                 })
                 .finally(() => {
                     shareBtn.disabled = false;
-                    shareBtn.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
                 });
         });
     });
+
+    setTimeout(() => {
+        document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+            el.classList.remove("hidden");
+        });
+    }, 500);
 });
 
 
 window.activateClock = activateClock;
 window.updatePreview = updatePreview;
+window.getImageDetails = getImageDetails;

@@ -485,14 +485,24 @@ function getImageDetails() {
 
 document.getElementById('shareBtn').addEventListener('click', () => {
     const shareBtn = document.getElementById('shareBtn');
-    shareBtn.disabled = true;
+    if (!imageContainer) {
+        alert("Error: Image container not found!");
+        return;
+    }
 
+    shareBtn.disabled = true;
+    alert("Processing... Please wait!");
     document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
         handle.style.display = 'none';
     });
 
     html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
         canvas.toBlob((blob) => {
+            if (!blob) {
+                alert("Error: Failed to generate image!");
+                shareBtn.disabled = false;
+                return;
+            }
             const formData = new FormData();
             const now = new Date();
             const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS

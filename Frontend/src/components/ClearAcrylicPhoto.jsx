@@ -3,8 +3,12 @@ import "../assets/css/ClearAcrylic.css";
 import { FaImages, FaShareAlt } from "react-icons/fa";
 import { FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
+import { useCartUtils } from "../utils/cartUtils";
+import { MdAddShoppingCart } from "react-icons/md";
 
 const ClearAcrylic = () => {
+    const { addToCartWithImage } = useCartUtils(); // Call the hook here
+
     useEffect(() => {
         const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
 
@@ -31,7 +35,12 @@ const ClearAcrylic = () => {
             };
         };
     }, []);
+    const handleAddToCart = () => {
+        const customizationDetails = window.getImageDetails();
+        console.log(customizationDetails);
 
+        addToCartWithImage("acp-image-container", "Customized Acrylic Clear Photo", 20.99);
+    };
     return (
         <div className="acp-container">
             <div className="acp-preview-container">
@@ -69,6 +78,9 @@ const ClearAcrylic = () => {
                 <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} />
                 <button className="acp-upload-btn acp-share" id="shareBtn">
                     <FaShareAlt />
+                </button>
+                <button className="acp-upload-btn acp-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+                    <MdAddShoppingCart />
                 </button>
                 <p>Size:</p>
 

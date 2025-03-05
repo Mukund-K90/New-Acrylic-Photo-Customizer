@@ -21,6 +21,8 @@ const zoomLevel = document.getElementById('zoomRange').value;
 const textElements = document.querySelectorAll('.acp-text-box');
 const fontStyleSelect = document.getElementById('fontStyleSelect');
 const allTextData = [];
+const cartBtn = document.getElementById('cartBtn');
+
 
 const BASE_URL = window.BASE_URL;
 
@@ -44,6 +46,7 @@ fileInput.addEventListener('change', async function (e) {
             previewImage.style.transform = 'translate(0px, 0px) scale(1)';
             await removeBackgroundAPI(e.target.result);
             shareBtn.style.display = 'block';
+            cartBtn.style.display = 'block';
         };
         reader.readAsDataURL(file);
     }
@@ -420,3 +423,5 @@ shareBtn.addEventListener('click', () => {
 
 window.updatePreview = updatePreview;
 window.getImageDetails=getImageDetails;
+window.getImageDetails=getImageDetails;
+

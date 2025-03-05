@@ -7,6 +7,9 @@ body {
   user-select: none;
   font-family: "Poppins", sans-serif;
 }
+.hidden {
+  display: none !important;
+}
 
 /*
 .container {

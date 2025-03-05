@@ -4,8 +4,12 @@ import { useEffect } from "react";
 import { FaUpload } from "react-icons/fa6";
 import { FaShareAlt } from "react-icons/fa";
 import { HiPencilSquare } from "react-icons/hi2";
+import { useCartUtils } from "../utils/cartUtils";
+import { MdAddShoppingCart } from "react-icons/md";
 
 const ClockCustomizer = () => {
+    const { addToCartWithImage } = useCartUtils(); // Call the hook here
+
     useEffect(() => {
         const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
 
@@ -32,6 +36,24 @@ const ClockCustomizer = () => {
             };
         };
     }, []);
+    const handleAddToCart = () => {
+        const customizationDetails = window.getImageDetails();
+        console.log(customizationDetails);
+
+        document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+            el.classList.add("hidden");
+        });
+
+        addToCartWithImage("image-container", "Customized Acrylic Clock", 20.99);
+
+        setTimeout(() => {
+            document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+                el.classList.remove("hidden");
+            });
+        }, 500); 
+    };
+
+
     return (
         <div className="ac-container">
             <div className="preview-container">
@@ -82,6 +104,9 @@ const ClockCustomizer = () => {
                 <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} />
                 <button className="upload-btn share" id="shareBtn">
                     <FaShareAlt />
+                </button>
+                <button className="upload-btn add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+                    <MdAddShoppingCart />
                 </button>
                 <p>Size:</p>
                 {[
