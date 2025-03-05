@@ -5,7 +5,7 @@ import { CartContext } from "../components/CartContext";
 export const useCartUtils = () => {
   const { addToCart } = useContext(CartContext);
 
-  const addToCartWithImage = async (imageContainerId, name, price) => {
+  const addToCartWithImage = async (imageContainerId, name, price, imageDetails) => {
     const imageContainer = document.getElementById(imageContainerId) || document.querySelector(`.${imageContainerId}`);
 
     if (!imageContainer) {
@@ -23,6 +23,7 @@ export const useCartUtils = () => {
         name: name || "Customized Product",
         price: price || 20.99,
         quantity: 1,
+        imageDetails: imageDetails|| "",
       };
 
       addToCart(newItem);

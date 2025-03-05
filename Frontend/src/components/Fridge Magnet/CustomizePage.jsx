@@ -40,7 +40,7 @@ const CustomizePage = () => {
     const customizationDetails = window.getImageDetails();
     console.log(customizationDetails);
 
-    addToCartWithImage("afm-upload-box", "Customized Acrylic Fridge Magnet", 20.99);
+    addToCartWithImage("afm-upload-box", "Customized Acrylic Fridge Magnet", 20.99, customizationDetails);
   };
   return (
     <div className={`afm-image-customization-page ${type ? `afm-${type}` : ''}`}>

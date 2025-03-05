@@ -150,7 +150,7 @@ document.querySelectorAll('.ap-size-btn').forEach(btn => {
         document.querySelectorAll('.ap-size-btn').forEach(button => button.classList.remove('ap-active'));
         this.classList.add('ap-active');
 
-        const ratio = this.dataset.ratio.split('/');
+        const ratio = this.dataset.ratio.split('x');
         const aspectWidth = ratio[0];
         const aspectHeight = ratio[1];
 

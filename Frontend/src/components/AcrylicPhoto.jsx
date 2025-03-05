@@ -41,7 +41,7 @@ const AcrylicPhoto = () => {
     const customizationDetails = window.getImageDetails();
     console.log(customizationDetails);
 
-    addToCartWithImage("ap-image-container", "Customized Acrylic Photo", 20.99);
+    addToCartWithImage("ap-image-container", "Customized Acrylic Photo", 20.99,customizationDetails);
   };
 
 
@@ -137,20 +137,20 @@ const AcrylicPhoto = () => {
         <p>Size:</p>
         {[
           "default",
-          "12/9",
-          "11/11",
-          "16/12",
-          "16/16",
-          "21/15",
-          "35/23",
-          "48/36",
+          "12x9",
+          "11x11",
+          "16x12",
+          "16x16",
+          "21x15",
+          "35x23",
+          "48x36",
         ].map((ratio, index) => (
           <button
             key={index}
             className={`ap-size-btn ${index === 0 ? "ap-active" : ""}`}
             data-ratio={ratio}
           >
-            {ratio.replace("/", "x")}
+            {ratio}
           </button>
         ))}
 
