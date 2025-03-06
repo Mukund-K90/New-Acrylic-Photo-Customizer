@@ -7,11 +7,11 @@ import CustomizePage from "./components/Fridge Magnet/CustomizePage";
 import ClockCustomizer from "./components/AcrylicWallClock";
 import AcrylicCollageHome from "./components/CollagePhoto/CollageHome";
 import CollageAcrylicPhoto from "./components/CollagePhoto/CollageAcrylicPhoto";
-import Navbar from "./components/Navbar/Appbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { CartProvider } from "./components/CartContext";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
+import Navbar from "./components/Navbar/Navbar";
 
 function App() {
   const location = useLocation();
