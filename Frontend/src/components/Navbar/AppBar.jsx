@@ -37,6 +37,7 @@ import { BsBagX } from "react-icons/bs";
 export default function MenuAppBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [user, setUser] = useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -74,6 +75,8 @@ export default function MenuAppBar() {
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     // setCart(storedCart);
+    const user = JSON.parse(localStorage.getItem("user"));
+    setUser(user);
   }, []);
 
 
@@ -125,9 +128,7 @@ export default function MenuAppBar() {
               <IconButton
                 size="large"
                 aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
+                onClick={() => navigate("/profile")}
                 color="inherit"
               >
                 <AccountCircle />
@@ -146,7 +147,7 @@ export default function MenuAppBar() {
                 }}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
-                sx={{ "& .MuiPaper-root": { width: "13%" } }} // Increased width
+                sx={{ "& .MuiPaper-root": { width: "13%" } }}
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <Divider />
@@ -375,9 +376,7 @@ export default function MenuAppBar() {
             )}
           </Box>
         </Drawer>
-
       </Box>
-
       <ProductDetailsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} productDetails={selectedItem} />
     </>
   );

@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
-const PORT = 3000;
+const { CONFIG } = require('./src/config/config');
+const PORT = CONFIG.port;
 const multer = require('multer');
 const upload = multer();
 const dotenv = require('dotenv');
@@ -10,36 +11,21 @@ dotenv.config();
 const key = process.env.RBG_KEY || "M8mXZ4i6yPodao2fBhhr5gdF";
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+const { connectDb } = require('./src/config/db');
+const { removeBg } = require('./src/utils/removeBg');
+
 app.use(cors({
     origin: '*'
 }));
+
+connectDb();
 
 app.set("view engine", 'ejs');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views/pages'));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 
-app.use(bodyParser.json({ limit: "10mb" }));
-
-async function removeBg(imageBlob, backgroundUrl) {
-    const formData = new URLSearchParams();
-    formData.append("size", "auto");
-    formData.append("image_file_b64", imageBlob);
-    backgroundUrl ? formData.append("bg_image_url", backgroundUrl) : null;
-
-    const response = await fetch("https://api.remove.bg/v1.0/removebg", {
-        method: "POST",
-        headers: { "X-Api-Key": key },
-        body: formData,
-    });
-
-    if (response.ok) {
-        return await response.arrayBuffer();
-    } else {
-        const errorText = await response.text();
-        throw new Error(`${response.status}: ${response.statusText} - ${errorText}`);
-    }
-}
+app.use(bodyParser.json());
 
 app.post('/change-bg', async (req, res) => {
     try {
@@ -95,7 +81,12 @@ app.post('/send-email', upload.single('image'), async (req, res) => {
     }
 });
 
-app.get('/home',(req,res)=>{
+app.get('/home', (req, res) => {
     res.send('Hello World!')
 })
+
+
+//Routes
+app.use('/user', require('./src/Routes/UserRoutes'));
+
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
