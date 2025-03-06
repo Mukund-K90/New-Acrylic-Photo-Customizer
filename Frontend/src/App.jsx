@@ -12,19 +12,19 @@ import { CartProvider } from "./components/CartContext";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Navbar from "./components/Navbar/Navbar";
+import { Toaster, toast } from 'sonner'
 
 function App() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/";
-  const token = localStorage.getItem("token");
-  console.log(JSON.stringify(localStorage.getItem("user")));
-  
+  const token = localStorage.getItem("token");  
 
   if (token && isLoginPage) {
     return <Navigate to="/home" />;
   }
   return (
     <>
+    <Toaster richColors position="top-right" />
       <CartProvider>
         {!isLoginPage && <Navbar />}
         <div style={!isLoginPage ? { marginTop: "6%" } : {}}>

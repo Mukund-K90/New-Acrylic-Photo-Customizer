@@ -53,6 +53,7 @@ app.post('/change-bg', async (req, res) => {
 //send email
 app.post('/send-email', upload.single('image'), async (req, res) => {
     try {
+        
         const subject = req.body.subject;
         const details = req.body.details ? JSON.parse(req.body.details) : {};
 

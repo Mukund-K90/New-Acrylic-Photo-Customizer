@@ -8,7 +8,7 @@ import { RiFridgeFill, RiCollageFill } from "react-icons/ri";
 import { IoMdClock } from "react-icons/io";
 
 const menuItems = [
-  { text: "Home", icon: <FaHome size={30} color="#0056B3" />, path: "/" },
+  { text: "Home", icon: <FaHome size={30} color="#0056B3" />, path: "/home" },
   { text: "Acrylic Photo", icon: <BsFileImageFill size={30} color="#0056B3" />, path: "/acrylic" },
   { text: "Clear Acrylic Photo", icon: <BsFileImage size={30} color="#0056B3" />, path: "/clear-acrylic" },
   { text: "Fridge Magnets", icon: <RiFridgeFill size={30} color="#0056B3" />, path: "/fridge-magnets" },

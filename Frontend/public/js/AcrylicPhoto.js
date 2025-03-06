@@ -484,57 +484,37 @@ function getImageDetails() {
     return imageDetails;
 };
 
-document.getElementById('shareBtn').addEventListener('click', () => {
-    const shareBtn = document.getElementById('shareBtn');
-    if (!imageContainer) {
-        alert("Error: Image container not found!");
-        return;
-    }
+function shareImage() {
+    return new Promise((resolve, reject) => {
+        html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    alert("Error: Failed to generate image!");
+                    reject("Failed to generate image");
+                    return;
+                }
+                
+                const formData = new FormData();
+                const now = new Date();
+                const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS
+                const fileName = `customized-image-${formattedDate}.png`;
 
-    shareBtn.disabled = true;
-    alert("Processing... Please wait!");
-    document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
-        handle.style.display = 'none';
+                const imageData = getImageDetails();
+                formData.append('image', blob, fileName);
+                formData.append('details', JSON.stringify(imageData));
+                const subject = `Acrylic Photo Order - ${formattedDate}`;
+                formData.append('subject', JSON.stringify(subject));
+
+                resolve(formData); 
+            });
+        }).catch(error => reject(error));
     });
+}
 
-    html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                alert("Error: Failed to generate image!");
-                shareBtn.disabled = false;
-                return;
-            }
-            const formData = new FormData();
-            const now = new Date();
-            const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS
-            const fileName = `customized-image-${formattedDate}.png`;
-
-            const imageData = getImageDetails();
-            formData.append('image', blob, fileName);
-            formData.append('details', JSON.stringify(imageData));
-            const subject = `Acrylic Photo Order - ${formattedDate}`;
-            formData.append('subject', JSON.stringify(subject));
-
-            fetch(`${BASE_URL}/send-email`, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                })
-                .finally(() => {
-                    shareBtn.disabled = false;
-                });
-        });
-    });
-});
 
 // window.updatePreview = updatePreview;
 window.closeBgModal = closeBgModal;
 window.closeTextModal = closeTextModal;
 window.getImageDetails = getImageDetails;
+window.shareImage = shareImage;
 

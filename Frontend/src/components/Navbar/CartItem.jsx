@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 import { IoCloseCircle } from "react-icons/io5";
+import { CartContext } from "../CartContext";
 
-const CartItem = ({ item, increaseQuantity, decreaseQuantity, removeItem, onViewDetails }) => {
+const CartItem = () => {
+    const { cart, increaseQuantity, decreaseQuantity, removeItem } = useContext(CartContext);
+    console.log(";;;;;",cart);
+    
     return (
         <Box sx={{ display: "flex", alignItems: "center", padding: "16px", borderBottom: "1px solid #ddd" }}>
             {/* Product Image */}
@@ -19,8 +23,8 @@ const CartItem = ({ item, increaseQuantity, decreaseQuantity, removeItem, onView
                 }}
             >
                 <img
-                    src={item.image}
-                    alt={item.name}
+                    src={cart.image}
+                    alt={cart.name}
                     style={{
                         maxWidth: "100%",
                         maxHeight: "100%",
@@ -30,26 +34,26 @@ const CartItem = ({ item, increaseQuantity, decreaseQuantity, removeItem, onView
             </Box>
 
             {/* Product Details */}
-            <Box sx={{ flex: 1, marginLeft: "16px", cursor: "pointer" }} onClick={() => onViewDetails(item)}>
-                <Typography variant="body2" sx={{ fontWeight: "bold" }}>{item.name}</Typography>
+            <Box sx={{ flex: 1, marginLeft: "16px", cursor: "pointer" }} onClick={() => onViewDetails(cart)}>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>{cart.name}</Typography>
                 <Typography variant="body2" sx={{ color: "#0056B3", fontWeight: "bold", mt: 1 }}>
-                    Rs. {item.price.toLocaleString()}.00
+                    Rs. {cart.price.toLocaleString()}.00
                 </Typography>
 
                 {/* Quantity Controls */}
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                    <IconButton size="small" onClick={() => decreaseQuantity(item.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
+                    <IconButton size="small" onClick={() => decreaseQuantity(cart.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
                         <Remove />
                     </IconButton>
-                    <Typography sx={{ mx: 1 }}>{item.quantity}</Typography>
-                    <IconButton size="small" onClick={() => increaseQuantity(item.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
+                    <Typography sx={{ mx: 1 }}>{cart.quantity}</Typography>
+                    <IconButton size="small" onClick={() => increaseQuantity(cart.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
                         <Add />
                     </IconButton>
                 </Box>
             </Box>
 
             {/* Delete Button */}
-            <IconButton size="small" onClick={() => removeItem(item.id)}>
+            <IconButton size="small" onClick={() => removeItem(cart.id)}>
                 <IoCloseCircle style={{ fontSize: "1.5rem" }} />
             </IconButton>
         </Box>
