@@ -6,9 +6,10 @@ import { IoClose } from 'react-icons/io5'
 import { VscDebugRestart, VscTextSize } from 'react-icons/vsc'
 import { HiPencilSquare } from "react-icons/hi2";
 import { FaShareAlt } from "react-icons/fa";
-import { useCartUtils } from "../../utils/cartUtils";
+import { useCartUtils } from "../../utils/CartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
-import { handleShare } from "../../utils/shareService";
+import { handleShare } from "../../utils/ShareService";
+import { useHandleAddToCart } from "../../utils/AddToCart";
 
 const collageLayouts = {
 
@@ -45,7 +46,7 @@ const collageLayouts = {
 };
 
 const CollageAcrylicPhoto = () => {
-    const { addToCartWithImage } = useCartUtils(); // Call the hook here
+    const { handleAddToCart } = useHandleAddToCart(); // Use the hook
 
     const { type } = useParams();
     console.log(type);
@@ -79,12 +80,12 @@ const CollageAcrylicPhoto = () => {
         };
     }, [type]);
     if (!layout) return <h2>Invalid collage type</h2>;
-    const handleAddToCart = () => {
-        const customizationDetails = window.getImageDetails();
-        console.log(customizationDetails);
+    // const handleAddToCart = () => {
+    //     const customizationDetails = window.getImageDetails();
+    //     console.log(customizationDetails);
 
-        addToCartWithImage("acol-collage-frame", `Customized Collage Acrylic (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
-    };
+    //     addToCartWithImage("acol-collage-frame", `Customized Collage Acrylic (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
+    // };
     return (
         <div className="acol-content">
             <h2>{type ? type.replace("-", " ") : "2-pic"} Collage</h2>
@@ -156,7 +157,15 @@ const CollageAcrylicPhoto = () => {
                     </div>
                     {/* <button className="acol-upload-btn acol-download" id="acol-downloadBtn"><FaDownload /></button> */}
                     <button className="acol-upload-btn acol-share" id="acol-shareBtn" onClick={handleShare}><FaShareAlt /></button>
-                    <button className="acol-upload-btn acol-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+                    <button
+                        className="acol-upload-btn acol-add-to-cart"
+                        id="cartBtn"
+                        onClick={() => handleAddToCart({
+                            container: "acol-collage-frame",
+                            title: "Customized Collage Acrylic",
+                            price: 799
+                        })}
+                    >
                         <MdAddShoppingCart />
                     </button>
                 </div>

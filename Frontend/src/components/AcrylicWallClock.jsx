@@ -4,12 +4,14 @@ import { useEffect } from "react";
 import { FaUpload } from "react-icons/fa6";
 import { FaShareAlt } from "react-icons/fa";
 import { HiPencilSquare } from "react-icons/hi2";
-import { useCartUtils } from "../utils/cartUtils";
+import { useCartUtils } from "../utils/CartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
-import { handleShare } from "../utils/shareService";
+import { handleShare } from "../utils/ShareService";
+import { useHandleAddToCart } from "../utils/AddToCart";
+
 
 const ClockCustomizer = () => {
-    const { addToCartWithImage } = useCartUtils(); // Call the hook here
+    const { handleAddToCart } = useHandleAddToCart(); // Use the hook
 
     useEffect(() => {
         const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -37,21 +39,10 @@ const ClockCustomizer = () => {
             };
         };
     }, []);
-    const handleAddToCart = () => {
-        const customizationDetails = window.getImageDetails();
-        console.log(customizationDetails);
-
+    const removeClockHand = () => {
         document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
             el.classList.add("hidden");
         });
-
-        addToCartWithImage("image-container", `Customized Acrylic Clock (${customizationDetails.size?customizationDetails.size:''})`, 20.99, customizationDetails);
-
-        setTimeout(() => {
-            document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
-                el.classList.remove("hidden");
-            });
-        }, 500);
     };
 
 
@@ -102,11 +93,22 @@ const ClockCustomizer = () => {
                 <button className="upload-btn upload" onClick={() => document.getElementById("fileInput").click()}>
                     <FaUpload />
                 </button>
-                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} onClick={handleShare}/>
+                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} onClick={handleShare} />
                 <button className="upload-btn share" id="shareBtn">
                     <FaShareAlt />
                 </button>
-                <button className="upload-btn add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+                <button
+                    className="ap-upload-btn ap-add-to-cart"
+                    id="cartBtn"
+                    onClick={() => {
+                        removeClockHand(),
+                            handleAddToCart({
+                                container: "image-container",
+                                title: "Customized Acrylic Clock",
+                                price: 999
+                            })
+                    }}
+                >
                     <MdAddShoppingCart />
                 </button>
                 <p>Size:</p>

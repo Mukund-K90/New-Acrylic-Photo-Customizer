@@ -2,12 +2,13 @@ import React, { useEffect } from "react";
 import "../../assets/css/FridgeMagnet.css"; // Make sure this file exists
 import { FaCameraRetro, FaShareAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { useCartUtils } from "../../utils/cartUtils";
+import { useCartUtils } from "../../utils/CartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
-import { handleShare } from "../../utils/shareService";
+import { handleShare } from "../../utils/ShareService";
+import { useHandleAddToCart } from "../../utils/AddToCart";
 
 const CustomizePage = () => {
-  const { addToCartWithImage } = useCartUtils(); // Call the hook here
+  const { handleAddToCart } = useHandleAddToCart(); // Use the hook
 
   const { type } = useParams();
 
@@ -37,12 +38,12 @@ const CustomizePage = () => {
     };
   }, []);
 
-  const handleAddToCart = () => {
-    const customizationDetails = window.getImageDetails();
-    console.log(customizationDetails);
+  // const handleAddToCart = () => {
+  //   const customizationDetails = window.getImageDetails();
+  //   console.log(customizationDetails);
 
-    addToCartWithImage("afm-upload-box", `Customized Acrylic Fridge Magnet (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
-  };
+  //   addToCartWithImage("afm-upload-box", `Customized Acrylic Fridge Magnet (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
+  // };
   return (
     <div className={`afm-image-customization-page ${type ? `afm-${type}` : ''}`}>
       <div className="afm-page-container">
@@ -82,7 +83,15 @@ const CustomizePage = () => {
           <button className="afm-upload-btn afm-share" id="shareBtn" onClick={handleShare}>
             <FaShareAlt />
           </button>
-          <button className="afm-upload-btn ap-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+          <button
+            className="afm-upload-btn afm-add-to-cart"
+            id="cartBtn"
+            onClick={() => handleAddToCart({
+              container: "afm-upload-box",
+              title: "Customized Acrylic Fridge Magnet",
+              price: 849
+            })}
+          >
             <MdAddShoppingCart />
           </button>
         </div>

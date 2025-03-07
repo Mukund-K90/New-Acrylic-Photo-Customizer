@@ -3,13 +3,13 @@ import "../assets/css/ClearAcrylic.css";
 import { FaImages, FaShareAlt } from "react-icons/fa";
 import { FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
-import { useCartUtils } from "../utils/CartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
 import { handleShare } from "../utils/ShareService";
-import { toast } from "sonner";
+import { useHandleAddToCart } from "../utils/AddToCart";
+
 
 const ClearAcrylic = () => {
-    const { addToCartWithImage } = useCartUtils(); // Call the hook here
+    const { handleAddToCart } = useHandleAddToCart();
 
     useEffect(() => {
         const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -38,24 +38,24 @@ const ClearAcrylic = () => {
         };
     }, []);
 
-    const handleAddToCart = () => {
-        try {
-            const customizationDetails = window.getImageDetails();
-            console.log(customizationDetails);
+    // const handleAddToCart = () => {
+    //     try {
+    //         const customizationDetails = window.getImageDetails();
+    //         console.log(customizationDetails);
 
-            addToCartWithImage(
-                "acp-image-container",
-                `Customized Acrylic Clear Photo (${customizationDetails.size ? customizationDetails.size : ''})`,
-                699,
-                customizationDetails
-            );
+    //         addToCartWithImage(
+    //             "acp-image-container",
+    //             `Customized Acrylic Clear Photo (${customizationDetails.size ? customizationDetails.size : ''})`,
+    //             699,
+    //             customizationDetails
+    //         );
 
-            toast.success("Product added to cart!", { duration: 2000 });
-        } catch (error) {
-            console.error("Error adding product to cart:", error);
-            toast.error("Failed to add product. Please try again.", { duration: 3000 });
-        }
-    };
+    //         toast.success("Product added to cart!", { duration: 2000 });
+    //     } catch (error) {
+    //         console.error("Error adding product to cart:", error);
+    //         toast.error("Failed to add product. Please try again.", { duration: 3000 });
+    //     }
+    // };
     return (
         <div className="acp-container">
             <div className="acp-preview-container">
@@ -94,7 +94,15 @@ const ClearAcrylic = () => {
                 <button className="acp-upload-btn acp-share" id="shareBtn">
                     <FaShareAlt />
                 </button>
-                <button className="acp-upload-btn acp-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+                <button
+                    className="acp-upload-btn acp-add-to-cart"
+                    id="cartBtn"
+                    onClick={() => handleAddToCart({
+                        container: "acp-image-container",
+                        title: "Customized Acrylic Clear Photo",
+                        price: 899
+                    })}
+                >
                     <MdAddShoppingCart />
                 </button>
                 <p>Size:</p>
