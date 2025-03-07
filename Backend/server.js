@@ -8,7 +8,6 @@ const multer = require('multer');
 const upload = multer();
 const dotenv = require('dotenv');
 dotenv.config();
-const key = process.env.RBG_KEY || "M8mXZ4i6yPodao2fBhhr5gdF";
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const { connectDb } = require('./src/config/db');
@@ -17,7 +16,8 @@ const { removeBg } = require('./src/utils/removeBg');
 app.use(cors({
     origin: '*'
 }));
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 connectDb();
 
 app.set("view engine", 'ejs');
@@ -53,7 +53,8 @@ app.post('/change-bg', async (req, res) => {
 //send email
 app.post('/send-email', upload.single('image'), async (req, res) => {
     try {
-
+        console.log(req.body);
+        
         const subject = req.body.subject;
         const details = req.body.details ? JSON.parse(req.body.details) : {};
 
@@ -89,5 +90,6 @@ app.get('/home', (req, res) => {
 
 //Routes
 app.use('/user', require('./src/Routes/UserRoutes'));
+app.use('/cart', require('./src/Routes/CartRoutes'));
 
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));

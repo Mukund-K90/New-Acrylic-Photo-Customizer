@@ -15,8 +15,7 @@ export const handleShare = async () => {
                     {
                         headers: { "Content-Type": "multipart/form-data" }
                     }
-                );
-
+                );                
                 return response.data;
             })(),
             {

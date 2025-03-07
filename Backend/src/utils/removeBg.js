@@ -1,3 +1,6 @@
+const key = process.env.RBG_KEY || "M8mXZ4i6yPodao2fBhhr5gdF";
+
+
 async function removeBg(imageBlob, backgroundUrl) {
     const formData = new URLSearchParams();
     formData.append("size", "auto");

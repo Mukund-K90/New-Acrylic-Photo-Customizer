@@ -17,31 +17,29 @@ import { Toaster, toast } from 'sonner'
 function App() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/";
-  const token = localStorage.getItem("token");  
+  const token = localStorage.getItem("token");
 
   if (token && isLoginPage) {
     return <Navigate to="/home" />;
   }
   return (
     <>
-    <Toaster richColors position="top-right" />
-      <CartProvider>
-        {!isLoginPage && <Navbar />}
-        <div style={!isLoginPage ? { marginTop: "6%" } : {}}>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/acrylic" element={<ProtectedRoute><Acrylic /></ProtectedRoute>} />
-            <Route path="/clear-acrylic" element={<ProtectedRoute><ClearAcrylic /></ProtectedRoute>} />
-            <Route path="/fridge-magnets" element={<ProtectedRoute><MainHome /></ProtectedRoute>} />
-            <Route path="/customize/:type" element={<ProtectedRoute><CustomizePage /></ProtectedRoute>} />
-            <Route path="/acrylic-wall-clock" element={<ProtectedRoute><ClockCustomizer /></ProtectedRoute>} />
-            <Route path="/collage-acrylic-photo" element={<ProtectedRoute><AcrylicCollageHome /></ProtectedRoute>} />
-            <Route path="/colllage/:type" element={<ProtectedRoute><CollageAcrylicPhoto /></ProtectedRoute>} />
-          </Routes>
-        </div>
-      </CartProvider>
+      <Toaster richColors position="top-right" />
+      {!isLoginPage && <Navbar />}
+      <div style={!isLoginPage ? { marginTop: "6%" } : {}}>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/acrylic" element={<ProtectedRoute><Acrylic /></ProtectedRoute>} />
+          <Route path="/clear-acrylic" element={<ProtectedRoute><ClearAcrylic /></ProtectedRoute>} />
+          <Route path="/fridge-magnets" element={<ProtectedRoute><MainHome /></ProtectedRoute>} />
+          <Route path="/customize/:type" element={<ProtectedRoute><CustomizePage /></ProtectedRoute>} />
+          <Route path="/acrylic-wall-clock" element={<ProtectedRoute><ClockCustomizer /></ProtectedRoute>} />
+          <Route path="/collage-acrylic-photo" element={<ProtectedRoute><AcrylicCollageHome /></ProtectedRoute>} />
+          <Route path="/colllage/:type" element={<ProtectedRoute><CollageAcrylicPhoto /></ProtectedRoute>} />
+        </Routes>
+      </div>
     </>
   );
 }

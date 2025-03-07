@@ -5,11 +5,13 @@ import { FaDownload, FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
 import { MdAddShoppingCart } from "react-icons/md";
 import { handleShare } from "../utils/ShareService";
-import { useHandleAddToCart } from "../utils/AddToCart";
+import { toast } from "sonner";
+import axios from "axios";
+import addCartsStore from "../manage/CartStore";
 
 const AcrylicPhoto = () => {
 
-  const { handleAddToCart } = useHandleAddToCart(); // Use the hook
+  const { addCart } = addCartsStore(); // Use the hook
 
   useEffect(() => {
     const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -39,12 +41,46 @@ const AcrylicPhoto = () => {
     };
   }, []);
 
-  // const handleAddToCart = () => {
-  //   const customizationDetails = window.getImageDetails();
-  //   console.log(customizationDetails);
+  const handleAddToCart = async () => {
+    try {
+      const formData = await window.shareImage();
+      console.log("FormData:", [...formData.entries()]);
 
-  //   addToCartWithImage("ap-image-container", `Customized Acrylic Photo (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
-  // };
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("User is not authenticated");
+        toast.error("User is not authenticated.");
+        return;
+      }
+
+      const headers = {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
+        formData,
+        { headers }
+      );
+
+      if (response.data?.success) {
+        const newCartItem = response.data.cartItem;
+
+        const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+        const updatedCart = [...storedCart, newCartItem];
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        toast.success("Product added to cart!", { duration: 2000 });
+      } else {
+        toast.error("Failed to add product to cart!", { duration: 2000 });
+      }
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+
+      toast.error("Failed to add product. Please try again.", { duration: 3000 });
+    }
+  };
+
 
   return (
     <div className="ap-container">
@@ -134,11 +170,7 @@ const AcrylicPhoto = () => {
         <button
           className="ap-upload-btn ap-add-to-cart"
           id="cartBtn"
-          onClick={() => handleAddToCart({
-            container: "ap-image-container",
-            title: "Customized Acrylic Photo",
-            price: 799
-          })}
+          onClick={handleAddToCart}
         >
           <MdAddShoppingCart />
         </button>

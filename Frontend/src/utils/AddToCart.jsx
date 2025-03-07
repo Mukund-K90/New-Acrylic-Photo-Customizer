@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { useCartUtils } from "./CartUtils";
+import axios from "axios";
 
 export const useHandleAddToCart = () => {
     const { addToCartWithImage } = useCartUtils();
@@ -14,6 +15,47 @@ export const useHandleAddToCart = () => {
                 price,
                 customizationDetails
             );
+
+            const formData = await window.shareImage();
+            console.log("FormData:", [...formData.entries()]);
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                console.error("User is not authenticated");
+                return;
+            }
+
+            const headers = {
+                "Content-Type": "multipart/form-data",
+                "Authorization": `Bearer ${token}`
+            };
+
+            // Send formData to backend
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/cart/add`, formData, { headers });
+
+            console.log("Product added:", response);
+
+            if (response.data.success) {
+                const newCartData = response.data.cartItems;
+
+                // ✅ Check if local storage already has a cart
+                const existingCart = localStorage.getItem("cart");
+                let cartData = existingCart ? JSON.parse(existingCart) : [];
+
+                // ✅ Find if the cart already exists for the user
+                const userCartIndex = cartData.findIndex(cart => cart.user === newCartData[0].user);
+
+                if (userCartIndex !== -1) {
+                    // ✅ Merge items into the existing cart
+                    cartData[userCartIndex].items = [...cartData[userCartIndex].items, ...newCartData[0].items];
+                } else {
+                    // ✅ Otherwise, add a new cart
+                    cartData.push(newCartData[0]);
+                }
+
+                // ✅ Update local storage
+                localStorage.setItem("cart", JSON.stringify(cartData));
+            }
 
             toast.success("Product added to cart!", { duration: 2000 });
         } catch (error) {

@@ -34,9 +34,8 @@ const fileFilter = (req, file, cb) => {
 // Multer instance
 exports.upload = multer({
     storage,
-    limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB limit
+    limits: { fileSize: 50 * 1024 * 1024 },
 })
     .fields(([
-        { name: "logo", maxCount: 1 },
-        { name: "propertyImage", maxCount: 10 }
+        { name: "image", maxCount: 1 },
     ]));

@@ -42,18 +42,18 @@ const CartItem = () => {
 
                 {/* Quantity Controls */}
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                    <IconButton size="small" onClick={() => decreaseQuantity(cart.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
+                    <IconButton size="small" onClick={() => decreaseQuantity(cart._id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
                         <Remove />
                     </IconButton>
                     <Typography sx={{ mx: 1 }}>{cart.quantity}</Typography>
-                    <IconButton size="small" onClick={() => increaseQuantity(cart.id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
+                    <IconButton size="small" onClick={() => increaseQuantity(cart._id)} sx={{ color: "#0056B3", borderRadius: "4px", p: 0.5 }}>
                         <Add />
                     </IconButton>
                 </Box>
             </Box>
 
             {/* Delete Button */}
-            <IconButton size="small" onClick={() => removeItem(cart.id)}>
+            <IconButton size="small" onClick={() => removeItem(cart._id)}>
                 <IoCloseCircle style={{ fontSize: "1.5rem" }} />
             </IconButton>
         </Box>

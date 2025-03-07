@@ -462,7 +462,7 @@ function getImageDetails() {
     console.log(imageContainer);
 
     const imageDetails = {
-        name: 'Acrylic Photo',
+        type: 'Acrylic Photo',
         image: {
             name: file.name,
             lastModified: file.lastModified,

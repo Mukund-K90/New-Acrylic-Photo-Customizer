@@ -6,11 +6,12 @@ const User = require('../Model/User');
 
 module.exports.authorization = async (req, res, next) => {
     try {
-        const token = req.headers["authorization"];
+        const token = req.headers["authorization"];        
         if (!token) {
             return errorResponse(req, res, 401, "Authorization forbidden");
         }
         const token1 = token.split(" ")[1];
+        
         if (!token1) {
             return errorResponse(req, res, 401, "Token not provided");
         }
@@ -32,7 +33,6 @@ module.exports.authorization = async (req, res, next) => {
         if (!user) {
             return errorResponse(req, res, 401, "Permission denied");
         }
-        // If all checks pass, move to the next middleware
         req.user = user; // Store user info in the request for further use
         next();
     } catch (error) {
