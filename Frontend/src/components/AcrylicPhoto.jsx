@@ -3,14 +3,13 @@ import "../assets/css/AcrylicPhoto.css";
 import { FaImage, FaShareAlt } from "react-icons/fa";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
-import { useCartUtils } from "../utils/cartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
-import axios from "axios";
-import { toast } from 'sonner';
-
+import { handleShare } from "../utils/ShareService";
+import { useHandleAddToCart } from "../utils/AddToCart";
 
 const AcrylicPhoto = () => {
-  const { addToCartWithImage } = useCartUtils(); // Call the hook here
+
+  const { handleAddToCart } = useHandleAddToCart(); // Use the hook
 
   useEffect(() => {
     const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -40,40 +39,12 @@ const AcrylicPhoto = () => {
     };
   }, []);
 
-  const handleAddToCart = () => {
-    const customizationDetails = window.getImageDetails();
-    console.log(customizationDetails);
+  // const handleAddToCart = () => {
+  //   const customizationDetails = window.getImageDetails();
+  //   console.log(customizationDetails);
 
-    addToCartWithImage("ap-image-container", `Customized Acrylic Photo (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
-  };
-
-
-  const handleShare = async () => {
-    try {
-      await toast.promise(
-        (async () => {
-          const formData = await window.shareImage();
-
-          const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/send-email`,
-            formData,
-            {
-              headers: { "Content-Type": "multipart/form-data" }
-            }
-          );
-
-          return response.data;
-        })(),
-        {
-          loading: 'Sharing image...',
-          success: 'Image shared successfully!',
-          error: 'Failed to share image. Please try again.',
-        }
-      );
-    } catch (error) {
-      console.error("Error sharing image:", error);
-    }
-  };
+  //   addToCartWithImage("ap-image-container", `Customized Acrylic Photo (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
+  // };
 
   return (
     <div className="ap-container">
@@ -160,10 +131,17 @@ const AcrylicPhoto = () => {
         <button className="ap-upload-btn ap-share" id="shareBtn" onClick={handleShare}>
           <FaShareAlt />
         </button>
-        <button className="ap-upload-btn ap-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
+        <button
+          className="ap-upload-btn ap-add-to-cart"
+          id="cartBtn"
+          onClick={() => handleAddToCart({
+            container: "ap-image-container",
+            title: "Customized Acrylic Photo",
+            price: 799
+          })}
+        >
           <MdAddShoppingCart />
         </button>
-
         <p>Size:</p>
         {[
           "default",

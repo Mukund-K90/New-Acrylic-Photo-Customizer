@@ -4,6 +4,7 @@ import { FaCameraRetro, FaShareAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { useCartUtils } from "../../utils/cartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
+import { handleShare } from "../../utils/shareService";
 
 const CustomizePage = () => {
   const { addToCartWithImage } = useCartUtils(); // Call the hook here
@@ -78,7 +79,7 @@ const CustomizePage = () => {
             <button className="afm-thickness-btn">8 MM</button>
           </div>
           <br />
-          <button className="afm-upload-btn afm-share" id="shareBtn">
+          <button className="afm-upload-btn afm-share" id="shareBtn" onClick={handleShare}>
             <FaShareAlt />
           </button>
           <button className="afm-upload-btn ap-add-to-cart" id="cartBtn" onClick={handleAddToCart}>

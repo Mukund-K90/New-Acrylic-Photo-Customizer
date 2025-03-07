@@ -6,6 +6,7 @@ import { FaShareAlt } from "react-icons/fa";
 import { HiPencilSquare } from "react-icons/hi2";
 import { useCartUtils } from "../utils/cartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
+import { handleShare } from "../utils/shareService";
 
 const ClockCustomizer = () => {
     const { addToCartWithImage } = useCartUtils(); // Call the hook here
@@ -101,7 +102,7 @@ const ClockCustomizer = () => {
                 <button className="upload-btn upload" onClick={() => document.getElementById("fileInput").click()}>
                     <FaUpload />
                 </button>
-                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} />
+                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} onClick={handleShare}/>
                 <button className="upload-btn share" id="shareBtn">
                     <FaShareAlt />
                 </button>

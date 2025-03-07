@@ -3,8 +3,10 @@ import "../assets/css/ClearAcrylic.css";
 import { FaImages, FaShareAlt } from "react-icons/fa";
 import { FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
-import { useCartUtils } from "../utils/cartUtils";
+import { useCartUtils } from "../utils/CartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
+import { handleShare } from "../utils/ShareService";
+import { toast } from "sonner";
 
 const ClearAcrylic = () => {
     const { addToCartWithImage } = useCartUtils(); // Call the hook here
@@ -35,11 +37,24 @@ const ClearAcrylic = () => {
             };
         };
     }, []);
-    const handleAddToCart = () => {
-        const customizationDetails = window.getImageDetails();
-        console.log(customizationDetails);
 
-        addToCartWithImage("acp-image-container", `Customized Acrylic Clear Photo (${customizationDetails.size?customizationDetails.size:''})`, 699,customizationDetails);
+    const handleAddToCart = () => {
+        try {
+            const customizationDetails = window.getImageDetails();
+            console.log(customizationDetails);
+
+            addToCartWithImage(
+                "acp-image-container",
+                `Customized Acrylic Clear Photo (${customizationDetails.size ? customizationDetails.size : ''})`,
+                699,
+                customizationDetails
+            );
+
+            toast.success("Product added to cart!", { duration: 2000 });
+        } catch (error) {
+            console.error("Error adding product to cart:", error);
+            toast.error("Failed to add product. Please try again.", { duration: 3000 });
+        }
     };
     return (
         <div className="acp-container">
@@ -75,7 +90,7 @@ const ClearAcrylic = () => {
                 <button className="acp-upload-btn acp-upload" onClick={() => document.getElementById("fileInput").click()}>
                     <FaUpload />
                 </button>
-                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} />
+                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} onClick={handleShare} />
                 <button className="acp-upload-btn acp-share" id="shareBtn">
                     <FaShareAlt />
                 </button>

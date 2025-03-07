@@ -8,7 +8,7 @@ const addTextBtn = document.getElementById('afm-addTextBtn');
 const allSizeBtn = document.querySelectorAll('.afm-size-btn');
 const allThicknessBtn = document.querySelectorAll('.afm-thickness-btn');
 const leftPanel = document.querySelector('.afm-image-customization-page .afm-left');
-const allTextData=[];
+const allTextData = [];
 const cartBtn = document.getElementById('cartBtn');
 
 const BASE_URL = window.BASE_URL;
@@ -70,7 +70,7 @@ function addResizeHandle(imageElement) {
     resizeHandle.innerText = '+';
     resizeHandle.style.color = 'blue';
     resizeHandle.style.fontWeight = 'bold';
-    resizeHandle.style.fontSize='1.5rem';
+    resizeHandle.style.fontSize = '1.5rem';
     resizeHandle.style.backgroundColor = 'transparent';
 
     leftPanel.appendChild(resizeHandle);
@@ -106,7 +106,7 @@ function addRotateHandle(imageElement) {
     rotateHandle.innerHTML = '&#8635;';
     rotateHandle.style.color = 'blue';
     rotateHandle.style.fontWeight = 'bold';
-    rotateHandle.style.fontSize='1.5rem';
+    rotateHandle.style.fontSize = '1.5rem';
     rotateHandle.style.backgroundColor = 'transparent';
 
     leftPanel.appendChild(rotateHandle);
@@ -374,46 +374,72 @@ function getImageDetails() {
     return imageDetails;
 }
 
-document.getElementById('shareBtn').addEventListener('click', () => {
-    shareBtn.style.display = 'none';
+// document.getElementById('shareBtn').addEventListener('click', () => {
+//     shareBtn.style.display = 'none';
 
-    document.querySelectorAll('.afm-resize-handle, .afm-rotate-handle').forEach(handle => {
-        handle.style.display = 'none';
+//     document.querySelectorAll('.afm-resize-handle, .afm-rotate-handle').forEach(handle => {
+//         handle.style.display = 'none';
+//     });
+//     html2canvas(uploadBox, { backgroundColor: null }).then((canvas) => {
+//         canvas.toBlob((blob) => {
+//             if (!blob) {
+//                 alert("Error: Failed to generate image!");
+//                 shareBtn.style.display = 'block';
+//                 return;
+//             }
+//             const formData = new FormData();
+//             const now = new Date();
+//             const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
+//             const fileName = `customized-image-${formattedDate}.png`;
+
+//             const imageData = getImageDetails();
+//             formData.append('image', blob, fileName);
+//             formData.append('details', JSON.stringify(imageData));
+//             const subject = `Acrylic Fridge Magnet Order - ${formattedDate}`;
+//             formData.append('subject', JSON.stringify(subject));
+
+//             fetch(`${BASE_URL}/send-email`, {
+//                 method: 'POST',
+//                 body: formData
+//             })
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     alert(data.message);
+//                 })
+//                 .catch(error => {
+//                     console.log(error);
+//                     alert('Error: ' + error.message);
+//                     shareBtn.style.display = 'block';
+//                 })
+//         });
+//     });
+// });
+
+function shareImage() {
+    return new Promise((resolve, reject) => {
+        html2canvas(uploadBox, { backgroundColor: null }).then((canvas) => {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    alert("Error: Failed to generate image!");
+                    reject("Failed to generate image");
+                    return;
+                }
+
+                const formData = new FormData();
+                const now = new Date();
+                const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS
+                const fileName = `customized-image-${formattedDate}.png`;
+
+                const imageData = getImageDetails();
+                formData.append('image', blob, fileName);
+                formData.append('details', JSON.stringify(imageData));
+                const subject = `Acrylic Fridge Magnet Order - ${formattedDate}`;
+                formData.append('subject', JSON.stringify(subject));
+
+                resolve(formData);
+            });
+        }).catch(error => reject(error));
     });
-    alert("Processing... Please wait!");
-    html2canvas(uploadBox, { backgroundColor: null }).then((canvas) => {
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                alert("Error: Failed to generate image!");
-                shareBtn.style.display = 'block';
-                return;
-            }
-            const formData = new FormData();
-            const now = new Date();
-            const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
-            const fileName = `customized-image-${formattedDate}.png`;
-
-            const imageData = getImageDetails();
-            formData.append('image', blob, fileName);
-            formData.append('details', JSON.stringify(imageData));
-            const subject = `Acrylic Fridge Magnet Order - ${formattedDate}`;
-            formData.append('subject', JSON.stringify(subject));
-
-            fetch(`${BASE_URL}/send-email`, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                })
-                .catch(error => {
-                    console.log(error);
-                    alert('Error: ' + error.message);
-                    shareBtn.style.display = 'block';
-                })
-        });
-    });
-});
-
-window.getImageDetails=getImageDetails;
+}
+window.getImageDetails = getImageDetails;
+window.shareImage = shareImage;

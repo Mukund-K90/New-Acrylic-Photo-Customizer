@@ -8,6 +8,7 @@ import { HiPencilSquare } from "react-icons/hi2";
 import { FaShareAlt } from "react-icons/fa";
 import { useCartUtils } from "../../utils/cartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
+import { handleShare } from "../../utils/shareService";
 
 const collageLayouts = {
 
@@ -154,7 +155,7 @@ const CollageAcrylicPhoto = () => {
                         <button className="acol-thickness-btn" data-thickness="8 MM">8 MM (Premium)</button>
                     </div>
                     {/* <button className="acol-upload-btn acol-download" id="acol-downloadBtn"><FaDownload /></button> */}
-                    <button className="acol-upload-btn acol-share" id="acol-shareBtn"><FaShareAlt /></button>
+                    <button className="acol-upload-btn acol-share" id="acol-shareBtn" onClick={handleShare}><FaShareAlt /></button>
                     <button className="acol-upload-btn acol-add-to-cart" id="cartBtn" onClick={handleAddToCart}>
                         <MdAddShoppingCart />
                     </button>

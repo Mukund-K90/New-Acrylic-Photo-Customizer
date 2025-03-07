@@ -39,7 +39,7 @@ const CartDrawer = ({ open, onClose }) => {
                   onClose();
                 }}
               >
-                Go to Shop
+                Personalize Now
               </Button>
             </Box>
           ) : (
