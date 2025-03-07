@@ -7,12 +7,14 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import ProductDetailsDialog from "../ProductDetailsDialog";
+import useCartStore from "../../manage/CartStore";
 
 const CartDrawer = ({ open, onClose }) => {
   const [cart, setCart] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const { removeCart } = useCartStore()
 
   const API_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -21,7 +23,7 @@ const CartDrawer = ({ open, onClose }) => {
   const fetchCart = async () => {
     try {
       console.log("FETCHED");
-      
+
       const response = await axios.get(`${API_URL}/cart/get`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -46,7 +48,7 @@ const CartDrawer = ({ open, onClose }) => {
       });
 
       if (response.data.success) {
-        fetchCart(); // Refresh cart data
+        fetchCart();
       }
     } catch (error) {
       console.error("Error increasing quantity:", error);
@@ -80,10 +82,10 @@ const CartDrawer = ({ open, onClose }) => {
       setCart(updatedCart);
 
       toast.success("Item removed from cart!");
-
-      const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-      const updatedStoredCart = storedCart.filter(item => item._id !== id);
-      localStorage.setItem("cart", JSON.stringify(updatedStoredCart));
+      removeCart(id);
+      // const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      // const updatedStoredCart = storedCart.filter(item => item._id !== id);
+      // localStorage.setItem("cart", JSON.stringify(updatedStoredCart));
 
     } catch (error) {
       console.error("Error removing item:", error);

@@ -493,7 +493,7 @@ function shareImage() {
                     reject("Failed to generate image");
                     return;
                 }
-                
+
                 const formData = new FormData();
                 const now = new Date();
                 const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS
@@ -502,10 +502,10 @@ function shareImage() {
                 const imageData = getImageDetails();
                 formData.append('image', blob, fileName);
                 formData.append('details', JSON.stringify(imageData));
-                const subject = `Acrylic Photo Order - ${formattedDate}`;
+                const subject = `Acrylic Photo Order (${imageData.size || "default"})`;
                 formData.append('subject', JSON.stringify(subject));
 
-                resolve(formData); 
+                resolve(formData);
             });
         }).catch(error => reject(error));
     });

@@ -7,11 +7,11 @@ import { MdAddShoppingCart } from "react-icons/md";
 import { handleShare } from "../utils/ShareService";
 import { toast } from "sonner";
 import axios from "axios";
-import addCartsStore from "../manage/CartStore";
+import useCartStore from "../manage/CartStore";
 
 const AcrylicPhoto = () => {
 
-  const { addCart } = addCartsStore(); // Use the hook
+  const { addCart } = useCartStore(); // Use the hook
 
   useEffect(() => {
     const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -68,8 +68,14 @@ const AcrylicPhoto = () => {
         const newCartItem = response.data.cartItem;
 
         const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-        const updatedCart = [...storedCart, newCartItem];
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        // const updatedCart = [...storedCart, newCartItem];
+        // localStorage.setItem("cart", JSON.stringify(updatedCart));
+        console.log(newCartItem);
+        addCart({
+          id: newCartItem._id,
+          name: newCartItem.name,
+        })
+
         toast.success("Product added to cart!", { duration: 2000 });
       } else {
         toast.error("Failed to add product to cart!", { duration: 2000 });

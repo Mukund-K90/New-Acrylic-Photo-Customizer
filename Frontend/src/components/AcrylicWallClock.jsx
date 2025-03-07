@@ -11,7 +11,7 @@ import { useHandleAddToCart } from "../utils/AddToCart";
 
 
 const ClockCustomizer = () => {
-    const { handleAddToCart } = useHandleAddToCart(); // Use the hook
+    // const { handleAddToCart } = useHandleAddToCart(); // Use the hook
 
     useEffect(() => {
         const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -39,12 +39,48 @@ const ClockCustomizer = () => {
             };
         };
     }, []);
-    const removeClockHand = () => {
-        document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
-            el.classList.add("hidden");
-        });
-    };
+    const handleAddToCart = async () => {
+        try {
+            document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+                el.classList.add("hidden");
+            });
+            const formData = await window.shareImage();
+            console.log("FormData:", [...formData.entries()]);
 
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("User is not authenticated");
+                toast.error("User is not authenticated.");
+                return;
+            }
+
+            const headers = {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+            };
+
+            const response = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
+                formData,
+                { headers }
+            );
+
+            if (response.data?.success) {
+                const newCartItem = response.data.cartItem;
+
+                const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+                const updatedCart = [...storedCart, newCartItem];
+                localStorage.setItem("cart", JSON.stringify(updatedCart));
+                toast.success("Product added to cart!", { duration: 2000 });
+            } else {
+                toast.error("Failed to add product to cart!", { duration: 2000 });
+            }
+        } catch (error) {
+            console.error("Error adding product to cart:", error);
+
+            toast.error("Failed to add product. Please try again.", { duration: 3000 });
+        }
+    };
 
     return (
         <div className="ac-container">
@@ -100,14 +136,7 @@ const ClockCustomizer = () => {
                 <button
                     className="ap-upload-btn ap-add-to-cart"
                     id="cartBtn"
-                    onClick={() => {
-                        removeClockHand(),
-                            handleAddToCart({
-                                container: "image-container",
-                                title: "Customized Acrylic Clock",
-                                price: 999
-                            })
-                    }}
+                    onClick={handleAddToCart}
                 >
                     <MdAddShoppingCart />
                 </button>
