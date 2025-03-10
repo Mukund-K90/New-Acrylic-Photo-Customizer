@@ -34,6 +34,10 @@ const cartSchema = new mongoose.Schema(
     thickness: {
       type: String,
       default: "default"
+    },
+    address: {
+      type: String,
+      default: null
     }
   },
   { timestamps: true }

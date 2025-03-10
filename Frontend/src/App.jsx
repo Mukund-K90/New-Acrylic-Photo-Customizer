@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Navbar from "./components/Navbar/Navbar";
+import CheckoutScreen from "./components/CheckoutScreen";
 import { Toaster, toast } from 'sonner'
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
           <Route path="/acrylic-wall-clock" element={<ProtectedRoute><ClockCustomizer /></ProtectedRoute>} />
           <Route path="/collage-acrylic-photo" element={<ProtectedRoute><AcrylicCollageHome /></ProtectedRoute>} />
           <Route path="/colllage/:type" element={<ProtectedRoute><CollageAcrylicPhoto /></ProtectedRoute>} />
+          <Route path="/checkout" element={<CheckoutScreen />} />
         </Routes>
       </div>
     </>

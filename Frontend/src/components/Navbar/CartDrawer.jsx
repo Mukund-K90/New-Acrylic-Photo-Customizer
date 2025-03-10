@@ -83,9 +83,6 @@ const CartDrawer = ({ open, onClose }) => {
 
       toast.success("Item removed from cart!");
       removeCart(id);
-      // const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-      // const updatedStoredCart = storedCart.filter(item => item._id !== id);
-      // localStorage.setItem("cart", JSON.stringify(updatedStoredCart));
 
     } catch (error) {
       console.error("Error removing item:", error);
@@ -213,9 +210,17 @@ const CartDrawer = ({ open, onClose }) => {
           {/* Checkout Button */}
           {cart.length > 0 && (
             <Box sx={{ p: 2 }}>
-              <Button variant="contained" sx={{ width: "100%", bgcolor: "#0056B3", color: "white", fontWeight: "bold" }}>
+              <Button
+                variant="contained"
+                sx={{ width: "100%", bgcolor: "#0056B3", color: "white", fontWeight: "bold" }}
+                onClick={() => {
+                  onClose();
+                  navigate("/checkout");
+                }}
+              >
                 Checkout
               </Button>
+
             </Box>
           )}
         </Box>
