@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../../assets/css/CollagePhoto.css";
 import { FaDownload, FaImage, FaTrash } from 'react-icons/fa6'
-import { IoClose } from 'react-icons/io5'
 import { VscDebugRestart, VscTextSize } from 'react-icons/vsc'
 import { HiPencilSquare } from "react-icons/hi2";
 import { FaShareAlt } from "react-icons/fa";
-import { useCartUtils } from "../../utils/CartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
 import { handleShare } from "../../utils/ShareService";
-import { useHandleAddToCart } from "../../utils/AddToCart";
+import { toast } from "sonner";
+import axios from "axios";
+import useCartStore from "../../manage/CartStore";
+import { ImSpinner2 } from "react-icons/im";
 
 const collageLayouts = {
 
@@ -46,7 +47,9 @@ const collageLayouts = {
 };
 
 const CollageAcrylicPhoto = () => {
-    const { handleAddToCart } = useHandleAddToCart(); // Use the hook
+    const [loading, setLoading] = useState(false);
+
+    const { addCart } = useCartStore();
 
     const { type } = useParams();
     console.log(type);
@@ -80,12 +83,100 @@ const CollageAcrylicPhoto = () => {
         };
     }, [type]);
     if (!layout) return <h2>Invalid collage type</h2>;
-    // const handleAddToCart = () => {
-    //     const customizationDetails = window.getImageDetails();
-    //     console.log(customizationDetails);
 
-    //     addToCartWithImage("acol-collage-frame", `Customized Collage Acrylic (${customizationDetails.size ? customizationDetails.size : ''})`, 699, customizationDetails);
-    // };
+    const handleAddToCart = async () => {
+        const promise = new Promise(async (resolve, reject) => {
+            try {
+                const formData = await window.shareImage();
+                console.log("FormData:", [...formData.entries()]);
+
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("User is not authenticated");
+                    reject("User is not authenticated.");
+                    return;
+                }
+
+                const headers = {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                };
+
+                const response = await axios.post(
+                    `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
+                    formData,
+                    { headers }
+                );
+
+                if (response.data?.success) {
+                    const newCartItem = response.data.cartItem;
+
+                    addCart({
+                        id: newCartItem._id,
+                        name: newCartItem.name,
+                    });
+
+                    resolve({ name: newCartItem.name });
+                } else {
+                    reject("Failed to add product to cart!");
+                }
+            } catch (error) {
+                console.error("Error adding product to cart:", error);
+                reject("Failed to add product. Please try again.");
+            }
+        });
+
+        toast.promise(promise, {
+            loading: "Adding product to cart...",
+            success: (data) => `${data.name} added to cart!`,
+            error: (errMsg) => errMsg,
+        });
+    };
+
+    const handleShare = async () => {
+        setLoading(true);
+        const promise = new Promise(async (resolve, reject) => {
+            try {
+                const formData = await window.shareImage();
+                console.log("FormData:", [...formData.entries()]);
+
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("User is not authenticated");
+                    reject("User is not authenticated.");
+                    return;
+                }
+
+                const headers = {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                };
+
+                const response = await axios.post(
+                    `${import.meta.env.VITE_BACKEND_URL}/send-email`,
+                    formData,
+                    { headers }
+                );
+
+                if (response.data?.success) {
+                    resolve("Product share successfully!");
+                    setLoading(false);
+                } else {
+                    reject("Failed to share product.");
+                }
+            } catch (error) {
+                console.error("Error sharing product:", error);
+                reject("Failed to share product. Please try again.");
+            }
+        });
+
+        toast.promise(promise, {
+            loading: "Sharing product...",
+            success: (message) => message,
+            error: (errMsg) => errMsg,
+        });
+
+    };
     return (
         <div className="acol-content">
             <h2>{type ? type.replace("-", " ") : "2-pic"} Collage</h2>
@@ -156,7 +247,9 @@ const CollageAcrylicPhoto = () => {
                         <button className="acol-thickness-btn" data-thickness="8 MM">8 MM (Premium)</button>
                     </div>
                     {/* <button className="acol-upload-btn acol-download" id="acol-downloadBtn"><FaDownload /></button> */}
-                    <button className="acol-upload-btn acol-share" id="acol-shareBtn" onClick={handleShare}><FaShareAlt /></button>
+                    <button className="acol-upload-btn acol-share" id="acol-shareBtn" onClick={handleShare} disabled={loading}>
+                        {loading ? <ImSpinner2 className="spin" /> : <FaShareAlt />}
+                    </button>
                     <button
                         className="acol-upload-btn acol-add-to-cart"
                         id="cartBtn"

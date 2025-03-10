@@ -341,7 +341,9 @@ function getImageDetails() {
     const selectedSize = document.querySelector('.afm-size-btn.afm-active');
     const selectedThickness = document.querySelector('.afm-thickness-btn.afm-active');
     const textElements = document.querySelectorAll('.text-box');
-
+    const size = selectedSize && selectedSize.dataset.ratio !== "default"
+        ? selectedSize.dataset.ratio
+        : "default";
     if (!previewImage || !previewImage.src) {
         console.error("No image uploaded.");
         return null;
@@ -355,7 +357,6 @@ function getImageDetails() {
         return null;
     }
 
-    // Get text details if any text is added
     const imageDetails = {
         image: {
             name: file.name,
@@ -366,9 +367,11 @@ function getImageDetails() {
         },
         width: previewImage.naturalWidth + 'px',
         height: previewImage.naturalHeight + 'px',
-        size: selectedSize ? selectedSize.dataset.ratio : "default",
+        size: size,
+        name: `Acrylic Fridge Magnet (${size})`,
+        type: 'Acrylic Fridge Magnet',
+        price: 899,
         thickness: selectedThickness ? selectedThickness.innerText : "default",
-        addedText: allTextData
     };
 
     return imageDetails;

@@ -9,7 +9,7 @@ router.post("/add", authorization, upload.single("image"), addToCart);
 router.get("/get", authorization, getUserCart);
 router.put("/update/:cartItemId", authorization, updateCartItem);
 router.delete("/remove/:cartItemId", authorization, deleteCartItem);
-router.delete("/clear/:userId", authorization, clearCart);
+router.delete("/clear", authorization, clearCart);
 router.put("/increase/:id", authorization, increaseQuantity);
 router.put("/decrease/:id", authorization, decreaseQuantity);
 router.delete("/remove/:id", authorization, removeItem);

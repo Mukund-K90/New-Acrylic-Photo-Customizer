@@ -366,9 +366,10 @@ resteBtn.addEventListener('click', () => {
 function getImageDetails() {
     const imageContainers = document.querySelectorAll('.acol-small-img');
     const selectedSize = document.querySelector('.acol-size-btn.acol-active');
-    const textElement = document.querySelector('.acol-text-box');
     const selectedThickness = document.querySelector('.acol-thickness-btn.acol-active')
-
+    const size = selectedSize && selectedSize.dataset.ratio !== "default"
+        ? selectedSize.dataset.ratio
+        : "default";
     let imagesData = [];
 
     imageContainers.forEach(container => {
@@ -385,60 +386,89 @@ function getImageDetails() {
     });
 
     const imageDetails = {
-        name: 'Acrylic Collage',
+        name: `Acrylic Collage (${size})`,
         images: imagesData,
-        size: selectedSize ? selectedSize.dataset.ratio : 'default',
-        addedText: textElement ? textElement.innerText : [],
-        thickness: selectedThickness ? selectedThickness.dataset.thickness : 'none'
+        size: size,
+        thickness: selectedThickness ? selectedThickness.dataset.thickness : 'none',
+        type: 'Acrylic Collage',
+        price: 999
     };
 
     return imageDetails;
 }
 
 
-document.getElementById('acol-shareBtn').addEventListener('click', () => {
-    const shareBtn = document.getElementById('shareBtn');
-    if (!imageContainer) {
-        alert("Error: Image container not found!");
-        return;
-    }
+// document.getElementById('acol-shareBtn').addEventListener('click', () => {
+//     const shareBtn = document.getElementById('shareBtn');
+//     if (!imageContainer) {
+//         alert("Error: Image container not found!");
+//         return;
+//     }
 
-    shareBtn.disabled = true;
-    alert("Processing... Please wait!");
-    document.querySelectorAll('.acol-resize-handle, .acol-rotate-handle').forEach(handle => {
-        handle.style.display = 'none';
+//     shareBtn.disabled = true;
+//     alert("Processing... Please wait!");
+//     document.querySelectorAll('.acol-resize-handle, .acol-rotate-handle').forEach(handle => {
+//         handle.style.display = 'none';
+//     });
+
+//     html2canvas(collagePhoto, { backgroundColor: null }).then((canvas) => {
+//         canvas.toBlob((blob) => {
+//             const formData = new FormData();
+//             const now = new Date();
+//             const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS
+//             const fileName = `customized-image-${formattedDate}.png`;
+
+//             const imageData = getImageDetails();
+//             formData.append('image', blob, fileName);
+//             formData.append('details', JSON.stringify(imageData));
+//             const subject = `Collage Acrylic Photo Order - ${formattedDate}`;
+//             formData.append('subject', JSON.stringify(subject));
+
+//             fetch(`${BASE_URL}/send-email`, {
+//                 method: 'POST',
+//                 body: formData
+//             })
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     alert(data.message);
+//                 })
+//                 .catch(error => {
+//                     alert('Error: ' + error.message);
+//                 }).finally(() => {
+//                     shareBtn.disabled = false;
+//                 });
+//         });
+//     });
+// });
+
+function shareImage() {
+    return new Promise((resolve, reject) => {
+        html2canvas(collagePhoto, { backgroundColor: null }).then((canvas) => {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    alert("Error: Failed to generate image!");
+                    reject("Failed to generate image");
+                    return;
+                }
+
+                const formData = new FormData();
+                const now = new Date();
+                const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS
+                const fileName = `customized-image-${formattedDate}.png`;
+
+                const imageData = getImageDetails();
+                formData.append('image', blob, fileName);
+                formData.append('details', JSON.stringify(imageData));
+                const subject = `Collage Acrylic Photo Order - ${formattedDate}`;
+                formData.append('subject', JSON.stringify(subject));
+
+                resolve(formData);
+            });
+        }).catch(error => reject(error));
     });
-
-    html2canvas(collagePhoto, { backgroundColor: null }).then((canvas) => {
-        canvas.toBlob((blob) => {
-            const formData = new FormData();
-            const now = new Date();
-            const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0]; // Format: YYYY-MM-DDTHH-MM-SS
-            const fileName = `customized-image-${formattedDate}.png`;
-
-            const imageData = getImageDetails();
-            formData.append('image', blob, fileName);
-            formData.append('details', JSON.stringify(imageData));
-            const subject = `Collage Acrylic Photo Order - ${formattedDate}`;
-            formData.append('subject', JSON.stringify(subject));
-
-            fetch(`${BASE_URL}/send-email`, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                }).finally(() => {
-                    shareBtn.disabled = false;
-                });
-        });
-    });
-});
+}
 
 window.updatePreview = updatePreview;
 window.changeFontFamily = changeFontFamily;
 window.getImageDetails = getImageDetails;
+window.shareImage = shareImage;

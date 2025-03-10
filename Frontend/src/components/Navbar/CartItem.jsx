@@ -10,7 +10,6 @@ const CartItem = () => {
     
     return (
         <Box sx={{ display: "flex", alignItems: "center", padding: "16px", borderBottom: "1px solid #ddd" }}>
-            {/* Product Image */}
             <Box
                 sx={{
                     width: "100px",

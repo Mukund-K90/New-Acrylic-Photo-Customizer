@@ -1,15 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "../assets/css/AcrylicPhoto.css";
 import { FaImage, FaShareAlt } from "react-icons/fa";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
 import { MdAddShoppingCart } from "react-icons/md";
-import { handleShare } from "../utils/ShareService";
 import { toast } from "sonner";
 import axios from "axios";
 import useCartStore from "../manage/CartStore";
+import { ImSpinner2 } from "react-icons/im";
 
 const AcrylicPhoto = () => {
+  const [loading, setLoading] = useState(false);
 
   const { addCart } = useCartStore(); // Use the hook
 
@@ -42,52 +43,99 @@ const AcrylicPhoto = () => {
   }, []);
 
   const handleAddToCart = async () => {
-    try {
-      const formData = await window.shareImage();
-      console.log("FormData:", [...formData.entries()]);
+    const promise = new Promise(async (resolve, reject) => {
+      try {
+        const formData = await window.shareImage();
+        console.log("FormData:", [...formData.entries()]);
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("User is not authenticated");
-        toast.error("User is not authenticated.");
-        return;
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("User is not authenticated");
+          reject("User is not authenticated.");
+          return;
+        }
+
+        const headers = {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        };
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
+          formData,
+          { headers }
+        );
+
+        if (response.data?.success) {
+          const newCartItem = response.data.cartItem;
+
+          addCart({
+            id: newCartItem._id,
+            name: newCartItem.name,
+          });
+
+          resolve({ name: newCartItem.name });
+        } else {
+          reject("Failed to add product to cart!");
+        }
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+        reject("Failed to add product. Please try again.");
       }
+    });
 
-      const headers = {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      };
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
-        formData,
-        { headers }
-      );
-
-      if (response.data?.success) {
-        const newCartItem = response.data.cartItem;
-
-        const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-        // const updatedCart = [...storedCart, newCartItem];
-        // localStorage.setItem("cart", JSON.stringify(updatedCart));
-        console.log(newCartItem);
-        addCart({
-          id: newCartItem._id,
-          name: newCartItem.name,
-        })
-
-        toast.success("Product added to cart!", { duration: 2000 });
-      } else {
-        toast.error("Failed to add product to cart!", { duration: 2000 });
-      }
-    } catch (error) {
-      console.error("Error adding product to cart:", error);
-
-      toast.error("Failed to add product. Please try again.", { duration: 3000 });
-    }
+    toast.promise(promise, {
+      loading: "Adding product to cart...",
+      success: (data) => `${data.name} added to cart!`,
+      error: (errMsg) => errMsg,
+    });
   };
 
+  const handleShare = async () => {
+    setLoading(true);
+    const promise = new Promise(async (resolve, reject) => {
+      try {
+        const formData = await window.shareImage();
+        console.log("FormData:", [...formData.entries()]);
 
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("User is not authenticated");
+          reject("User is not authenticated.");
+          return;
+        }
+
+        const headers = {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        };
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/send-email`,
+          formData,
+          { headers }
+        );
+
+        if (response.data?.success) {
+          resolve("Product share successfully!");
+          setLoading(false);
+        } else {
+          reject("Failed to share product.");
+        }
+      } catch (error) {
+        console.error("Error sharing product:", error);
+        reject("Failed to share product. Please try again.");
+      }
+    });
+
+    toast.promise(promise, {
+      loading: "Sharing product...",
+      success: (message) => message,
+      error: (errMsg) => errMsg,
+    });
+
+  };
+  
   return (
     <div className="ap-container">
       <div className="ap-border-colors">
@@ -170,9 +218,10 @@ const AcrylicPhoto = () => {
         {/* <button className="ap-upload-btn ap-download" id="downloadBtn">
           <FaDownload />
         </button> */}
-        <button className="ap-upload-btn ap-share" id="shareBtn" onClick={handleShare}>
-          <FaShareAlt />
+        <button className="ap-upload-btn ap-share" id="shareBtn" onClick={handleShare} disabled={loading}>
+          {loading ? <ImSpinner2 className="spin" /> : <FaShareAlt />}
         </button>
+
         <button
           className="ap-upload-btn ap-add-to-cart"
           id="cartBtn"

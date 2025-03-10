@@ -417,7 +417,7 @@ function updateClock() {
     secondHand.style.transform = `rotate(${secondDeg}deg)`;
 }
 
-function createClockNumbers(type) {    
+function createClockNumbers(type) {
     const clockNumbers = document.querySelectorAll('.clock-number');
     const clockFace = document.querySelector('.clock-face');
 
@@ -591,6 +591,9 @@ function getImageDetails() {
         console.error("No file selected.");
         return null;
     }
+    const size = selectedSize && selectedSize.dataset.ratio !== "default"
+        ? selectedSize.dataset.ratio
+        : "default";
 
     const file = fileInput.files[0];
 
@@ -620,7 +623,10 @@ function getImageDetails() {
             width: previewImage.naturalWidth + 'px',
             height: previewImage.naturalHeight + 'px',
         },
-        size: selectedSize ? selectedSize.dataset.ratio : "default",
+        type: 'Acrylic Clock',
+        name: `Acrylic Clock (${size})`,
+        price: 799,
+        size: size,
         addedText: allTextData.length ? allTextData : "No text added"
     };
 
@@ -628,60 +634,88 @@ function getImageDetails() {
 }
 
 
-shareBtn.addEventListener('click', () => {
-    document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
-        el.classList.add("hidden");
+// shareBtn.addEventListener('click', () => {
+//     document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+//         el.classList.add("hidden");
+//     });
+//     if (!imageContainer) {
+//         alert("Error: Image container not found!");
+//         return;
+//     }
+
+//     shareBtn.disabled = true;
+//     alert("Processing... Please wait!");
+
+//     document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
+//         handle.style.display = 'none';
+//     });
+
+//     html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
+//         canvas.toBlob((blob) => {
+//             const formData = new FormData();
+//             const now = new Date();
+//             const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
+//             const fileName = `customized-image-${formattedDate}.png`;
+
+//             const imageData = getImageDetails();
+//             formData.append('image', blob, fileName);
+//             formData.append('details', JSON.stringify(imageData));
+//             const subject = `Acrylic Fridge Magnet Order - ${formattedDate}`;
+//             formData.append('subject', JSON.stringify(subject));
+
+//             fetch(`${BASE_URL}/send-email`, {
+//                 method: 'POST',
+//                 body: formData
+//             })
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     alert(data.message);
+//                 })
+//                 .catch(error => {
+//                     alert('Error: ' + error.message);
+//                 })
+//                 .finally(() => {
+//                     shareBtn.disabled = false;
+//                 });
+//         });
+//     });
+
+//     setTimeout(() => {
+//         document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+//             el.classList.remove("hidden");
+//         });
+//     }, 500);
+// });
+
+function shareImage() {
+    return new Promise((resolve, reject) => {
+        html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    alert("Error: Failed to generate image!");
+                    reject("Failed to generate image");
+                    return;
+                }
+
+                const formData = new FormData();
+                const now = new Date();
+                const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
+                const fileName = `customized-image-${formattedDate}.png`;
+
+                const imageData = getImageDetails();
+                formData.append('image', blob, fileName);
+                formData.append('details', JSON.stringify(imageData));
+                const subject = `Acrylic Clock Order - ${formattedDate}`;
+                formData.append('subject', JSON.stringify(subject));
+
+                resolve(formData);
+            });
+        }).catch(error => reject(error));
     });
-    if (!imageContainer) {
-        alert("Error: Image container not found!");
-        return;
-    }
-
-    shareBtn.disabled = true;
-    alert("Processing... Please wait!");
-
-    document.querySelectorAll('.resize-handle, .rotate-handle').forEach(handle => {
-        handle.style.display = 'none';
-    });
-
-    html2canvas(imageContainer, { backgroundColor: null }).then((canvas) => {
-        canvas.toBlob((blob) => {
-            const formData = new FormData();
-            const now = new Date();
-            const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
-            const fileName = `customized-image-${formattedDate}.png`;
-
-            const imageData = getImageDetails();
-            formData.append('image', blob, fileName);
-            formData.append('details', JSON.stringify(imageData));
-            const subject = `Acrylic Fridge Magnet Order - ${formattedDate}`;
-            formData.append('subject', JSON.stringify(subject));
-
-            fetch(`${BASE_URL}/send-email`, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                })
-                .finally(() => {
-                    shareBtn.disabled = false;
-                });
-        });
-    });
-
-    setTimeout(() => {
-        document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
-            el.classList.remove("hidden");
-        });
-    }, 500);
-});
+}
 
 
 window.activateClock = activateClock;
 window.updatePreview = updatePreview;
 window.getImageDetails = getImageDetails;
+window.shareImage = shareImage;

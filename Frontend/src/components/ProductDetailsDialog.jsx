@@ -18,7 +18,7 @@ import { TbBrandDatabricks } from "react-icons/tb";
 const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
     if (!productDetails) return null;
     console.log(productDetails);
-    // const isCollagePhoto = productDetails.imageDetails?.name == "Acrylic Collage";
+    // const isCollagePhoto = productDetails?.name == "Acrylic Collage";
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -33,7 +33,7 @@ const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
                     padding: "12px 24px",
                 }}
             >
-                {productDetails.name} ({productDetails?.imageDetails?.size || "N/A"})
+                {productDetails.name}
                 <IconButton onClick={onClose} sx={{ color: "white" }}>
                     <CloseIcon />
                 </IconButton>
@@ -85,44 +85,44 @@ const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
                         <Divider sx={{ mb: 2 }} />
 
                         {/* Dynamic Product Fields */}
-                        {productDetails.imageDetails?.width && (
+                        {productDetails?.width && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
                                 <RxWidth style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
-                                    <strong>Width:</strong> {productDetails.imageDetails.width}
+                                    <strong>Width:</strong> {productDetails.width}
                                 </Typography>
                             </Box>
                         )}
 
-                        {productDetails.imageDetails?.height && (
+                        {productDetails?.height && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
                                 <MdOutlineHeight style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
-                                    <strong>Height:</strong> {productDetails.imageDetails.height}
+                                    <strong>Height:</strong> {productDetails.height}
                                 </Typography>
                             </Box>
                         )}
 
-                        {productDetails.imageDetails?.shape && (
+                        {productDetails?.shape && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
                                 <FaShapes style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
-                                    <strong>Shape:</strong> {productDetails.imageDetails.shape}
+                                    <strong>Shape:</strong> {productDetails.shape}
                                 </Typography>
                             </Box>
                         )}
 
-                        {productDetails.imageDetails?.size && (
+                        {productDetails?.size && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
                                 <MdStraighten style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
-                                    <strong>Size:</strong> {productDetails.imageDetails.size}
+                                    <strong>Size:</strong> {productDetails.size}
                                 </Typography>
                             </Box>
                         )}
 
                         {/* Display Border Color Box if Border Exists */}
-                        {productDetails.imageDetails?.border && productDetails.imageDetails.border !== "none" && (
+                        {productDetails?.border && productDetails.border !== "none" && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
                                 <RxBorderWidth style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
@@ -132,17 +132,17 @@ const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
                                     sx={{
                                         width: "20%",
                                         height: "10px",
-                                        backgroundColor: productDetails.imageDetails?.border.split("solid ")[1],
+                                        backgroundColor: productDetails?.border.split("solid ")[1],
                                     }}
                                 />
                             </Box>
                         )}
 
-                        {productDetails.imageDetails?.thickness && productDetails.imageDetails.thickness !== "none" && (
+                        {productDetails?.thickness && productDetails.thickness !== "none" && (
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: 1 }}>
                                 <TbBrandDatabricks style={{ color: "#1976D2" }} />
                                 <Typography variant="body1">
-                                    <strong>Thickness:</strong> {productDetails.imageDetails.thickness}
+                                    <strong>Thickness:</strong> {productDetails.thickness}
                                 </Typography>
                             </Box>
                         )}

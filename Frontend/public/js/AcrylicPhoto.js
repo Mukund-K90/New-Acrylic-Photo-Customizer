@@ -459,8 +459,9 @@ function getImageDetails() {
     const selectedShape = document.querySelector('.ap-shape-btn.ap-active');
     const selectedSize = document.querySelector('.ap-size-btn.ap-active');
     const textElement = document.querySelector('.text-box');
-    console.log(imageContainer);
-
+    const size = selectedSize && selectedSize.dataset.ratio !== "default"
+        ? selectedSize.dataset.ratio
+        : "default";
     const imageDetails = {
         type: 'Acrylic Photo',
         image: {
@@ -471,16 +472,15 @@ function getImageDetails() {
             type: file.type,
             webkitRelativePath: file.webkitRelativePath
         },
+        name: `Acrylic Photo (${size})`,
+        price: 599,
         width: imageContainer.offsetWidth + 'px',
         height: imageContainer.offsetHeight + 'px',
         border: imageContainer ? imageContainer.style.border : 'none',
         shape: selectedShape ? selectedShape.dataset.shape : 'default',
-        size: selectedSize && selectedSize.dataset.ratio !== "default/default"
-            ? selectedSize.dataset.ratio
-            : "default",
+        size: size,
         addedText: textElement ? allTextData : [],
     };
-
     return imageDetails;
 };
 

@@ -25,8 +25,8 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views/pages'));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 
-app.use(bodyParser.json({ limit: '10mb' }));
-
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.post('/change-bg', async (req, res) => {
     try {
         const { imageBlob, backgroundUrl } = req.body;
@@ -54,7 +54,7 @@ app.post('/change-bg', async (req, res) => {
 app.post('/send-email', upload.single('image'), async (req, res) => {
     try {
         console.log(req.body);
-        
+
         const subject = req.body.subject;
         const details = req.body.details ? JSON.parse(req.body.details) : {};
 

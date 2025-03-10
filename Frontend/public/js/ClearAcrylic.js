@@ -15,8 +15,7 @@ const addTextModalBtn = document.getElementById('addTextModalBtn');
 const selectedFont = document.getElementById('fontStyleSelect').value;
 const textInput = document.getElementById('fontStyleSelect');
 
-const selectedSize = document.querySelector('.acp-size-btn.active');
-const selectedBorderColor = document.querySelector('.color-btn.active');
+
 const zoomLevel = document.getElementById('zoomRange').value;
 const textElements = document.querySelectorAll('.acp-text-box');
 const fontStyleSelect = document.getElementById('fontStyleSelect');
@@ -54,9 +53,12 @@ fileInput.addEventListener('change', async function (e) {
 
 allColorsBtn.forEach(btn => {
     btn.addEventListener('click', function () {
+        allColorsBtn.forEach(button => button.classList.remove('acp-active'));
+        this.classList.add('acp-active');
         const borderColor = getComputedStyle(this).borderColor;
         console.log(borderColor);
         imageContainer.style.border = `15px solid ${borderColor}`;
+        btn.classList.add('acp-active')
     });
 });
 
@@ -111,8 +113,8 @@ zoomRange.addEventListener('input', function () {
 
 allSizeBtn.forEach(btn => {
     btn.addEventListener('click', function () {
-        allSizeBtn.forEach(button => button.classList.remove('active'));
-        this.classList.add('active');
+        allSizeBtn.forEach(button => button.classList.remove('acp-active'));
+        this.classList.add('acp-active');
 
         const ratio = this.dataset.ratio.split('/');
         const aspectWidth = ratio[0];
@@ -332,7 +334,10 @@ function changeFontFamily() {
     textInput.style.fontFamily = selectedFont;
 }
 
+
 function getImageDetails() {
+    const selectedSize = document.querySelector('.acp-size-btn.acp-active');
+
     if (!previewImage || !previewImage.src) {
         console.error("No image uploaded.");
         return null;
@@ -344,7 +349,9 @@ function getImageDetails() {
         return null;
     }
 
-
+    const size = selectedSize && selectedSize.dataset.ratio !== "default"
+        ? selectedSize.dataset.ratio
+        : "default";
     const imageDetails = {
         image: {
             name: file.name,
@@ -353,75 +360,98 @@ function getImageDetails() {
             size: file.size,
             type: file.type,
         },
-        dimensions: {
-            width: previewImage.naturalWidth + 'px',
-            height: previewImage.naturalHeight + 'px',
-        },
-        customization: {
-            size: selectedSize ? selectedSize.dataset.ratio : "default",
-            borderColor: selectedBorderColor ? selectedBorderColor.style.borderColor : "default",
-            zoom: zoomLevel,
-            selectedFont: fontStyleSelect ? fontStyleSelect.value : "default"
-        },
-        addedText: allTextData
+        name: `Trasparent Acrylic Photo (${size})`,
+        type: 'Trasparent Acrylic Photo',
+        price: 699,
+        size: size,
+        border: imageContainer ? imageContainer.style.border : '15px solid rgb(0, 0, 0)',
     };
 
     return imageDetails;
 }
 
-shareBtn.addEventListener('click', () => {
+// shareBtn.addEventListener('click', () => {
 
-    if (!imageContainer) {
-        alert("Error: Image container not found!");
-        return;
-    }
+//     if (!imageContainer) {
+//         alert("Error: Image container not found!");
+//         return;
+//     }
 
-    shareBtn.disabled = true;
-    alert("Processing... Please wait!");
+//     shareBtn.disabled = true;
+//     alert("Processing... Please wait!");
 
-    document.querySelectorAll('.acp-resize-handle, .acp-rotate-handle').forEach(handle => {
-        handle.style.display = 'none';
+//     document.querySelectorAll('.acp-resize-handle, .acp-rotate-handle').forEach(handle => {
+//         handle.style.display = 'none';
+//     });
+
+//     html2canvas(imageContainer, {
+//         backgroundColor: null,
+//         scale: 2,
+//         useCORS: true,
+//         allowTaint: true,
+//         logging: true
+//     }).then((canvas) => {
+//         canvas.toBlob((blob) => {
+//             if (!blob) {
+//                 alert("Error: Failed to generate image!");
+//                 shareBtn.disabled = false;
+//                 return;
+//             }
+
+//             const formData = new FormData();
+//             const now = new Date();
+//             const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
+//             const fileName = `customized-image-${formattedDate}.png`;
+//             const imageData = getImageDetails();
+//             formData.append('image', blob, fileName);
+//             formData.append('details', JSON.stringify(imageData));
+//             formData.append('subject', `Clear Acrylic Photo Order - ${formattedDate}`);
+
+//             fetch(`${BASE_URL}/send-email`, {
+//                 method: 'POST',
+//                 body: formData
+//             })
+//                 .then(response => response.json())
+//                 .then(data => alert(data.message))
+//                 .catch(error => alert("Error: " + error.message))
+//                 .finally(() => {
+//                     shareBtn.disabled = false;
+//                 });
+//         }, 'image/png');
+//     });
+// });
+
+function shareImage() {
+    return new Promise((resolve, reject) => {
+        html2canvas(imageContainer, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: true
+        }).then((canvas) => {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    alert("Error: Failed to generate image!");
+                    reject("Failed to generate image");
+                    return;
+                }
+
+                const formData = new FormData();
+                const now = new Date();
+                const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
+                const fileName = `customized-image-${formattedDate}.png`;
+                const imageData = getImageDetails();
+                formData.append('image', blob, fileName);
+                formData.append('details', JSON.stringify(imageData));
+                formData.append('subject', `Clear Acrylic Photo Order - ${formattedDate}`);
+
+                resolve(formData);
+            });
+        }).catch(error => reject(error));
     });
-
-    html2canvas(imageContainer, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: true
-    }).then((canvas) => {
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                alert("Error: Failed to generate image!");
-                shareBtn.disabled = false;
-                return;
-            }
-
-            const formData = new FormData();
-            const now = new Date();
-            const formattedDate = now.toISOString().replace(/:/g, '-').split('.')[0];
-            const fileName = `customized-image-${formattedDate}.png`;
-            const imageData = getImageDetails();
-            formData.append('image', blob, fileName);
-            formData.append('details', JSON.stringify(imageData));
-            formData.append('subject', `Clear Acrylic Photo Order - ${formattedDate}`);
-
-            fetch(`${BASE_URL}/send-email`, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => alert(data.message))
-                .catch(error => alert("Error: " + error.message))
-                .finally(() => {
-                    shareBtn.disabled = false;
-                });
-        }, 'image/png');
-    });
-});
-
-
+}
 window.updatePreview = updatePreview;
-window.getImageDetails=getImageDetails;
-window.getImageDetails=getImageDetails;
+window.getImageDetails = getImageDetails;
+window.shareImage = shareImage;
 

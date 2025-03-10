@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import "../assets/css/AcrylicClock.css";
 import { useEffect } from "react";
 import { FaUpload } from "react-icons/fa6";
 import { FaShareAlt } from "react-icons/fa";
 import { HiPencilSquare } from "react-icons/hi2";
-import { useCartUtils } from "../utils/CartUtils";
 import { MdAddShoppingCart } from "react-icons/md";
 import { handleShare } from "../utils/ShareService";
-import { useHandleAddToCart } from "../utils/AddToCart";
-
+import useCartStore from "../manage/CartStore";
+import { toast } from "sonner";
+import axios from "axios";
+import { ImSpinner2 } from "react-icons/im";
 
 const ClockCustomizer = () => {
-    // const { handleAddToCart } = useHandleAddToCart(); // Use the hook
+    const [loading, setLoading] = useState(false);
+
+    const { addCart } = useCartStore();
 
     useEffect(() => {
         const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -39,49 +42,114 @@ const ClockCustomizer = () => {
             };
         };
     }, []);
-    const handleAddToCart = async () => {
-        try {
+
+    const handleClockHands = async () => {
+        document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
+            el.classList.add("hidden");
+        });
+        setTimeout(() => {
             document.querySelectorAll(".clock-hand, .clock-center").forEach(el => {
-                el.classList.add("hidden");
+                el.classList.remove("hidden");
             });
-            const formData = await window.shareImage();
-            console.log("FormData:", [...formData.entries()]);
+        }, 300);
+    }
+    const handleAddToCart = async () => {
+        handleClockHands();
+        const promise = new Promise(async (resolve, reject) => {
+            try {
+                const formData = await window.shareImage();
+                console.log("FormData:", [...formData.entries()]);
 
-            const token = localStorage.getItem("token");
-            if (!token) {
-                console.error("User is not authenticated");
-                toast.error("User is not authenticated.");
-                return;
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("User is not authenticated");
+                    reject("User is not authenticated.");
+                    return;
+                }
+
+                const headers = {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                };
+
+                const response = await axios.post(
+                    `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
+                    formData,
+                    { headers }
+                );
+
+                if (response.data?.success) {
+                    const newCartItem = response.data.cartItem;
+
+                    addCart({
+                        id: newCartItem._id,
+                        name: newCartItem.name,
+                    });
+
+                    resolve({ name: newCartItem.name }); // Resolve with cart item name
+                } else {
+                    reject("Failed to add product to cart!");
+                }
+            } catch (error) {
+                console.error("Error adding product to cart:", error);
+                reject("Failed to add product. Please try again.");
             }
+        });
 
-            const headers = {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`,
-            };
+        toast.promise(promise, {
+            loading: "Adding product to cart...",
+            success: "Product added to cart!",
+            error: (errMsg) => errMsg,
+        });
 
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
-                formData,
-                { headers }
-            );
 
-            if (response.data?.success) {
-                const newCartItem = response.data.cartItem;
-
-                const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-                const updatedCart = [...storedCart, newCartItem];
-                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                toast.success("Product added to cart!", { duration: 2000 });
-            } else {
-                toast.error("Failed to add product to cart!", { duration: 2000 });
-            }
-        } catch (error) {
-            console.error("Error adding product to cart:", error);
-
-            toast.error("Failed to add product. Please try again.", { duration: 3000 });
-        }
     };
 
+    const handleShare = async () => {
+        setLoading(true);
+        const promise = new Promise(async (resolve, reject) => {
+            try {
+                handleClockHands();
+                const formData = await window.shareImage();
+                console.log("FormData:", [...formData.entries()]);
+
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("User is not authenticated");
+                    reject("User is not authenticated.");
+                    return;
+                }
+
+                const headers = {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                };
+
+                const response = await axios.post(
+                    `${import.meta.env.VITE_BACKEND_URL}/send-email`,
+                    formData,
+                    { headers }
+                );
+
+                if (response.data?.success) {
+                    resolve("Product share successfully!");
+                    setLoading(false);
+                } else {
+                    reject("Failed to share product.");
+                }
+            } catch (error) {
+                console.error("Error sharing product:", error);
+                reject("Failed to share product. Please try again.");
+            }
+        });
+
+        toast.promise(promise, {
+            loading: "Sharing product...",
+            success: (message) => message,
+            error: (errMsg) => errMsg,
+        });
+
+    };
     return (
         <div className="ac-container">
             <div className="preview-container">
@@ -130,11 +198,11 @@ const ClockCustomizer = () => {
                     <FaUpload />
                 </button>
                 <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} onClick={handleShare} />
-                <button className="upload-btn share" id="shareBtn">
-                    <FaShareAlt />
+                <button className="upload-btn share" id="shareBtn" onClick={handleShare} disabled={loading}>
+                    {loading ? <ImSpinner2 className="spin" /> : <FaShareAlt />}
                 </button>
                 <button
-                    className="ap-upload-btn ap-add-to-cart"
+                    className="upload-btn add-to-cart"
                     id="cartBtn"
                     onClick={handleAddToCart}
                 >

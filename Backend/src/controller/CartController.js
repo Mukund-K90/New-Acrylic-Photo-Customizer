@@ -6,7 +6,7 @@ exports.addToCart = async (req, res) => {
         const details = JSON.parse(req.body.details);
         const subject = req.body.subject || "Custom Acrylic Photo";
         console.log(details);
-        
+
         let uploadedImageUrl = null;
 
         if (req.file) {
@@ -17,14 +17,15 @@ exports.addToCart = async (req, res) => {
         }
 
         const cartItem = new Cart({
-            size: details.size,
-            type: details.type,
-            border: details.border,
-            image: uploadedImageUrl,
-            name: subject,
-            price: 799,
+            size: details.size || null,
+            type: details.type || null,
+            border: details.border || null,
+            image: uploadedImageUrl || null,
+            name: details.name || null,
+            price: details.price || null,
             quantity: 1,
-            user: req.user.id,
+            user: req.user.id || null,
+            thickness: details.thickness || null
         });
 
         await cartItem.save();
@@ -89,9 +90,7 @@ exports.deleteCartItem = async (req, res) => {
 // Clear the entire cart for a user
 exports.clearCart = async (req, res) => {
     try {
-        const { userId } = req.params;
-
-        await Cart.deleteMany({ user: userId });
+        await Cart.deleteMany({ user: req.user.id });
 
         res.status(200).json({ success: true, message: "Cart cleared successfully" });
     } catch (error) {

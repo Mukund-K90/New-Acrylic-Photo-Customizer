@@ -97,7 +97,7 @@ const CartDrawer = ({ open, onClose }) => {
   // Clear entire cart
   const clearCart = async () => {
     try {
-      await axios.delete(`${API_URL}/cart/clear/${localStorage.getItem("userId")}`, {
+      await axios.delete(`${API_URL}/cart/clear`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -115,13 +115,39 @@ const CartDrawer = ({ open, onClose }) => {
     <>
       <Drawer anchor="right" open={open} onClose={onClose}>
         <Box sx={{ width: 450, display: "flex", flexDirection: "column", height: "100%" }}>
-          {/* Cart Header */}
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 2, bgcolor: "white", borderBottom: "1px solid #ddd" }}>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>Your Cart</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              p: 2,
+              bgcolor: "white",
+              borderBottom: "1px solid #ddd",
+            }}
+          >
+
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>Your Cart</Typography>
+              {!cart || cart.length !== 0 && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "red",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                  onClick={clearCart}
+                >
+                  Clear Cart
+                </Typography>
+              )}
+            </Box>
             <IconButton onClick={onClose}>
               <BsBagX />
             </IconButton>
           </Box>
+
 
           {/* Cart Items */}
           {cart.length === 0 ? (
@@ -151,7 +177,7 @@ const CartDrawer = ({ open, onClose }) => {
                   <Box sx={{ flex: 1, marginLeft: "16px" }} >
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>{item.name}</Typography>
                     <Typography variant="body3" sx={{ color: "#0056B3", fontWeight: "bold", ml: 1 }}>
-                      Rs. {item.price.toLocaleString()}.00
+                      Rs. {item.price.toLocaleString() || "00"}.00
                     </Typography>
 
                     {/* Quantity Controls */}

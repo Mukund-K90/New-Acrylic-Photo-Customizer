@@ -1,15 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "../assets/css/ClearAcrylic.css";
 import { FaImages, FaShareAlt } from "react-icons/fa";
 import { FaUpload } from "react-icons/fa6";
 import { HiPencilSquare } from "react-icons/hi2";
 import { MdAddShoppingCart } from "react-icons/md";
 import { handleShare } from "../utils/ShareService";
-import { useHandleAddToCart } from "../utils/AddToCart";
-
+import useCartStore from "../manage/CartStore";
+import { toast } from "sonner";
+import axios from "axios";
+import { ImSpinner2 } from "react-icons/im";
 
 const ClearAcrylic = () => {
-    const { handleAddToCart } = useHandleAddToCart();
+    const [loading, setLoading] = useState(false);
+
+    const { addCart } = useCartStore();
 
     useEffect(() => {
         const newPage = JSON.parse(sessionStorage.getItem("newPage") || "false");
@@ -38,24 +42,99 @@ const ClearAcrylic = () => {
         };
     }, []);
 
-    // const handleAddToCart = () => {
-    //     try {
-    //         const customizationDetails = window.getImageDetails();
-    //         console.log(customizationDetails);
+    const handleAddToCart = async () => {
+        const promise = new Promise(async (resolve, reject) => {
+            try {
+                const formData = await window.shareImage();
+                console.log("FormData:", [...formData.entries()]);
 
-    //         addToCartWithImage(
-    //             "acp-image-container",
-    //             `Customized Acrylic Clear Photo (${customizationDetails.size ? customizationDetails.size : ''})`,
-    //             699,
-    //             customizationDetails
-    //         );
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("User is not authenticated");
+                    reject("User is not authenticated.");
+                    return;
+                }
 
-    //         toast.success("Product added to cart!", { duration: 2000 });
-    //     } catch (error) {
-    //         console.error("Error adding product to cart:", error);
-    //         toast.error("Failed to add product. Please try again.", { duration: 3000 });
-    //     }
-    // };
+                const headers = {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                };
+
+                const response = await axios.post(
+                    `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
+                    formData,
+                    { headers }
+                );
+
+                if (response.data?.success) {
+                    const newCartItem = response.data.cartItem;
+
+                    addCart({
+                        id: newCartItem._id,
+                        name: newCartItem.name,
+                    });
+
+                    resolve({ name: newCartItem.name });
+                } else {
+                    reject("Failed to add product to cart!");
+                }
+            } catch (error) {
+                console.error("Error adding product to cart:", error);
+                reject("Failed to add product. Please try again.");
+            }
+        });
+
+        toast.promise(promise, {
+            loading: "Adding product to cart...",
+            success: (data) => `${data.name} added to cart!`,
+            error: (errMsg) => errMsg,
+        });
+    };
+
+    const handleShare = async () => {
+        setLoading(true);
+        const promise = new Promise(async (resolve, reject) => {
+            try {
+                const formData = await window.shareImage();
+                console.log("FormData:", [...formData.entries()]);
+
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("User is not authenticated");
+                    reject("User is not authenticated.");
+                    return;
+                }
+
+                const headers = {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                };
+
+                const response = await axios.post(
+                    `${import.meta.env.VITE_BACKEND_URL}/send-email`,
+                    formData,
+                    { headers }
+                );
+
+                if (response.data?.success) {
+                    resolve("Product share successfully!");
+                    setLoading(false);
+                } else {
+                    reject("Failed to share product.");
+                }
+            } catch (error) {
+                console.error("Error sharing product:", error);
+                reject("Failed to share product. Please try again.");
+            }
+        });
+
+        toast.promise(promise, {
+            loading: "Sharing product...",
+            success: (message) => message,
+            error: (errMsg) => errMsg,
+        });
+
+    };
     return (
         <div className="acp-container">
             <div className="acp-preview-container">
@@ -78,7 +157,7 @@ const ClearAcrylic = () => {
             {/* Border Colors */}
             <div className="acp-border-colors">
                 {["#000000", "#f0f0f0", "#FFEB3B", "#E21E23"].map((color, index) => (
-                    <button key={index} className="acp-color-btn" style={{ border: `2px solid ${color}` }}>
+                    <button key={index} className={`acp-color-btn ${index == 0 ? 'acp-active' : ''}`} style={{ border: `2px solid ${color}` }}>
                         <FaImages />
                     </button>
                 ))}
@@ -91,8 +170,8 @@ const ClearAcrylic = () => {
                     <FaUpload />
                 </button>
                 <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} onClick={handleShare} />
-                <button className="acp-upload-btn acp-share" id="shareBtn">
-                    <FaShareAlt />
+                <button className="acp-upload-btn acp-share" id="shareBtn" onClick={handleShare} disabled={loading}>
+                    {loading ? <ImSpinner2 className="spin" /> : <FaShareAlt />}
                 </button>
                 <button
                     className="acp-upload-btn acp-add-to-cart"
@@ -117,7 +196,7 @@ const ClearAcrylic = () => {
                     { label: "35x23", ratio: "35/23" },
                     { label: "48x36", ratio: "48/36" },
                 ].map((size, index) => (
-                    <button key={index} className={`acp-size-btn ${index === 0 ? 'active' : ''}`} data-ratio={size.ratio}>
+                    <button key={index} className={`acp-size-btn ${index === 0 ? 'acp-active' : ''}`} data-ratio={size.ratio}>
                         {size.label}
                     </button>
                 ))}
