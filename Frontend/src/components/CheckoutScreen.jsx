@@ -15,10 +15,12 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 import useCartStore from "../manage/CartStore";
+import { useNavigate } from "react-router-dom"
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const CheckoutPage = () => {
     const { clearCart } = useCartStore();
+    const navigate = useNavigate();
     const [carts, setCart] = useState([]);
     const [formData, setFormData] = useState({
         firstname: "",
@@ -80,7 +82,7 @@ const CheckoutPage = () => {
             const totalAmount = billingResponse.data.order.total;
             const billingId = billingResponse.data.order._id;
             console.log(billingId);
-            
+
             // Step 2: Create an Order for Payment
             const orderResponse = await axios.post(`${API_URL}/order/create`,
                 { amount: totalAmount, billingId: billingId },
@@ -114,7 +116,8 @@ const CheckoutPage = () => {
                     console.log(`Order ID: ${response.razorpay_order_id}`);
 
                     try {
-                        toast.success("Payment successful!");
+                        toast.success("Order Placed");
+                        navigate('/my-orders')
                         clearCart();
                     } catch (error) {
                         console.error("Error handling response:", error);
@@ -178,22 +181,8 @@ const CheckoutPage = () => {
                     <TextField label="Last Name" name="lastname" fullWidth onChange={handleChange} />
                 </Box>
 
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                    <InputLabel>Country / Region</InputLabel>
-                    <Select name="country" value={formData.country} onChange={handleChange}>
-                        <MenuItem value="Sri Lanka">Sri Lanka</MenuItem>
-                    </Select>
-                </FormControl>
-
                 <TextField label="Street Address" name="street_address" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
                 <TextField label="Town / City" name="city" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
-
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                    <InputLabel>Province</InputLabel>
-                    <Select name="province" value={formData.province} onChange={handleChange}>
-                        <MenuItem value="Western Province">Western Province</MenuItem>
-                    </Select>
-                </FormControl>
 
                 <TextField label="ZIP Code" name="zipcode" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
                 <TextField label="Phone" name="phone" fullWidth sx={{ mb: 2 }} onChange={handleChange} />

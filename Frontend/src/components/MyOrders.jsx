@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, CardMedia, CardContent, Button, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardMedia,
+  CardContent,
+  Button,
+  CircularProgress,
+  Grid,
+} from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -43,69 +52,75 @@ const MyOrders = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: "900px", margin: "auto", mt: 4, p: 2 }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
+    <Box sx={{ maxWidth: "1000px", margin: "auto", mt: 4, p: 2 }}>
+      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
         My Orders
       </Typography>
 
       {orders.length === 0 ? (
-        <Typography sx={{ textAlign: "center", color: "gray" }}>No orders found.</Typography>
+        <Typography sx={{ textAlign: "center", color: "gray" }}>
+          No orders found.
+        </Typography>
       ) : (
         orders.map((order) => (
-          <Card key={order._id} sx={{ mb: 3, border: "1px solid #ddd", borderRadius: 2 }}>
-            <Box sx={{ display: "flex", p: 2, alignItems: "center" }}>
+          <Card
+            key={order._id}
+            sx={{
+              mb: 3,
+              border: "1px solid #ddd",
+              borderRadius: 2,
+              p: 2,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            }}
+          >
+            <Grid container spacing={2} alignItems="center">
               {/* Product Image */}
-              {order.products.length > 0 && order.products[0]?.productId?.image ? (
+              <Grid item xs={3}>
                 <CardMedia
                   component="img"
-                  image={order.products[0]?.productId?.image}
+                  image={order.products[0]?.productId?.image || "/placeholder.jpg"}
                   alt={order.products[0]?.productId?.name}
-                  sx={{ width: 120, height: 120, borderRadius: 2, objectFit: "cover" }}
+                  sx={{ width: 120, height: 120, borderRadius: 2, objectFit: "contain" }}
                 />
-              ) : (
-                <CardMedia
-                  component="img"
-                  image="/placeholder.jpg"
-                  alt="No Image"
-                  sx={{ width: 120, height: 120, borderRadius: 2, objectFit: "cover" }}
-                />
-              )}
+              </Grid>
 
               {/* Order Details */}
-              <CardContent sx={{ flex: 1, ml: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                  Order ID: {order.orderId}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>Product:</strong> {order.products[0]?.productId?.name || "Unknown Product"}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>Total:</strong> Rs. {order.total.toFixed(2)}
-                </Typography>
-                <Typography variant="body1">
-                  <strong>Status:</strong> {order.status}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "gray" }}>
-                  Ordered on: {new Date(order.createdAt).toLocaleString("en-IN", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: true,
-                    timeZone: "Asia/Kolkata"
-                  })}
-                </Typography>
-                <Button
-                  variant="contained"
-                  sx={{ mt: 2, bgcolor: "#0056b3", color: "white" }}
-                  onClick={() => navigate(`/order/${order._id}`)}
-                >
-                  View Details
-                </Button>
-              </CardContent>
-            </Box>
+              <Grid item xs={9}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    Order ID: {order.orderId}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Product:</strong> {order.products[0]?.productId?.name || "Unknown Product"}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Price:</strong> ₹{order.total.toFixed(2)}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Status:</strong> {order.status}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "gray" }}>
+                    Ordered on:{" "}
+                    {new Date(order.createdAt).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </Typography>
+
+                  <Box sx={{ mt: 2 }}>
+                    <Button
+                      variant="contained"
+                      sx={{ bgcolor: "#FF9900", color: "white", mr: 1 }}
+                      onClick={() => navigate(`/order/${order._id}`)}
+                    >
+                      View Order
+                    </Button>
+                    <Button variant="outlined">Buy Again</Button>
+                  </Box>
+                </CardContent>
+              </Grid>
+            </Grid>
           </Card>
         ))
       )}

@@ -15,6 +15,7 @@ import CartScreen from "./components/CartScreen";
 import { Toaster, toast } from 'sonner'
 import CheckoutScreen from "./components/CheckoutScreen";
 import MyOrders from "./components/MyOrders";
+import OrderDetails from "./components/OrderDetails";
 
 function App() {
   const location = useLocation();
@@ -43,6 +44,7 @@ function App() {
           <Route path="/cart" element={<CartScreen />} />
           <Route path="/checkout" element={<CheckoutScreen />} />
           <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/order/:orderId" element={<OrderDetails />} />
         </Routes>
       </div>
     </>

@@ -1,6 +1,10 @@
 const BillingDetails = require("../Model/BillingDetails");
 const Cart = require("../Model/Cart");
 const Products = require("../Model/Product");
+const { getOrderDetailsById } = require('../utils/razorpay');
+const { errorResponse, successResponse } = require('../utils/apiResponse');
+const { status } = require('http-status')
+const generateOrderNumber=require('../utils/orderNoGenerate')
 
 const placeOrder = async (req, res) => {
     try {
@@ -16,7 +20,6 @@ const placeOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: "Cart is empty!" });
         }
 
-        // Transfer cart items to Products collection
         const productsData = cartItems.map(item => ({
             image: item.image,
             name: item.name,
@@ -33,6 +36,7 @@ const placeOrder = async (req, res) => {
 
         const savedProducts = await Products.insertMany(productsData);
 
+        const orderNo=await generateOrderNumber();
         const order = new BillingDetails({
             firstname,
             lastname,
@@ -47,6 +51,7 @@ const placeOrder = async (req, res) => {
             products: savedProducts.map(product => ({ productId: product._id })),
             total: cartItems.reduce((sum, item) => sum + item.subTotal, 0),
             userId,
+            orderNo
         });
 
         await order.save();
@@ -60,15 +65,29 @@ const placeOrder = async (req, res) => {
     }
 };
 
-const getUserOrders=async(req,res)=>{
+const getUserOrders = async (req, res) => {
     try {
         const orders = await BillingDetails.find({ userId: req.user.id })
-        .populate('products.productId');
-              return res.status(200).json({success:true,message:"Orders retrieved successfully!",orders});
+            .populate('products.productId');
+        return res.status(200).json({ success: true, message: "Orders retrieved successfully!", orders });
     } catch (error) {
         console.error("Error retrieving orders:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error"});
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
 
-module.exports = { placeOrder ,getUserOrders};
+const getOrderDetails = async (req, res) => {
+    try {
+        const order = await BillingDetails.findById(req.params.orderId).populate('products.productId');
+        const paymentDetails = await getOrderDetailsById(order.orderId);
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+        return successResponse(req, res, status.OK, "Order Details Fetched!!", { order, paymentDetails })
+    } catch (error) {
+        console.error("Error retrieving orders:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+}
+
+module.exports = { placeOrder, getUserOrders, getOrderDetails };

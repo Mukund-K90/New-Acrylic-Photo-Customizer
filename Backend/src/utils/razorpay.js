@@ -178,13 +178,13 @@ const createNewOrder = async (options) => {
 //get order details by recipt
 const getOrderDetailsById = async (orderId) => {
     try {
-        const orderDetails = await razorpayInstance.orders.fetch(orderId);
-        return orderDetails;
+        const response = await razorpayInstance.orders.fetchPayments(orderId);
+        return response;
     } catch (error) {
-        console.error("Error fetching order details:", error);
-        throw new Error("Failed to fetch order details");
+        console.error("Error fetching order payments:", error);
+        throw new Error("Failed to fetch order payments");
     }
-}
+};
 
 module.exports = {
     createSubscription,

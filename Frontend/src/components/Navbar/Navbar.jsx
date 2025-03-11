@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { AppBar, Box, Toolbar, Typography, IconButton, Badge, Menu, MenuItem } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { AppBar, Box, Toolbar, Typography, IconButton, Badge, Menu, MenuItem, Divider, ListItemIcon } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { RiShoppingBag3Fill } from "react-icons/ri";
@@ -7,30 +7,37 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import CartDrawer from "./CartDrawer";
 import useCartStore from "../../manage/CartStore";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Navbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [user, SetUser] = useState(JSON.parse(localStorage.getItem('user')));
+  console.log(user);
+
   const navigate = useNavigate();
 
   const carts = useCartStore((state) => state.carts);
 
-  // Open Profile Menu
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Close Profile Menu
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  // Navigate on Menu Item Click
   const handleNavigate = (path) => {
     navigate(path);
     handleMenuClose();
   };
+
+  useEffect(() => {
+
+  })
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -62,9 +69,40 @@ export default function Navbar() {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             transformOrigin={{ vertical: "top", horizontal: "right" }}
           >
-            <MenuItem onClick={() => handleNavigate("/profile")}>Profile</MenuItem>
-            <MenuItem onClick={() => handleNavigate("/my-orders")}>My Orders</MenuItem>
-            <MenuItem onClick={() => handleNavigate("/cart")}>Cart</MenuItem>
+            <MenuItem sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }} onClick={() => handleNavigate("/profile")}>
+              <Typography sx={{ fontWeight: "bold", color: "black" }}>{user?.firstName || "Guest"} {user?.lastName[0] || ""}</Typography>
+              <Typography variant="body2" sx={{ color: "blue", cursor: "pointer" }} >
+                View Account
+              </Typography>
+            </MenuItem>
+
+            <Divider />
+
+            {/* My Orders */}
+            <MenuItem onClick={() => handleNavigate("/my-orders")}>
+              <ListItemIcon>
+                <ShoppingBagIcon fontSize="small" />
+              </ListItemIcon>
+              Your Orders
+            </MenuItem>
+
+            {/* Cart */}
+            <MenuItem onClick={() => handleNavigate("/cart")}>
+              <ListItemIcon>
+                <ShoppingCartIcon fontSize="small" />
+              </ListItemIcon>
+              Cart
+            </MenuItem>
+
+            <Divider />
+
+            {/* Logout */}
+            <MenuItem onClick={() => console.log("Logout function here")}>
+              <ListItemIcon>
+                <LogoutIcon fontSize="small" />
+              </ListItemIcon>
+              Logout
+            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>

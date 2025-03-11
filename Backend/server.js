@@ -12,10 +12,12 @@ const nodemailer = require('nodemailer');
 const cors = require('cors');
 const { connectDb } = require('./src/config/db');
 const { removeBg } = require('./src/utils/removeBg');
+const fs = require("fs");
+const PDFDocument = require("pdfkit");
+const pdf = require("html-pdf"); // Import html-pdf
+const generateInvoiceHTML = require('./src/helper/InvoiceTemplete');
 
-app.use(cors({
-    origin: '*'
-}));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 connectDb();
@@ -87,7 +89,39 @@ app.get('/home', (req, res) => {
     res.send('Hello World!')
 })
 
+// API to Generate & Download Invoice
+app.post("/download-invoice", async (req, res) => {
+    try {
+        const { order, paymentDetails } = req.body;
+        console.log(order,paymentDetails);
+        
+        if (!order || !order.products || !Array.isArray(order.products)) {
+            return res.status(400).json({ error: "Invalid order data" });
+        }
 
+        const htmlContent = generateInvoiceHTML(order, paymentDetails);
+        const pdfPath = path.join(__dirname, `invoice-${order.orderNo}.pdf`);
+
+        pdf.create(htmlContent).toFile(pdfPath, (err, result) => {
+            if (err) {
+                console.error("Error generating PDF:", err);
+                return res.status(500).json({ error: "Failed to generate invoice" });
+            }
+
+            res.download(result.filename, `invoice-${order.orderNo}.pdf`, (err) => {
+                if (err) {
+                    console.error("Error sending file:", err);
+                    res.status(500).json({ error: "Failed to download invoice" });
+                }
+                fs.unlinkSync(pdfPath); // Delete file after sending
+            });
+        });
+
+    } catch (error) {
+        console.error("Error generating invoice:", error);
+        res.status(500).json({ error: "Failed to generate invoice" });
+    }
+});
 //Routes
 app.use('/user', require('./src/Routes/UserRoutes'));
 app.use('/cart', require('./src/Routes/CartRoutes'));

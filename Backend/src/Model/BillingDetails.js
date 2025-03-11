@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const BillingSchema = new mongoose.Schema(
     {
+        orderNo: {
+            type: String,
+        },
         firstname: {
             type: String,
             required: true
@@ -10,16 +13,10 @@ const BillingSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        country: {
-            type: String
-        },
         street_address: {
             type: String
         },
         city: {
-            type: String
-        },
-        province: {
             type: String
         },
         zipcode: {
