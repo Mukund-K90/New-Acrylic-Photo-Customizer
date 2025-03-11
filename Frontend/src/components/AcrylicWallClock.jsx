@@ -79,7 +79,7 @@ const ClockCustomizer = () => {
                 );
 
                 if (response.data?.success) {
-                    const newCartItem = response.data.cartItem;
+                    const newCartItem = response.data.data;
 
                     addCart({
                         id: newCartItem._id,
@@ -197,7 +197,7 @@ const ClockCustomizer = () => {
                 <button className="upload-btn upload" onClick={() => document.getElementById("fileInput").click()}>
                     <FaUpload />
                 </button>
-                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} onClick={handleShare} />
+                <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" defaultValue="1" style={{ width: "200px" }} />
                 <button className="upload-btn share" id="shareBtn" onClick={handleShare} disabled={loading}>
                     {loading ? <ImSpinner2 className="spin" /> : <FaShareAlt />}
                 </button>

@@ -1,6 +1,6 @@
 const Cart = require("../Model/Cart");
 const cloudinary = require("../config/cloudinary");
-const { addCart, getCart, deleteCart, clearCart } = require("../dao/CartDao");
+const { addCart, getCart, deleteCart, clearCart, getCartById, removeItem } = require("../dao/CartDao");
 const { errorResponse, successResponse } = require('../utils/apiResponse');
 const { status } = require('http-status');
 
@@ -84,7 +84,7 @@ exports.clearCart = async (req, res) => {
 // Increase quantity of a cart item
 exports.increaseQuantity = async (req, res) => {
     try {
-        const cartItem = await Cart.findById(req.params.id);
+        const cartItem = await getCartById(req.params.id);
         if (!cartItem) {
             return errorResponse(req, res, status.NOT_FOUND, "Item not found");
         }
@@ -93,7 +93,7 @@ exports.increaseQuantity = async (req, res) => {
         cartItem.subTotal = cartItem.quantity * cartItem.price;
         await cartItem.save();
 
-        const cartItems = await Cart.find({ user: req.user.id });
+        const cartItems = await getCart(req.user.id);
         return successResponse(req, res, status.OK, "Quantity increased", cartItems);
     } catch (error) {
         return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
@@ -103,7 +103,7 @@ exports.increaseQuantity = async (req, res) => {
 // Decrease quantity of a cart item
 exports.decreaseQuantity = async (req, res) => {
     try {
-        const cartItem = await Cart.findById(req.params.id);
+        const cartItem = await getCartById(req.params.id);
         if (!cartItem) {
             return errorResponse(req, res, status.NOT_FOUND, "Item not found");
         }
@@ -114,17 +114,19 @@ exports.decreaseQuantity = async (req, res) => {
             await cartItem.save();
         }
 
-        const cartItems = await Cart.find({ user: req.user.id });
+        const cartItems = await getCart(req.user.id);
         return successResponse(req, res, status.OK, "Quantity decreased", cartItems);
     } catch (error) {
         return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
     }
 };
 
-// Remove an item from the cart
 exports.removeItem = async (req, res) => {
     try {
-        await Cart.findByIdAndDelete(req.params.id);
+        const removedItem = await removeItem(req.params.id);
+        if (!removedItem) {
+            return errorResponse(req, res, status.NOT_FOUND, "Item not found");
+        }
         return successResponse(req, res, status.OK, "Item removed successfully");
     } catch (error) {
         return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);

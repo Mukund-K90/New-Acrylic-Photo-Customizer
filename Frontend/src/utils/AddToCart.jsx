@@ -36,7 +36,7 @@ export const useHandleAddToCart = () => {
             console.log("Product added:", response);
 
             if (response.data.success) {
-                const newCartData = response.data.cartItems;
+                const newCartData = response.data.data;
 
                 // ✅ Check if local storage already has a cart
                 const existingCart = localStorage.getItem("cart");

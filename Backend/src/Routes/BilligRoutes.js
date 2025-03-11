@@ -5,5 +5,6 @@ const { authorization } = require('../middleware/auth.middleware');
 
 
 router.post('/place-order', authorization, placeOrder);
+router.get('/orders', authorization, placeOrder);
 
 module.exports = router;

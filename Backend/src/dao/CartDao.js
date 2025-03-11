@@ -42,3 +42,12 @@ module.exports.getCartById = async (id) => {
         throw error;
     }
 }
+
+module.exports.removeItem = async (id) => {
+    try {
+        await Cart.findByIdAndDelete(id);
+    }
+    catch {
+        throw error;
+    }
+}

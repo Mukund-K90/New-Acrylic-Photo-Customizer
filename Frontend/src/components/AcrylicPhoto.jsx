@@ -72,7 +72,6 @@ const AcrylicPhoto = () => {
             id: newCartItem._id,
             name: newCartItem.name,
           });
-
           resolve({ name: newCartItem.name });
         } else {
           reject("Failed to add product to cart!");

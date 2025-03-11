@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const BillingSchema = mongoose.Schema(
+const BillingSchema = new mongoose.Schema(
     {
         firstname: {
             type: String,
@@ -54,11 +54,13 @@ const BillingSchema = mongoose.Schema(
         orderId: {
             type: String
         },
-        productIds: [
+        products: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Cart",
-            },
+                productId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Products",
+                }
+            }
         ],
         userId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -72,4 +74,6 @@ const BillingSchema = mongoose.Schema(
 );
 
 
-module.exports = mongoose.model("Billing", BillingSchema);
+const Billing = mongoose.model("Billing", BillingSchema);
+
+module.exports = Billing;

@@ -4,8 +4,6 @@ const Products = require("../Model/Product");
 
 const placeOrder = async (req, res) => {
     try {
-        console.log(req.body);
-
         const { firstname, lastname, country, street_address, city, province, zipcode, phone, email, additional } = req.body;
         const userId = req.user.id;
 
@@ -35,7 +33,6 @@ const placeOrder = async (req, res) => {
 
         const savedProducts = await Products.insertMany(productsData);
 
-        // Create order with references to new Product IDs
         const order = new BillingDetails({
             firstname,
             lastname,
@@ -62,5 +59,13 @@ const placeOrder = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
+
+const getUserOrders=async(req,res)=>{
+    try {
+        
+    } catch (error) {
+        
+    }
+}
 
 module.exports = { placeOrder };

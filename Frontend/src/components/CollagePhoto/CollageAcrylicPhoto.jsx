@@ -109,7 +109,7 @@ const CollageAcrylicPhoto = () => {
                 );
 
                 if (response.data?.success) {
-                    const newCartItem = response.data.cartItem;
+                    const newCartItem = response.data.data;
 
                     addCart({
                         id: newCartItem._id,
