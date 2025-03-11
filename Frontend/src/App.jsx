@@ -14,6 +14,7 @@ import Navbar from "./components/Navbar/Navbar";
 import CartScreen from "./components/CartScreen";
 import { Toaster, toast } from 'sonner'
 import CheckoutScreen from "./components/CheckoutScreen";
+import MyOrders from "./components/MyOrders";
 
 function App() {
   const location = useLocation();
@@ -41,6 +42,7 @@ function App() {
           <Route path="/colllage/:type" element={<ProtectedRoute><CollageAcrylicPhoto /></ProtectedRoute>} />
           <Route path="/cart" element={<CartScreen />} />
           <Route path="/checkout" element={<CheckoutScreen />} />
+          <Route path="/my-orders" element={<MyOrders />} />
         </Routes>
       </div>
     </>

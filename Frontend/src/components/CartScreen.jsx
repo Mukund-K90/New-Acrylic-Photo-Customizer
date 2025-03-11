@@ -125,9 +125,20 @@ const CheckoutScreen = () => {
                 </Typography>
 
                 {carts.length === 0 ? (
-                    <Typography variant="h6" sx={{ color: "gray", mt: 2 }}>
-                        🛒 Your cart is empty. Start shopping now!
-                    </Typography>
+                    <Box>
+                        <Typography variant="h6" sx={{ color: "gray", mt: 2 }}>
+                            🛒 Your cart is empty.
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            sx={{ mt: 2, bgcolor: "#0056B3", color: "white", fontWeight: "bold" }}
+                            onClick={() => {
+                                navigate("/home");
+                            }}
+                        >
+                            Personalize Now
+                        </Button>
+                    </Box>
                 ) : (
                     <>
                         <Typography

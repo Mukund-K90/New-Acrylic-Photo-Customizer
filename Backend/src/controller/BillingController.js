@@ -62,10 +62,13 @@ const placeOrder = async (req, res) => {
 
 const getUserOrders=async(req,res)=>{
     try {
-        
+        const orders = await BillingDetails.find({ userId: req.user.id })
+        .populate('products.productId');
+              return res.status(200).json({success:true,message:"Orders retrieved successfully!",orders});
     } catch (error) {
-        
+        console.error("Error retrieving orders:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error"});
     }
 }
 
-module.exports = { placeOrder };
+module.exports = { placeOrder ,getUserOrders};

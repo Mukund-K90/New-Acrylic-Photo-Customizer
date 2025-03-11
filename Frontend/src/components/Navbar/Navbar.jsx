@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppBar, Box, Toolbar, Typography, IconButton, Badge } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, IconButton, Badge, Menu, MenuItem } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { RiShoppingBag3Fill } from "react-icons/ri";
@@ -11,9 +11,26 @@ import useCartStore from "../../manage/CartStore";
 export default function Navbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
 
   const carts = useCartStore((state) => state.carts);
+
+  // Open Profile Menu
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Close Profile Menu
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Navigate on Menu Item Click
+  const handleNavigate = (path) => {
+    navigate(path);
+    handleMenuClose();
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -33,9 +50,22 @@ export default function Navbar() {
             </Badge>
           </IconButton>
 
-          <IconButton size="large" color="inherit" onClick={() => navigate("/profile")}>
+          {/* Profile Icon with Dropdown Menu */}
+          <IconButton size="large" color="inherit" onClick={handleMenuOpen}>
             <AccountCircle />
           </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <MenuItem onClick={() => handleNavigate("/profile")}>Profile</MenuItem>
+            <MenuItem onClick={() => handleNavigate("/my-orders")}>My Orders</MenuItem>
+            <MenuItem onClick={() => handleNavigate("/cart")}>Cart</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
 
