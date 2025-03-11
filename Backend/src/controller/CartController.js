@@ -1,22 +1,22 @@
 const Cart = require("../Model/Cart");
 const cloudinary = require("../config/cloudinary");
+const { addCart, getCart, deleteCart, clearCart } = require("../dao/CartDao");
+const { errorResponse, successResponse } = require('../utils/apiResponse');
+const { status } = require('http-status');
 
 exports.addToCart = async (req, res) => {
     try {
         const details = JSON.parse(req.body.details);
-        const subject = req.body.subject || "Custom Acrylic Photo";
-        console.log(details);
-
         let uploadedImageUrl = null;
 
         if (req.file) {
             const uploadedImage = await cloudinary.uploader.upload(req.file.path);
             uploadedImageUrl = uploadedImage.secure_url;
         } else {
-            return res.status(400).json({ success: false, message: "Image upload failed" });
+            return errorResponse(req, res, status.BAD_REQUEST, "Image upload failed");
         }
 
-        const cartItem = new Cart({
+        const cartItem = {
             size: details.size || null,
             type: details.type || null,
             border: details.border || null,
@@ -25,91 +25,78 @@ exports.addToCart = async (req, res) => {
             price: details.price || null,
             quantity: 1,
             user: req.user.id || null,
-            thickness: details.thickness || null
-        });
+            thickness: details.thickness || null,
+            subTotal: details.price
+        };
 
-        await cartItem.save();
-        res.status(201).json({ success: true, message: "Item added to cart", cartItem });
+        const addedCart = await addCart(cartItem);
+
+        if (!addedCart) {
+            return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, "Error adding item to cart");
+        }
+
+        return successResponse(req, res, status.CREATED, "Item added to cart", addedCart);
     } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ success: false, message: "Error adding item to cart", error: error.message });
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, "Error adding item to cart", error.message);
     }
 };
-
 
 // Get all cart items for a user
 exports.getUserCart = async (req, res) => {
     try {
-        const cartItems = await Cart.find({ user: req.user.id });
-
-        res.status(200).json({ success: true, cartItems });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Error fetching cart items", error: error.message });
-    }
-};
-
-// Update a cart item (quantity, etc.)
-exports.updateCartItem = async (req, res) => {
-    try {
-        const { cartItemId } = req.params;
-        const { quantity } = req.body;
-
-        const updatedCartItem = await Cart.findByIdAndUpdate(
-            cartItemId,
-            { quantity },
-            { new: true }
-        );
-
-        if (!updatedCartItem) {
-            return res.status(404).json({ success: false, message: "Cart item not found" });
+        const cartItems = await getCart(req.user.id);
+        if (!cartItems) {
+            return errorResponse(req, res, status.NOT_FOUND, "Cart is empty");
         }
-
-        res.status(200).json({ success: true, message: "Cart item updated", cartItem: updatedCartItem });
+        return successResponse(req, res, status.OK, "Cart items fetched successfully", cartItems);
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error updating cart item", error: error.message });
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, "Error fetching cart items", error.message);
     }
 };
 
 // Delete a cart item
 exports.deleteCartItem = async (req, res) => {
     try {
-        const { cartItemId } = req.params;
-
-        const deletedCartItem = await Cart.findByIdAndDelete(cartItemId);
+        const deletedCartItem = await deleteCart(req.params.cartItemId);
 
         if (!deletedCartItem) {
-            return res.status(404).json({ success: false, message: "Cart item not found" });
+            return errorResponse(req, res, status.NOT_FOUND, "Cart item not found");
         }
-
-        res.status(200).json({ success: true, message: "Cart item removed" });
+        return successResponse(req, res, status.OK, "Cart item removed successfully");
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error deleting cart item", error: error.message });
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, "Error deleting cart item", error.message);
     }
 };
 
 // Clear the entire cart for a user
 exports.clearCart = async (req, res) => {
     try {
-        await Cart.deleteMany({ user: req.user.id });
-
-        res.status(200).json({ success: true, message: "Cart cleared successfully" });
+        const clearCart = await clearCart(req.user.id);
+        if (!clearCart) {
+            return errorResponse(req, res, status.BAD_REQUEST, "Clear Cart failed");
+        }
+        return successResponse(req, res, status.OK, "Cart cleared successfully");
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error clearing cart", error: error.message });
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, "Error clearing cart", error.message);
     }
 };
 
+// Increase quantity of a cart item
 exports.increaseQuantity = async (req, res) => {
     try {
         const cartItem = await Cart.findById(req.params.id);
-        if (!cartItem) return res.status(404).json({ success: false, message: "Item not found" });
+        if (!cartItem) {
+            return errorResponse(req, res, status.NOT_FOUND, "Item not found");
+        }
 
         cartItem.quantity += 1;
+        cartItem.subTotal = cartItem.quantity * cartItem.price;
         await cartItem.save();
 
         const cartItems = await Cart.find({ user: req.user.id });
-        res.json({ success: true, cartItems });
+        return successResponse(req, res, status.OK, "Quantity increased", cartItems);
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
     }
 };
 
@@ -117,17 +104,20 @@ exports.increaseQuantity = async (req, res) => {
 exports.decreaseQuantity = async (req, res) => {
     try {
         const cartItem = await Cart.findById(req.params.id);
-        if (!cartItem) return res.status(404).json({ success: false, message: "Item not found" });
+        if (!cartItem) {
+            return errorResponse(req, res, status.NOT_FOUND, "Item not found");
+        }
 
         if (cartItem.quantity > 1) {
             cartItem.quantity -= 1;
+            cartItem.subTotal = cartItem.quantity * cartItem.price;
             await cartItem.save();
         }
 
         const cartItems = await Cart.find({ user: req.user.id });
-        res.json({ success: true, cartItems });
+        return successResponse(req, res, status.OK, "Quantity decreased", cartItems);
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
     }
 };
 
@@ -135,8 +125,8 @@ exports.decreaseQuantity = async (req, res) => {
 exports.removeItem = async (req, res) => {
     try {
         await Cart.findByIdAndDelete(req.params.id);
-        res.json({ success: true, message: "Item removed" });
+        return successResponse(req, res, status.OK, "Item removed successfully");
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
     }
 };

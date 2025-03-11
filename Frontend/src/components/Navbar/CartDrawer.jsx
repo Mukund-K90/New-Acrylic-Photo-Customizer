@@ -29,10 +29,11 @@ const CartDrawer = ({ open, onClose }) => {
       });
 
       if (response.data.success) {
-        setCart(response.data.cartItems);
+        setCart(response.data.data || []);
       }
     } catch (error) {
       console.error("Error fetching cart:", error);
+      setCart([])
     }
   };
 
@@ -90,7 +91,6 @@ const CartDrawer = ({ open, onClose }) => {
     }
   };
 
-
   // Clear entire cart
   const clearCart = async () => {
     try {
@@ -105,8 +105,11 @@ const CartDrawer = ({ open, onClose }) => {
       console.error("Error clearing cart:", error);
     }
   };
+  console.log(cart);
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = Array.isArray(cart) && cart.length > 0
+    ? cart.reduce((total, item) => total + (item.subTotal || 0), 0)
+    : 0;
 
   return (
     <>
@@ -207,12 +210,42 @@ const CartDrawer = ({ open, onClose }) => {
             </Box>
           )}
 
-          {/* Checkout Button */}
           {cart.length > 0 && (
-            <Box sx={{ p: 2 }}>
+            <Box sx={{ display: "flex", gap: 2, justifyContent: "center", width: "100%", p: 2 }}>
               <Button
                 variant="contained"
-                sx={{ width: "100%", bgcolor: "#0056B3", color: "white", fontWeight: "bold" }}
+                sx={{
+                  flex: 1,
+                  maxWidth: 150,
+                  bgcolor: "#0056B3",
+                  color: "white",
+                  fontWeight: "bold",
+                  textTransform: "none",
+                  borderRadius: "8px",
+                  transition: "0.3s",
+                  ":hover": { bgcolor: "#004494" },
+                }}
+                onClick={() => {
+                  onClose();
+                  navigate("/cart");
+                }}
+              >
+                Cart
+              </Button>
+
+              <Button
+                variant="contained"
+                sx={{
+                  flex: 1,
+                  maxWidth: 150,
+                  bgcolor: "#0056B3",
+                  color: "white",
+                  fontWeight: "bold",
+                  textTransform: "none",
+                  borderRadius: "8px",
+                  transition: "0.3s",
+                  ":hover": { bgcolor: "#004494" },
+                }}
                 onClick={() => {
                   onClose();
                   navigate("/checkout");
@@ -220,7 +253,6 @@ const CartDrawer = ({ open, onClose }) => {
               >
                 Checkout
               </Button>
-
             </Box>
           )}
         </Box>

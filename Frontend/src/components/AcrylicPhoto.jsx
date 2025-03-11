@@ -67,8 +67,7 @@ const AcrylicPhoto = () => {
         );
 
         if (response.data?.success) {
-          const newCartItem = response.data.cartItem;
-
+          const newCartItem = response.data.data;
           addCart({
             id: newCartItem._id,
             name: newCartItem.name,
@@ -135,7 +134,7 @@ const AcrylicPhoto = () => {
     });
 
   };
-  
+
   return (
     <div className="ap-container">
       <div className="ap-border-colors">

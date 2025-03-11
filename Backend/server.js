@@ -91,5 +91,6 @@ app.get('/home', (req, res) => {
 //Routes
 app.use('/user', require('./src/Routes/UserRoutes'));
 app.use('/cart', require('./src/Routes/CartRoutes'));
+app.use('/billing', require('./src/Routes/BilligRoutes'));
 
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));

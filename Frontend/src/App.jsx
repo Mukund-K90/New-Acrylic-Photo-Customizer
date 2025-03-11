@@ -11,8 +11,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Navbar from "./components/Navbar/Navbar";
-import CheckoutScreen from "./components/CheckoutScreen";
+import CartScreen from "./components/CartScreen";
 import { Toaster, toast } from 'sonner'
+import CheckoutScreen from "./components/CheckoutScreen";
 
 function App() {
   const location = useLocation();
@@ -38,6 +39,7 @@ function App() {
           <Route path="/acrylic-wall-clock" element={<ProtectedRoute><ClockCustomizer /></ProtectedRoute>} />
           <Route path="/collage-acrylic-photo" element={<ProtectedRoute><AcrylicCollageHome /></ProtectedRoute>} />
           <Route path="/colllage/:type" element={<ProtectedRoute><CollageAcrylicPhoto /></ProtectedRoute>} />
+          <Route path="/cart" element={<CartScreen />} />
           <Route path="/checkout" element={<CheckoutScreen />} />
         </Routes>
       </div>

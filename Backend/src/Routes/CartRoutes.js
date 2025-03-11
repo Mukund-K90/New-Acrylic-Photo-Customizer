@@ -7,7 +7,7 @@ const { authorization } = require("../middleware/auth.middleware");
 
 router.post("/add", authorization, upload.single("image"), addToCart);
 router.get("/get", authorization, getUserCart);
-router.put("/update/:cartItemId", authorization, updateCartItem);
+// router.put("/update/:cartItemId", authorization, updateCartItem);
 router.delete("/remove/:cartItemId", authorization, deleteCartItem);
 router.delete("/clear", authorization, clearCart);
 router.put("/increase/:id", authorization, increaseQuantity);

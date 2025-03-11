@@ -1,264 +1,167 @@
+import React, { useState } from "react";
 import {
     Box,
     Typography,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
     Button,
-    Divider,
-    IconButton,
-    Checkbox,
 } from "@mui/material";
-import { FaTrash } from "react-icons/fa";
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import useCartStore from "../manage/CartStore";
-
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-const CheckoutScreen = () => {
-    const { removeCart } = useCartStore();
-    const [carts, setCart] = useState([]);
-    const [selectedItems, setSelectedItems] = useState([]);
-    const token = localStorage.getItem("token");
+const CheckoutPage = () => {
+    const { clearCart } = useCartStore();
+    const [formData, setFormData] = useState({
+        firstname: "",
+        lastname: "",
+        country: "Sri Lanka",
+        street_address: "",
+        city: "",
+        province: "Western Province",
+        zipcode: "",
+        phone: "",
+        email: "",
+        additional: "",
+    });
+    const [paymentMethod, setPaymentMethod] = useState("bank");
+    const [loading, setLoading] = useState(false);
 
-    // Fetch Cart Data
-    const fetchCart = async () => {
+    // Handle Input Change
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    // Validate Form Data
+    const validateForm = () => {
+        const requiredFields = ["firstname", "lastname", "street_address", "city", "zipcode", "phone", "email"];
+        for (let field of requiredFields) {
+            if (!formData[field]) {
+                toast.error(`Please fill ${field.replace("_", " ")}`);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // Handle Place Order
+    const handlePlaceOrder = async () => {
+        if (!validateForm()) return;
+
+        setLoading(true);
         try {
-            const response = await axios.get(`${API_URL}/cart/get`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
+            const response = await axios.post(`${API_URL}/billing/place-order`,
+                { ...formData },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             if (response.data.success) {
-                setCart(response.data.cartItems);
-                setSelectedItems(response.data.cartItems.map((item) => item._id));
+                toast.success("Order placed successfully!");
+                clearCart();
+            } else {
+                toast.error(response.data.message);
             }
         } catch (error) {
-            console.error("Error fetching cart:", error);
+            console.log(error);
+
+            toast.error("Failed to place order. Try again.");
+        } finally {
+            setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchCart();
-    }, []);
-
-    // Select/Deselect items
-    const toggleSelectItem = (id) => {
-        setSelectedItems((prev) =>
-            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-        );
-    };
-
-    // Increase quantity
-    const increaseQuantity = async (id) => {
-        try {
-            const response = await axios.put(`${API_URL}/cart/increase/${id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.data.success) {
-                fetchCart();
-            }
-        } catch (error) {
-            console.error("Error increasing quantity:", error);
-        }
-    };
-
-    // Decrease quantity
-    const decreaseQuantity = async (id) => {
-        try {
-            const response = await axios.put(`${API_URL}/cart/decrease/${id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.data.success) {
-                fetchCart(); // Refresh cart data
-            }
-        } catch (error) {
-            console.error("Error decreasing quantity:", error);
-        }
-    };
-
-    // Remove item from cart
-    const removeItem = async (id) => {
-        try {
-            await axios.delete(`${API_URL}/cart/remove/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            // Update cart state
-            const updatedCart = carts.filter((item) => item._id !== id);
-            setCart(updatedCart);
-            toast.success("Item removed from cart!");
-            removeCart(id);
-        } catch (error) {
-            console.error("Error removing item:", error);
-            toast.error("Failed to remove item.");
-        }
-    };
-
-
-    // Clear entire cart
-    const clearCart = async () => {
-        try {
-            await axios.delete(`${API_URL}/cart/clear`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            setCart([]);
-            localStorage.removeItem("cart");
-            toast.success("Cart cleared!");
-        } catch (error) {
-            console.error("Error clearing cart:", error);
-        }
-    };
-
-    // Calculate subtotal for selected items
-    const subtotal = carts
-        .filter((item) => selectedItems.includes(item._id))
-        .reduce((total, item) => total + item.price * item.quantity, 0);
 
     return (
-        <Box sx={{ display: "flex", justifyContent: "space-between", p: 3, bgcolor: "#fff" }}>
-            {/* Left: Cart Items */}
-            <Box sx={{ width: "65%", pr: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", p: 4 }}>
+            {/* Left: Billing Details */}
+            <Box sx={{ width: "55%" }}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
-                    Shopping Cart
+                    Billing details
                 </Typography>
 
-                {carts.length === 0 ? (
-                    <Typography variant="h6" sx={{ color: "gray", mt: 2 }}>
-                        🛒 Your cart is empty. Start shopping now!
-                    </Typography>
-                ) : (
-                    <>
-                        <Typography
-                            variant="body2"
-                            sx={{ color: "blue", cursor: "pointer", mb: 2 }}
-                            onClick={() => setSelectedItems([])}
-                        >
-                            Deselect all items
-                        </Typography>
+                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                    <TextField label="First Name" name="firstname" fullWidth onChange={handleChange} />
+                    <TextField label="Last Name" name="lastname" fullWidth onChange={handleChange} />
+                </Box>
 
-                        {carts.map((item) => (
-                            <Box
-                                key={item._id}
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    borderBottom: "1px solid #ddd",
-                                    pb: 2,
-                                    mb: 2,
-                                }}
-                            >
-                                <Checkbox
-                                    checked={selectedItems.includes(item._id)}
-                                    onChange={() => toggleSelectItem(item._id)}
-                                />
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    width={80}
-                                    height={80}
-                                    style={{ borderRadius: 8 }}
-                                />
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                    <InputLabel>Country / Region</InputLabel>
+                    <Select name="country" value={formData.country} onChange={handleChange}>
+                        <MenuItem value="Sri Lanka">Sri Lanka</MenuItem>
+                    </Select>
+                </FormControl>
 
-                                <Box sx={{ flex: 1, ml: 2 }}>
-                                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                                        {item.name}
-                                    </Typography>
-                                    <Typography variant="body2" color="green">
-                                        In Stock
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        ₹{item.price.toLocaleString()}
-                                    </Typography>
-                                </Box>
+                <TextField label="Street Address" name="street_address" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
+                <TextField label="Town / City" name="city" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
 
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <Button
-                                        variant="outlined"
-                                        sx={{ minWidth: 40, mr: 1, fontWeight: "bold" }}
-                                        onClick={() => decreaseQuantity(item._id)}
-                                    >
-                                        -
-                                    </Button>
-                                    <Typography>{item.quantity}</Typography>
-                                    <Button
-                                        variant="outlined"
-                                        sx={{ minWidth: 40, ml: 1, fontWeight: "bold" }}
-                                        onClick={() => increaseQuantity(item._id)}
-                                    >
-                                        +
-                                    </Button>
-                                    <IconButton onClick={() => removeItem(item._id)}>
-                                        <FaTrash />
-                                    </IconButton>
-                                </Box>
-                            </Box>
-                        ))}
-                    </>
-                )}
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                    <InputLabel>Province</InputLabel>
+                    <Select name="province" value={formData.province} onChange={handleChange}>
+                        <MenuItem value="Western Province">Western Province</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <TextField label="ZIP Code" name="zipcode" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
+                <TextField label="Phone" name="phone" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
+                <TextField label="Email Address" name="email" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
+                <TextField label="Additional Information" name="additional" fullWidth sx={{ mb: 2 }} onChange={handleChange} />
             </Box>
 
-            {/* Right: Checkout Summary */}
-            {carts.length > 0 && (
-                <Box
-                    sx={{
-                        width: "30%",
-                        p: 3,
-                        border: "1px solid #ddd",
-                        borderRadius: "8px",
-                        bgcolor: "#f9f9f9",
-                        height: "fit-content",
-                    }}
+            {/* Right: Order Summary */}
+            <Box sx={{ width: "40%", p: 3, border: "1px solid #ddd", borderRadius: "8px", bgcolor: "#f9f9f9" }}>
+                <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+                    Product <span style={{ float: "right" }}>Subtotal</span>
+                </Typography>
+
+                <Typography sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+                    Agggard Sofa × 1 <span>Rs. 250,000.00</span>
+                </Typography>
+
+                <Typography sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+                    Subtotal <span>Rs. 250,000.00</span>
+                </Typography>
+
+                <Typography sx={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", color: "#ff9800", fontSize: "1.2rem" }}>
+                    Total <span>Rs. 250,000.00</span>
+                </Typography>
+
+                {/* Payment Method */}
+                <FormControl component="fieldset" sx={{ mt: 2 }}>
+                    <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+                        <FormControlLabel value="bank" control={<Radio />} label="Direct Bank Transfer" />
+                        <Typography variant="body2" sx={{ color: "gray", mb: 2 }}>
+                            Make your payment directly into our bank account. Please use your Order ID as the payment reference.
+                        </Typography>
+                        <FormControlLabel value="cod" control={<Radio />} label="Cash on Delivery" />
+                    </RadioGroup>
+                </FormControl>
+
+                <Typography variant="body2" sx={{ color: "gray", mb: 2 }}>
+                    Your personal data will be used to support your experience on this website, manage access to your account, and for other purposes described in our <span style={{ textDecoration: "underline", cursor: "pointer" }}>privacy policy</span>.
+                </Typography>
+
+                <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{ mt: 2, fontWeight: "bold", borderRadius: "4px", bgcolor: "#0056B3", color: "white" }}
+                    onClick={handlePlaceOrder}
+                    disabled={loading}
                 >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        <span style={{ color: "green" }}>✔</span> Your order is eligible for FREE Delivery.
-                    </Typography>
-
-                    <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-                        Choose FREE Delivery option at checkout.
-                    </Typography>
-
-                    <Divider sx={{ my: 2 }} />
-
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        Subtotal ({selectedItems.length} items): ₹{subtotal.toLocaleString()}
-                    </Typography>
-
-                    <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                        <Checkbox />
-                        <Typography variant="body2">This order contains a gift</Typography>
-                    </Box>
-
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                            mt: 2,
-                            bgcolor: "#0056B3",
-                            color: "white",
-                            fontWeight: "bold",
-                            ":hover": { bgcolor: "#004494" },
-                        }}
-                        onClick={() => console.log("Proceeding to checkout")}
-                        disabled={selectedItems.length === 0}
-                    >
-                        Proceed to Buy
-                    </Button>
-
-                    <Button
-                        variant="outlined"
-                        color="error"
-                        fullWidth
-                        sx={{ mt: 2, fontWeight: "bold" }}
-                        onClick={clearCart}
-                    >
-                        Clear Cart
-                    </Button>
-                </Box>
-            )}
+                    {loading ? "Placing Order..." : "Place Order"}
+                </Button>
+            </Box>
         </Box>
     );
 };
 
-export default CheckoutScreen;
+export default CheckoutPage;
