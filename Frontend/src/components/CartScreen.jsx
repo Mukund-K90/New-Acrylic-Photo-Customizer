@@ -107,19 +107,19 @@ const CheckoutScreen = () => {
 
 
     // Clear entire cart
-    const clearCart = async () => {
-        try {
-            await axios.delete(`${API_URL}/cart/clear`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+    // const clearCart = async () => {
+    //     try {
+    //         await axios.delete(`${API_URL}/cart/clear`, {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
 
-            setCart([]);
-            localStorage.removeItem("cart");
-            toast.success("Cart cleared!");
-        } catch (error) {
-            console.error("Error clearing cart:", error);
-        }
-    };
+    //         setCart([]);
+    //         localStorage.removeItem("cart");
+    //         toast.success("Cart cleared!");
+    //     } catch (error) {
+    //         console.error("Error clearing cart:", error);
+    //     }
+    // };
 
     const subtotal = selectedItems.length > 0
         ? carts

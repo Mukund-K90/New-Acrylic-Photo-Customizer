@@ -38,22 +38,17 @@ export const useHandleAddToCart = () => {
             if (response.data.success) {
                 const newCartData = response.data.data;
 
-                // ✅ Check if local storage already has a cart
                 const existingCart = localStorage.getItem("cart");
                 let cartData = existingCart ? JSON.parse(existingCart) : [];
 
-                // ✅ Find if the cart already exists for the user
                 const userCartIndex = cartData.findIndex(cart => cart.user === newCartData[0].user);
 
                 if (userCartIndex !== -1) {
-                    // ✅ Merge items into the existing cart
                     cartData[userCartIndex].items = [...cartData[userCartIndex].items, ...newCartData[0].items];
                 } else {
-                    // ✅ Otherwise, add a new cart
                     cartData.push(newCartData[0]);
                 }
 
-                // ✅ Update local storage
                 localStorage.setItem("cart", JSON.stringify(cartData));
             }
 

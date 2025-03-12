@@ -11,6 +11,7 @@ import { ImSpinner2 } from "react-icons/im";
 
 const AcrylicPhoto = () => {
   const [loading, setLoading] = useState(false);
+  const [cartLoading, setCartLoading] = useState(false);
 
   const { addCart } = useCartStore(); // Use the hook
 
@@ -43,6 +44,7 @@ const AcrylicPhoto = () => {
   }, []);
 
   const handleAddToCart = async () => {
+    setCartLoading(true);
     const promise = new Promise(async (resolve, reject) => {
       try {
         const formData = await window.shareImage();
@@ -52,6 +54,7 @@ const AcrylicPhoto = () => {
         if (!token) {
           console.error("User is not authenticated");
           reject("User is not authenticated.");
+          setCartLoading(false)
           return;
         }
 
@@ -67,6 +70,7 @@ const AcrylicPhoto = () => {
         );
 
         if (response.data?.success) {
+          setCartLoading(false)
           const newCartItem = response.data.data;
           addCart({
             id: newCartItem._id,
@@ -74,9 +78,11 @@ const AcrylicPhoto = () => {
           });
           resolve({ name: newCartItem.name });
         } else {
+          setCartLoading(false)
           reject("Failed to add product to cart!");
         }
       } catch (error) {
+        setCartLoading(false)
         console.error("Error adding product to cart:", error);
         reject("Failed to add product. Please try again.");
       }
@@ -225,7 +231,7 @@ const AcrylicPhoto = () => {
           id="cartBtn"
           onClick={handleAddToCart}
         >
-          <MdAddShoppingCart />
+          {cartLoading ? <ImSpinner2 className="spin" /> :<MdAddShoppingCart />}
         </button>
         <p>Size:</p>
         {[

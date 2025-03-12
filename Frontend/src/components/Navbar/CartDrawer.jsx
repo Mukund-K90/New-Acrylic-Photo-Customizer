@@ -14,7 +14,7 @@ const CartDrawer = ({ open, onClose }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
-  const { removeCart } = useCartStore()
+  const { removeCart ,clearCart} = useCartStore()
 
   const API_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -92,15 +92,14 @@ const CartDrawer = ({ open, onClose }) => {
   };
 
   // Clear entire cart
-  const clearCart = async () => {
+  const clearAllCart = async () => {
     try {
       await axios.delete(`${API_URL}/cart/clear`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setCart([]);
-      localStorage.removeItem("cart");
-      toast.success("Cart cleared!");
+      clearCart();
     } catch (error) {
       console.error("Error clearing cart:", error);
     }
@@ -137,7 +136,7 @@ const CartDrawer = ({ open, onClose }) => {
                     fontSize: "12px",
                     "&:hover": { textDecoration: "underline" },
                   }}
-                  onClick={clearCart}
+                  onClick={clearAllCart}
                 >
                   Clear Cart
                 </Typography>

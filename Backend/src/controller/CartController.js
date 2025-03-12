@@ -71,13 +71,15 @@ exports.deleteCartItem = async (req, res) => {
 // Clear the entire cart for a user
 exports.clearCart = async (req, res) => {
     try {
-        const clearCart = await clearCart(req.user.id);
-        if (!clearCart) {
+        const clearedCart = await clearCart(req.user.id);
+        if (!clearedCart) {
             return errorResponse(req, res, status.BAD_REQUEST, "Clear Cart failed");
         }
         return successResponse(req, res, status.OK, "Cart cleared successfully");
     } catch (error) {
-        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, "Error clearing cart", error.message);
+        console.log(error);
+        
+        return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
     }
 };
 
