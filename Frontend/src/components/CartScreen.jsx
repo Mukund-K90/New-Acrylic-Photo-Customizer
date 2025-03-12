@@ -19,7 +19,6 @@ const CheckoutScreen = () => {
     const navigate = useNavigate();
     const { removeCart } = useCartStore();
     const [carts, setCart] = useState([]);
-    const [selectedItems, setSelectedItems] = useState([]);
     const token = localStorage.getItem("token");
 
     // Fetch Cart Data
@@ -30,13 +29,7 @@ const CheckoutScreen = () => {
             });
 
             if (response.data.success) {
-                const updatedCart = response.data.data;
-                setCart(updatedCart);
-                setSelectedItems((prevSelected) =>
-                    prevSelected.length > 0
-                        ? prevSelected.filter((id) => updatedCart.some((item) => item._id === id))
-                        : updatedCart.map((item) => item._id) // Check all items initially
-                );
+                setCart(response.data.data || []);
             }
         } catch (error) {
             console.error("Error fetching cart:", error);
@@ -48,15 +41,6 @@ const CheckoutScreen = () => {
         fetchCart();
     }, []);
 
-    // Select/Deselect items
-    const toggleSelectItem = (id) => {
-        setSelectedItems((prev) =>
-            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-        );
-        console.log(selectedItems);
-
-    };
-
     // Increase quantity
     const increaseQuantity = async (id) => {
         try {
@@ -65,7 +49,7 @@ const CheckoutScreen = () => {
             });
 
             if (response.data.success) {
-                await fetchCart();
+                fetchCart();
             }
         } catch (error) {
             console.error("Error increasing quantity:", error);
@@ -107,25 +91,21 @@ const CheckoutScreen = () => {
 
 
     // Clear entire cart
-    // const clearCart = async () => {
-    //     try {
-    //         await axios.delete(`${API_URL}/cart/clear`, {
-    //             headers: { Authorization: `Bearer ${token}` },
-    //         });
+    const clearCart = async () => {
+        try {
+            await axios.delete(`${API_URL}/cart/clear`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-    //         setCart([]);
-    //         localStorage.removeItem("cart");
-    //         toast.success("Cart cleared!");
-    //     } catch (error) {
-    //         console.error("Error clearing cart:", error);
-    //     }
-    // };
+            setCart([]);
+            localStorage.removeItem("cart");
+            toast.success("Cart cleared!");
+        } catch (error) {
+            console.error("Error clearing cart:", error);
+        }
+    };
 
-    const subtotal = selectedItems.length > 0
-        ? carts
-            .filter((item) => selectedItems.includes(item._id))
-            .reduce((total, item) => total + item.subTotal, 0)
-        : 0;
+    const subtotal = carts.reduce((total, item) => total + item.subTotal, 0);
 
     return (
         <Box sx={{ display: "flex", justifyContent: "space-between", p: 3, bgcolor: "#fff" }}>
@@ -152,13 +132,6 @@ const CheckoutScreen = () => {
                     </Box>
                 ) : (
                     <>
-                        <Typography
-                            variant="body2"
-                            sx={{ color: "blue", cursor: "pointer", mb: 2 }}
-                            onClick={() => setSelectedItems([])}
-                        >
-                            Deselect all items
-                        </Typography>
 
                         {carts.map((item) => (
                             <Box
@@ -171,10 +144,6 @@ const CheckoutScreen = () => {
                                     mb: 2,
                                 }}
                             >
-                                <Checkbox
-                                    checked={selectedItems.includes(item._id)}
-                                    onChange={() => toggleSelectItem(item._id)}
-                                />
                                 <img
                                     src={item.image}
                                     alt={item.name}
@@ -236,7 +205,7 @@ const CheckoutScreen = () => {
                     <Typography variant="h9" sx={{ fontWeight: "normal" }}>
                         Subtotal:{" "}
                         <Box component="span" sx={{ fontWeight: "bold", color: "grey" }}>
-                            Rs. {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        Rs. {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Box>
                     </Typography>
 
@@ -259,7 +228,6 @@ const CheckoutScreen = () => {
                             ":hover": { bgcolor: "#004494" },
                         }}
                         onClick={() => navigate("/checkout")}
-                        disabled={selectedItems.length === 0}
                     >
                         Check Out
                     </Button>
