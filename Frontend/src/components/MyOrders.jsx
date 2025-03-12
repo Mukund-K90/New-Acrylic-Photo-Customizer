@@ -75,12 +75,12 @@ const MyOrders = () => {
           >
             <Grid container spacing={2} alignItems="center">
               {/* Product Image */}
-              <Grid item xs={3}>
+              <Grid item >
                 <CardMedia
                   component="img"
                   image={order.products[0]?.productId?.image || "/placeholder.jpg"}
                   alt={order.products[0]?.productId?.name}
-                  sx={{ width: 120, height: 120, borderRadius: 2, objectFit: "contain" }}
+                  sx={{ width: 200, objectFit: "contain" }}
                 />
               </Grid>
 
@@ -88,7 +88,7 @@ const MyOrders = () => {
               <Grid item xs={9}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Order ID: {order.orderId}
+                    Order ID: {order.orderNo}
                   </Typography>
                   <Typography variant="body1">
                     <strong>Product:</strong> {order.products[0]?.productId?.name || "Unknown Product"}
@@ -96,9 +96,17 @@ const MyOrders = () => {
                   <Typography variant="body1">
                     <strong>Price:</strong> ₹{order.total.toFixed(2)}
                   </Typography>
-                  <Typography variant="body1">
-                    <strong>Status:</strong> {order.status}
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: order.status === "Pending" ? "orange" :
+                        order.status === "Processing" ? "blue" :
+                          order.status === "Completed" ? "green" : "black"
+                    }}
+                  >
+                    <strong style={{color:'black'}}>Status:</strong> {order.status}
                   </Typography>
+
                   <Typography variant="body2" sx={{ color: "gray" }}>
                     Ordered on:{" "}
                     {new Date(order.createdAt).toLocaleDateString("en-IN", {
@@ -111,12 +119,11 @@ const MyOrders = () => {
                   <Box sx={{ mt: 2 }}>
                     <Button
                       variant="contained"
-                      sx={{ bgcolor: "#FF9900", color: "white", mr: 1 }}
+                      sx={{ bgcolor: "#0056B3", color: "white", mr: 1 }}
                       onClick={() => navigate(`/order/${order._id}`)}
                     >
                       View Order
                     </Button>
-                    <Button variant="outlined">Buy Again</Button>
                   </Box>
                 </CardContent>
               </Grid>

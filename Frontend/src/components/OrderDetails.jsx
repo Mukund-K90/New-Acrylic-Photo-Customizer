@@ -1,5 +1,6 @@
-import React, { lazy, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
 import {
     Box,
     Typography,
@@ -9,8 +10,13 @@ import {
     Grid,
     CircularProgress,
     Divider,
-    Button,
+    Stepper,
+    Step,
+    StepLabel,
 } from "@mui/material";
+import { IoImages } from "react-icons/io5";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -54,8 +60,27 @@ const OrderDetails = () => {
 
     const { order: orderData, paymentDetails } = order;
 
+    const statusSteps = ["Pending", "Processing", "Completed"];
+    const statusMapping = {
+        "Pending": 0,
+        "Processing": 1,
+        "Completed": 2,
+    };
+    const activeStep = statusMapping[orderData.status] || 0;
+
+    // Custom Step Icon Component
+    const CustomStepIcon = ({ active, completed }) => {
+        return completed || activeStep == 2 ? (
+            <CheckCircleIcon sx={{ color: "#0056B3" }} />
+        ) : active ? (
+            <IoImages color="#0056B3" size={'1.5rem'} />
+        ) : (
+            <RadioButtonUncheckedIcon sx={{ color: "gray" }} />
+        );
+    };
+
     return (
-        <Box sx={{ maxWidth: "900px", margin: "auto", mt: 4, p: 3 }}>
+        <Box sx={{ maxWidth: "100%", margin: "auto", mt: 4, p: 3 }}>
             <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
                 Order Details
             </Typography>
@@ -66,12 +91,25 @@ const OrderDetails = () => {
                     month: "long",
                     year: "numeric",
                 })}{" "}
-                | Order number <strong>{orderData.orderNo}</strong>
+                | Order number <strong>{orderData.orderNo} | {orderData.orderId}</strong>
             </Typography>
 
-            {/* Shipping Address, Payment, and Summary in One Row */}
+            {/* Amazon-like Status Tracker */}
+            <Box sx={{ my: 3 }}>
+                <Stepper activeStep={activeStep} alternativeLabel>
+                    {statusSteps.map((label, index) => (
+                        <Step key={label}>
+                            <StepLabel StepIconComponent={CustomStepIcon}>
+                                {label}
+                            </StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
+            </Box>
+
+            {/* Shipping Address, Payment, and Summary */}
             <Card sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-                <Grid container spacing={7}>
+                <Grid container spacing={10}>
                     <Grid item xs={12} md={5}>
                         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                             Shipping Address
@@ -109,7 +147,7 @@ const OrderDetails = () => {
                 </Grid>
             </Card>
 
-            {/* Ordered Products Below */}
+            {/* Ordered Products */}
             {orderData.products.map((item) => (
                 <Card key={item.productId._id} sx={{ mb: 2, display: "flex", alignItems: "center", p: 2 }}>
                     <CardMedia
@@ -118,19 +156,17 @@ const OrderDetails = () => {
                         sx={{ width: 120, height: 120, objectFit: "cover", borderRadius: 2 }}
                     />
                     <CardContent sx={{ flex: 1 }}>
-                        <Typography variant="h6" sx={{ color: "#0073bb", cursor: "pointer" }}>
+                        <Typography variant="h6" sx={{ color: "#0073bb" }}>
                             {item.productId.name}
                         </Typography>
                         <Typography variant="body2" sx={{ color: "gray" }}>
                             Sold by: Acylic Image Customizer
                         </Typography>
-                        <Typography sx={{ fontWeight: "bold" }}>₹{item.productId.price}</Typography>
+                        <Typography sx={{ fontWeight: "bold" }}>₹{item.productId.price} x {item.productId.quantity}</Typography>
                     </CardContent>
                 </Card>
             ))}
-
         </Box>
-
     );
 };
 

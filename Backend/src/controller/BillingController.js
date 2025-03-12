@@ -4,7 +4,7 @@ const Products = require("../Model/Product");
 const { getOrderDetailsById } = require('../utils/razorpay');
 const { errorResponse, successResponse } = require('../utils/apiResponse');
 const { status } = require('http-status')
-const generateOrderNumber=require('../utils/orderNoGenerate')
+const generateOrderNumber = require('../utils/orderNoGenerate')
 
 const placeOrder = async (req, res) => {
     try {
@@ -36,7 +36,7 @@ const placeOrder = async (req, res) => {
 
         const savedProducts = await Products.insertMany(productsData);
 
-        const orderNo=await generateOrderNumber();
+        const orderNo = await generateOrderNumber();
         const order = new BillingDetails({
             firstname,
             lastname,
@@ -67,7 +67,7 @@ const placeOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
     try {
-        const orders = await BillingDetails.find({ userId: req.user.id })
+        const orders = await BillingDetails.find({ userId: req.user.id }).sort({ createdAt: -1 })
             .populate('products.productId');
         return res.status(200).json({ success: true, message: "Orders retrieved successfully!", orders });
     } catch (error) {
