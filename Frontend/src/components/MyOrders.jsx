@@ -54,7 +54,7 @@ const MyOrders = () => {
   return (
     <Box sx={{ maxWidth: "1000px", margin: "auto", mt: 4, p: 2 }}>
       <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
-        My Orders
+        Your Orders
       </Typography>
 
       {orders.length === 0 ? (

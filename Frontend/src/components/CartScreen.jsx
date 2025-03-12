@@ -30,8 +30,13 @@ const CheckoutScreen = () => {
             });
 
             if (response.data.success) {
-                setCart(response.data.data || []);
-                setSelectedItems(response.data.data.map((item) => item._id) || []);
+                const updatedCart = response.data.data;
+                setCart(updatedCart);
+                setSelectedItems((prevSelected) =>
+                    prevSelected.length > 0
+                        ? prevSelected.filter((id) => updatedCart.some((item) => item._id === id))
+                        : updatedCart.map((item) => item._id) // Check all items initially
+                );
             }
         } catch (error) {
             console.error("Error fetching cart:", error);
@@ -48,6 +53,8 @@ const CheckoutScreen = () => {
         setSelectedItems((prev) =>
             prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
         );
+        console.log(selectedItems);
+
     };
 
     // Increase quantity
@@ -58,7 +65,7 @@ const CheckoutScreen = () => {
             });
 
             if (response.data.success) {
-                fetchCart();
+                await fetchCart();
             }
         } catch (error) {
             console.error("Error increasing quantity:", error);
@@ -114,7 +121,11 @@ const CheckoutScreen = () => {
         }
     };
 
-    const subtotal = carts.reduce((total, item) => total + item.subTotal, 0);
+    const subtotal = selectedItems.length > 0
+        ? carts
+            .filter((item) => selectedItems.includes(item._id))
+            .reduce((total, item) => total + item.subTotal, 0)
+        : 0;
 
     return (
         <Box sx={{ display: "flex", justifyContent: "space-between", p: 3, bgcolor: "#fff" }}>
@@ -222,25 +233,21 @@ const CheckoutScreen = () => {
                         height: "fit-content",
                     }}
                 >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        <span style={{ color: "green" }}>✔</span> Your order is eligible for FREE Delivery.
-                    </Typography>
-
-                    <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-                        Choose FREE Delivery option at checkout.
+                    <Typography variant="h9" sx={{ fontWeight: "normal" }}>
+                        Subtotal:{" "}
+                        <Box component="span" sx={{ fontWeight: "bold", color: "grey" }}>
+                            Rs. {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </Box>
                     </Typography>
 
                     <Divider sx={{ my: 2 }} />
 
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        Subtotal ({selectedItems.length} items): ₹{subtotal.toLocaleString()}
+                    <Typography variant="h6" sx={{ fontWeight: "normal" }}>
+                        Total:{" "}
+                        <Box component="span" sx={{ fontWeight: "bold", color: "#0056B3" }}>
+                            Rs. {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </Box>
                     </Typography>
-
-                    <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                        <Checkbox />
-                        <Typography variant="body2">This order contains a gift</Typography>
-                    </Box>
-
                     <Button
                         variant="contained"
                         fullWidth
@@ -257,15 +264,6 @@ const CheckoutScreen = () => {
                         Check Out
                     </Button>
 
-                    <Button
-                        variant="outlined"
-                        color="error"
-                        fullWidth
-                        sx={{ mt: 2, fontWeight: "bold" }}
-                        onClick={clearCart}
-                    >
-                        Clear Cart
-                    </Button>
                 </Box>
             )}
         </Box>
