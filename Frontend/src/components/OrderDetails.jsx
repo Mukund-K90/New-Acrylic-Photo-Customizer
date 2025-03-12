@@ -13,10 +13,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
-import { usePDF } from 'react-to-pdf';
-import PDFComp from "./PDFComp";
-import Invoice from "./PDFComp";
-import InvoicePDF from "./PDFComp";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -24,10 +20,6 @@ const OrderDetails = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    // const pdfRef = useRef();
-    // const { toPdf } = useReactToPdf({ filename: `invoice-${orderId}.pdf` });
-    const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
@@ -50,7 +42,7 @@ const OrderDetails = () => {
         };
 
         fetchOrderDetails();
-    }, [orderId]);
+    }, []);
 
     if (loading) {
         return (
@@ -61,28 +53,6 @@ const OrderDetails = () => {
     }
 
     const { order: orderData, paymentDetails } = order;
-
-    const downloadInvoice = async (order, paymentDetails) => {
-        fetch("http://localhost:8080/download-invoice", {
-            method: "POST",
-            body: JSON.stringify({ order, paymentDetails }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => res.blob()) // Convert response to blob
-            .then((blob) => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `invoice-${order.orderNo}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            })
-            .catch((err) => console.error("Download failed", err));
-    }
-
 
     return (
         <Box sx={{ maxWidth: "900px", margin: "auto", mt: 4, p: 3 }}>
@@ -156,25 +126,8 @@ const OrderDetails = () => {
                         </Typography>
                         <Typography sx={{ fontWeight: "bold" }}>₹{item.productId.price}</Typography>
                     </CardContent>
-
-                    {/* Buttons */}
-
-                    <Button variant="contained" startIcon={<span>🔄</span>} sx={{ mb: 1, textTransform: "none" }}>
-                        Buy it again
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        // onClick={() => downloadInvoice(orderData, paymentDetails)}
-                        onClick={toPDF}
-                    >
-                        Download Invoice
-                    </Button>
                 </Card>
             ))}
-            <div style={{ position: "absolute", left: "-9999px" }}>
-            <InvoicePDF ref={targetRef} order={orderData} paymentDetails={paymentDetails} />
-            </div>
 
         </Box>
 
