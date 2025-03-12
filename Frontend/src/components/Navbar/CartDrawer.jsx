@@ -98,6 +98,7 @@ const CartDrawer = ({ open, onClose }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      toast.success("Cart Cleard!");
       setCart([]);
       clearCart();
     } catch (error) {

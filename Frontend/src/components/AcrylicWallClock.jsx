@@ -13,6 +13,7 @@ import { ImSpinner2 } from "react-icons/im";
 
 const ClockCustomizer = () => {
     const [loading, setLoading] = useState(false);
+    const [cartLoading, setCartLoading] = useState(false);
 
     const { addCart } = useCartStore();
 
@@ -54,6 +55,7 @@ const ClockCustomizer = () => {
         }, 300);
     }
     const handleAddToCart = async () => {
+        setCartLoading(true);
         handleClockHands();
         const promise = new Promise(async (resolve, reject) => {
             try {
@@ -86,23 +88,17 @@ const ClockCustomizer = () => {
                         name: newCartItem.name,
                     });
 
-                    resolve({ name: newCartItem.name }); // Resolve with cart item name
+                    toast.success(`${newCartItem.name} added to cart!`);
                 } else {
-                    reject("Failed to add product to cart!");
+                    toast.error("Failed to add product to cart!");
                 }
             } catch (error) {
                 console.error("Error adding product to cart:", error);
-                reject("Failed to add product. Please try again.");
+                toast.error("Failed to add product. Please try again.");
+            } finally {
+                setCartLoading(false);
             }
         });
-
-        toast.promise(promise, {
-            loading: "Adding product to cart...",
-            success: "Product added to cart!",
-            error: (errMsg) => errMsg,
-        });
-
-
     };
 
     const handleShare = async () => {
@@ -205,8 +201,10 @@ const ClockCustomizer = () => {
                     className="upload-btn add-to-cart"
                     id="cartBtn"
                     onClick={handleAddToCart}
+                    disabled={cartLoading}
                 >
-                    <MdAddShoppingCart />
+                    {cartLoading ? <ImSpinner2 className="spin" /> : <MdAddShoppingCart />}
+
                 </button>
                 <p>Size:</p>
                 {[

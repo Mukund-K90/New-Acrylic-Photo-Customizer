@@ -27,7 +27,7 @@ function App() {
   }
   return (
     <>
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position="top-center" />
       {!isLoginPage && <Navbar />}
       <div style={!isLoginPage ? { marginTop: "6%" } : {}}>
         <Routes>

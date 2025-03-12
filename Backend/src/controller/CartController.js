@@ -1,26 +1,18 @@
 const Cart = require("../Model/Cart");
 const cloudinary = require("../config/cloudinary");
-const { addCart, getCart, deleteCart, clearCart, getCartById, removeItem } = require("../dao/CartDao");
+const { addCart, getCart, deleteCart, getCartById, removeItem, clearUserCart } = require("../dao/CartDao");
 const { errorResponse, successResponse } = require('../utils/apiResponse');
 const { status } = require('http-status');
+const { getCloudinaryPublicId, destroyImage } = require("../utils/upload");
 
 exports.addToCart = async (req, res) => {
     try {
         const details = JSON.parse(req.body.details);
-        let uploadedImageUrl = null;
-
-        if (req.file) {
-            const uploadedImage = await cloudinary.uploader.upload(req.file.path);
-            uploadedImageUrl = uploadedImage.secure_url;
-        } else {
-            return errorResponse(req, res, status.BAD_REQUEST, "Image upload failed");
-        }
-
         const cartItem = {
             size: details.size || null,
             type: details.type || null,
             border: details.border || null,
-            image: uploadedImageUrl || null,
+            image: req.file.path || null,
             name: details.name || null,
             price: details.price || null,
             quantity: 1,
@@ -71,14 +63,14 @@ exports.deleteCartItem = async (req, res) => {
 // Clear the entire cart for a user
 exports.clearCart = async (req, res) => {
     try {
-        const clearedCart = await clearCart(req.user.id);
+        const clearedCart = await clearUserCart(req.user.id);        
         if (!clearedCart) {
             return errorResponse(req, res, status.BAD_REQUEST, "Clear Cart failed");
         }
         return successResponse(req, res, status.OK, "Cart cleared successfully");
     } catch (error) {
         console.log(error);
-        
+
         return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
     }
 };
@@ -129,6 +121,7 @@ exports.removeItem = async (req, res) => {
         if (!removedItem) {
             return errorResponse(req, res, status.NOT_FOUND, "Item not found");
         }
+
         return successResponse(req, res, status.OK, "Item removed successfully");
     } catch (error) {
         return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);

@@ -45,55 +45,48 @@ const AcrylicPhoto = () => {
 
   const handleAddToCart = async () => {
     setCartLoading(true);
-    const promise = new Promise(async (resolve, reject) => {
-      try {
-        const formData = await window.shareImage();
-        console.log("FormData:", [...formData.entries()]);
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("User is not authenticated");
-          reject("User is not authenticated.");
-          setCartLoading(false)
-          return;
-        }
-
-        const headers = {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        };
-
-        const response = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
-          formData,
-          { headers }
-        );
-
-        if (response.data?.success) {
-          setCartLoading(false)
-          const newCartItem = response.data.data;
-          addCart({
-            id: newCartItem._id,
-            name: newCartItem.name,
-          });
-          resolve({ name: newCartItem.name });
-        } else {
-          setCartLoading(false)
-          reject("Failed to add product to cart!");
-        }
-      } catch (error) {
-        setCartLoading(false)
-        console.error("Error adding product to cart:", error);
-        reject("Failed to add product. Please try again.");
+    try {
+      const formData = await window.shareImage();
+      console.log("FormData:", [...formData.entries()]);
+  
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("User is not authenticated");
+        toast.error("User is not authenticated.");
+        setCartLoading(false);
+        return;
       }
-    });
-
-    toast.promise(promise, {
-      loading: "Adding product to cart...",
-      success: (data) => `${data.name} added to cart!`,
-      error: (errMsg) => errMsg,
-    });
+  
+      const headers = {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      };
+  
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/cart/add`,
+        formData,
+        { headers }
+      );
+  
+      if (response.data?.success) {
+        const newCartItem = response.data.data;
+        addCart({
+          id: newCartItem._id,
+          name: newCartItem.name,
+        });
+  
+        toast.success(`${newCartItem.name} added to cart!`);
+      } else {
+        toast.error("Failed to add product to cart!");
+      }
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      toast.error("Failed to add product. Please try again.");
+    } finally {
+      setCartLoading(false);
+    }
   };
+  
 
   const handleShare = async () => {
     setLoading(true);
@@ -137,7 +130,6 @@ const AcrylicPhoto = () => {
       success: (message) => message,
       error: (errMsg) => errMsg,
     });
-
   };
 
   return (
@@ -219,9 +211,6 @@ const AcrylicPhoto = () => {
           defaultValue="1"
           style={{ width: "200px" }}
         />
-        {/* <button className="ap-upload-btn ap-download" id="downloadBtn">
-          <FaDownload />
-        </button> */}
         <button className="ap-upload-btn ap-share" id="shareBtn" onClick={handleShare} disabled={loading}>
           {loading ? <ImSpinner2 className="spin" /> : <FaShareAlt />}
         </button>
@@ -230,6 +219,7 @@ const AcrylicPhoto = () => {
           className="ap-upload-btn ap-add-to-cart"
           id="cartBtn"
           onClick={handleAddToCart}
+          disabled={cartLoading}
         >
           {cartLoading ? <ImSpinner2 className="spin" /> :<MdAddShoppingCart />}
         </button>
