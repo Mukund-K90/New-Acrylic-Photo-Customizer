@@ -60,7 +60,7 @@ const CheckoutPage = () => {
 
         setLoading(true);
         try {
-            // Step 1: Place the Order (Store Billing Data in DB)
+            // Step 1: Store Billing Data in DB
             const billingResponse = await axios.post(`${API_URL}/billing/place-order`,
                 { ...formData },
                 {
@@ -74,14 +74,13 @@ const CheckoutPage = () => {
             if (!billingResponse.data.success) {
                 toast.error(billingResponse.data.message);
                 setLoading(false);
-                clearCart();
                 return;
             }
 
             toast.success("Billing information stored successfully!");
             const totalAmount = billingResponse.data.order.total;
             const billingId = billingResponse.data.order._id;
-            console.log(billingId);
+            console.log("Billing ID:", billingId);
 
             // Step 2: Create an Order for Payment
             const orderResponse = await axios.post(`${API_URL}/order/create`,
@@ -98,7 +97,8 @@ const CheckoutPage = () => {
                 setLoading(false);
                 return;
             }
-            console.log(orderResponse.data.data?.amount);
+
+            console.log("Amount:", orderResponse.data.data?.amount);
 
             const orderId = orderResponse.data.data?.id;
             const amount = orderResponse.data.data?.amount;
@@ -107,20 +107,33 @@ const CheckoutPage = () => {
                 key: "rzp_test_uzGTmLb6xkyeHP",
                 amount: amount,
                 currency: "INR",
-                name: "Acylic Image",
-                // image: "/Assets/Meubel House_Logos-05.png",
+                name: "Acrylic Image",
                 description: billingResponse.data.order.orderNo,
                 order_id: orderId,
                 handler: async function (response) {
                     console.log(`Payment ID: ${response.razorpay_payment_id}`);
                     console.log(`Order ID: ${response.razorpay_order_id}`);
+                    console.log(`Signature: ${response.razorpay_signature}`);
 
                     try {
-                        toast.success("Order Placed");
-                        navigate('/my-orders')
-                        clearCart();
+                        // Step 3: Call Verify Payment API
+                        const verifyResponse = await axios.post(`${API_URL}/verify-payment`, {
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            billingId: billingId
+                        });
+
+                        if (verifyResponse.data.success) {
+                            toast.success("Order Placed Successfully!");
+                            navigate('/my-orders');
+                            clearCart();
+                        } else {
+                            toast.error("Payment verification failed. Please contact support.");
+                        }
                     } catch (error) {
-                        console.error("Error handling response:", error);
+                        console.error("Verification Error:", error);
+                        toast.error("Payment verification failed. Please try again.");
                     }
                 },
                 prefill: {
@@ -133,10 +146,26 @@ const CheckoutPage = () => {
             };
 
             const paymentObject = new window.Razorpay(options);
-            paymentObject.on("payment.failed", function (response) {
+
+            // Handle Payment Failure
+            paymentObject.on("payment.failed", async function (response) {
                 console.error("Payment Failed:", response.error);
                 toast.error("Payment failed. Please try again.");
+
+                try {
+                    // Inform backend that payment failed
+                    await axios.post(`${API_URL}/update-payment-status`, {
+                        billingId: billingId,
+                        status: "Failed",
+                        error: response.error.description || "Payment failed",
+                    });
+
+                    navigate('/my-orders'); // Redirect user to My Orders page
+                } catch (error) {
+                    console.error("Failed to update payment status:", error);
+                }
             });
+
             paymentObject.open();
 
         } catch (error) {
@@ -144,9 +173,9 @@ const CheckoutPage = () => {
             toast.error("Something went wrong. Try again.");
         } finally {
             setLoading(false);
+            clearCart();
         }
     };
-
 
     const fetchCart = async () => {
         try {
@@ -165,6 +194,9 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         fetchCart();
+        if (!carts || carts.length == 0) {
+            navigate('/my-orders');
+        }
     }, []);
     const subtotal = carts.reduce((total, item) => total + item.subTotal, 0);
 

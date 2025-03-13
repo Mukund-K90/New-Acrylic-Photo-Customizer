@@ -33,3 +33,11 @@ module.exports.getBillingData = async (id) => {
         throw error;
     }
 }
+
+module.exports.cancelOrder = async (id) => {
+    try {
+        return await Billing.findByIdAndDelete(id);
+    } catch (error) {
+        throw error;
+    }
+}

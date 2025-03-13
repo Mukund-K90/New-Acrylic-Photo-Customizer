@@ -28,7 +28,13 @@ const MyOrders = () => {
         });
 
         if (response.data.success) {
-          setOrders(response.data.orders);
+          const sortedOrders = response.data.orders.sort((a, b) => {
+            if (a.paymentStatus === "Pending" || a.paymentStatus === "Failed") return -1;
+            if (b.paymentStatus === "Pending" || b.paymentStatus === "Failed") return 1;
+            return 0;
+          });
+
+          setOrders(sortedOrders);
         } else {
           toast.error("Failed to fetch orders.");
         }
@@ -42,6 +48,96 @@ const MyOrders = () => {
 
     fetchOrders();
   }, []);
+
+  const handleRetryPayment = async (order) => {
+    try {
+      const orderResponse = await axios.post(`${API_URL}/order/create`,
+        { amount: order.total, billingId: order._id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+        }
+      );
+
+      if (!orderResponse.data.success) {
+        toast.error("Failed to create payment order.");
+        return;
+      }
+
+      const orderId = orderResponse.data.data?.id;
+      const amount = orderResponse.data.data?.amount;
+
+      const options = {
+        key: "rzp_test_uzGTmLb6xkyeHP",
+        amount: amount,
+        currency: "INR",
+        name: "Acrylic Image",
+        description: order.orderNo,
+        order_id: orderId,
+        handler: async function (response) {
+          try {
+            const verifyResponse = await axios.post(`${API_URL}/verify-payment`, {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              billingId: order._id
+            });
+
+            if (verifyResponse.data.success) {
+              toast.success("Payment Successful!");
+              window.location.reload();
+            } else {
+              toast.error("Payment verification failed.");
+            }
+          } catch (error) {
+            console.error("Payment verification error:", error);
+            toast.error("Payment verification failed.");
+          }
+        },
+        prefill: {
+          name: order.customerName,
+          email: order.customerEmail,
+          contact: order.customerPhone,
+        },
+        notes: { address: "Razorpay Corporate Office" },
+        theme: { color: "#3399cc" },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.on("payment.failed", function (response) {
+        console.error("Payment Failed:", response.error);
+        toast.error("Payment failed. Please try again.");
+      });
+      paymentObject.open();
+
+    } catch (error) {
+      console.error("Error retrying payment:", error);
+      toast.error("Something went wrong. Try again.");
+    }
+  };
+
+  const handleCancelPayment = async (id) => {
+    try {
+      const orderResponse = await axios.delete(`${API_URL}/billing/cancel-order/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+        }
+      );
+
+      if (!orderResponse.data.success) {
+        toast.error("Failed to cancel  order.");
+        return;
+      }
+      toast.success("Order cancelled successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error retrying payment:", error);
+      toast.error("Something went wrong. Try again.");
+    }
+  }
 
   if (loading) {
     return (
@@ -67,15 +163,16 @@ const MyOrders = () => {
             key={order._id}
             sx={{
               mb: 3,
-              border: "1px solid #ddd",
+              border: order.paymentStatus === "Pending" || order.paymentStatus === "Failed" ? "2px solid red" : "1px solid #ddd",
               borderRadius: 2,
               p: 2,
+              backgroundColor: order.paymentStatus === "Pending" || order.paymentStatus === "Failed" ? "#ffe6e6" : "white",
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             }}
           >
             <Grid container spacing={2} alignItems="center">
               {/* Product Image */}
-              <Grid item >
+              <Grid item>
                 <CardMedia
                   component="img"
                   image={order.products[0]?.productId?.image || "/placeholder.jpg"}
@@ -104,8 +201,20 @@ const MyOrders = () => {
                           order.status === "Completed" ? "green" : "black"
                     }}
                   >
-                    <strong style={{color:'black'}}>Status:</strong> {order.status}
+                    <strong style={{ color: 'black' }}>Status:</strong> {order.status}
                   </Typography>
+                  {(order.paymentStatus === "Pending" || order.paymentStatus === "Failed") && (
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: order.paymentStatus === "Pending" ? "red" : "darkred",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <strong style={{ color: "black" }}>Payment:</strong> {order.paymentStatus}
+                    </Typography>
+                  )}
+
                   <Typography variant="body1">
                     <strong>Items:</strong> {order.products.length}
                   </Typography>
@@ -119,13 +228,33 @@ const MyOrders = () => {
                   </Typography>
 
                   <Box sx={{ mt: 2 }}>
-                    <Button
-                      variant="contained"
-                      sx={{ bgcolor: "#0056B3", color: "white", mr: 1 }}
-                      onClick={() => navigate(`/order/${order._id}`)}
-                    >
-                      View Order
-                    </Button>
+                    {order.paymentStatus === "Captured" && (
+                      <Button
+                        variant="contained"
+                        sx={{ bgcolor: "#0056B3", color: "white", mr: 1 }}
+                        onClick={() => navigate(`/order/${order._id}`)}
+                      >
+                        View Order
+                      </Button>
+                    )}
+                    {order.paymentStatus === "Pending" || order.paymentStatus === "Failed" ? (
+                      <Box sx={{ display: "flex", gap: "1rem" }}>
+                        <Button
+                          variant="contained"
+                          sx={{ bgcolor: "#8DE969", color: "white" }}
+                          onClick={() => handleRetryPayment(order)}
+                        >
+                          Pay Now
+                        </Button>
+                        <Button
+                          variant="contained"
+                          sx={{ bgcolor: "red", color: "white" }}
+                          onClick={() => handleCancelPayment(order._id)}
+                        >
+                          Cancel
+                        </Button>
+                      </Box>
+                    ) : null}
                   </Box>
                 </CardContent>
               </Grid>

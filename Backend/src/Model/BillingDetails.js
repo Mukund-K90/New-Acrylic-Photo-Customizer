@@ -64,6 +64,11 @@ const BillingSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+        paymentStatus: {
+            type: String,
+            enum: ["Pending", "Captured", "Failed"],
+            default: "Pending"
+        }
     },
     {
         timestamps: true

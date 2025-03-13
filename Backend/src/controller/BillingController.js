@@ -51,16 +51,16 @@ const placeOrder = async (req, res) => {
             additional,
             products: savedProducts.map(product => ({ productId: product._id })),
             total: cartItems.reduce((sum, item) => sum + item.subTotal, 0),
-            userId,
+            userId: req.user.id,
             orderNo
         };
-        const savedBilling = await billingService.addBillingDetails(billingDetails);
+        const order = await billingService.addBillingDetails(billingDetails);
 
-        if (!savedBilling) {
+        if (!order) {
             return res.status(400).json({ success: false, message: "Failed to save billing" });
         }
 
-        await cartService.clearUserCart({ user: userId });
+        await cartService.clearUserCart(req.user.id);
 
         return res.status(201).json({ success: true, message: "Order placed successfully!", order });
     } catch (error) {
@@ -81,7 +81,7 @@ const getUserOrders = async (req, res) => {
 
 const getBillingDetails = async (req, res) => {
     try {
-        const billingData = await billingService.getBillingData(req.params.orderId);        
+        const billingData = await billingService.getBillingData(req.params.orderId);
         const paymentDetails = await razorpayService.getOrderDetailsById(billingData.orderId);
         if (!billingData) {
             return res.status(404).json({ success: false, message: "Order not found" });
@@ -93,4 +93,21 @@ const getBillingDetails = async (req, res) => {
     }
 }
 
-module.exports = { placeOrder, getUserOrders, getBillingDetails };
+const cancelUserOrder = async (req, res) => {
+    try {
+        const canceledOrder = await billingService.cancelOrder(req.params.orderId);
+
+        if (!canceledOrder) {
+            return res.status(404).json({ success: false, message: "Order not found or already canceled." });
+        }
+
+        return res.status(200).json({ success: true, message: "Order canceled successfully.", data: canceledOrder });
+
+    } catch (error) {
+        console.error("Error canceling order:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+
+module.exports = { placeOrder, getUserOrders, getBillingDetails, cancelUserOrder };
