@@ -82,12 +82,6 @@ const generateInvoiceHTML = (order, paymentDetails) => {
             font-size: 20px; 
             margin-top: 10px;
         }
-        .footer { 
-            margin-top: 30px; 
-            text-align: right; 
-            font-weight: bold;
-            font-size: 22px;
-        }
     </style>
 </head>
 <body>
@@ -127,7 +121,7 @@ const generateInvoiceHTML = (order, paymentDetails) => {
 
         <table>
             <tr>
-                <th>Sr No.</th>
+                <th>Sr.</th>
                 <th>Description</th>
                 <th>Unit Price</th>
                 <th>Quantity</th>
@@ -161,8 +155,6 @@ const generateInvoiceHTML = (order, paymentDetails) => {
             <p style="font-size: 20px;"><strong>Payment Mode:</strong> ${paymentDetails.items[0].method.toUpperCase()}</p>
             <p style="font-size: 20px;"><strong>Transaction ID:</strong> ${paymentDetails.items[0].id}</p>
         </div>
-
-        <div class="footer">Authorized Signatory</div>
     </div>
 </body>
 </html>

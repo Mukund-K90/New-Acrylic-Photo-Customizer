@@ -1,9 +1,9 @@
 const { status } = require("http-status");
 const bcrypt = require("bcrypt");
-const userDao = require("../dao/userDao");
+const userService = require("../Service/userService");
 const { errorResponse, successResponse } = require("../utils/apiResponse");
 const { createUserSession } = require("../utils/jwt");
-const { generateToken, checkToken, updateToken } = require("../dao/authTokenDao");
+const { generateToken, checkToken, updateToken } = require("../Service/authTokenService");
 const { ERROR_MESSAGES } = require("../helper/errorMessages");
 const { SUCCESS_MESSAGES } = require("../helper/successMessages");
 
@@ -12,14 +12,14 @@ const userRegister = async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body;
 
-        const isExistingUser = await userDao.findUser(email);
+        const isExistingUser = await userService.findUser(email);
         if (isExistingUser) {
             return errorResponse(req, res, status.CONFLICT, ERROR_MESSAGES.USER_ALREADY_REGISTERED);
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await userDao.createUser({
+        const newUser = await userService.createUser({
             firstName,
             lastName,
             email,
@@ -48,7 +48,7 @@ const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await userDao.findUser(email);
+        const user = await userService.findUser(email);
         if (!user) {
             return errorResponse(req, res, status.NOT_FOUND, ERROR_MESSAGES.USER_NOT_FOUND);
         }
@@ -78,7 +78,7 @@ const changeUserPassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
         const userId = req.user._id;
-        const user = await userDao.findUserById(userId);
+        const user = await userService.findUserById(userId);
         if (!user) {
             return errorResponse(req, res, status.NOT_FOUND, ERROR_MESSAGES.USER_NOT_FOUND);
         }
@@ -87,7 +87,7 @@ const changeUserPassword = async (req, res) => {
             return errorResponse(req, res, status.UNAUTHORIZED, ERROR_MESSAGES.WRONG_PASSWORD);
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await userDao.changePassword(userId, hashedPassword);
+        await userService.changePassword(userId, hashedPassword);
         return successResponse(req, res, status.OK, SUCCESS_MESSAGES.PASSWORD_CHANGED);
     } catch (error) {
         console.log(error);

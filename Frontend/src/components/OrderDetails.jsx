@@ -52,6 +52,7 @@ const OrderDetails = () => {
         };
 
         fetchOrderDetails();
+        
     }, []);
 
     if (loading) {
@@ -62,7 +63,7 @@ const OrderDetails = () => {
         );
     }
 
-    const { order: orderData, paymentDetails } = order;
+    const { billingData: orderData, paymentDetails } = order;
 
     const statusSteps = ["Order Accepted", "Processing", "Order Completed"];
     const statusMapping = {
@@ -108,9 +109,9 @@ const OrderDetails = () => {
         });
 
         toast.promise(promise, {
-            loading: 'Downloading invoice...',
-            success: 'Invoice downloaded successfully!',
-            error: 'Download failed. Please try again.',
+            loading: "Generating invoice...",
+            success: "Invoice generated successfully!",
+            error: "Generate failed. Please try again."
         });
     };
 
@@ -146,7 +147,6 @@ const OrderDetails = () => {
                 </Box>
 
 
-                {/* Shipping Address, Payment, and Summary */}
                 <Card sx={{ p: 2, mb: 3, borderRadius: 2 }}>
                     <Grid container spacing={10}>
                         <Grid item xs={12} md={5}>
@@ -188,7 +188,7 @@ const OrderDetails = () => {
 
                 {/* Ordered Products */}
                 {orderData.products.map((item) => (
-                    <Card key={item.productId._id} sx={{ mb: 2, display: "flex", alignItems: "center", p: 2 }}>
+                    <Card key={item.productId._id} sx={{ mb: 2, display: "flex", alignItems: "center", p: 2, width: "50%" }}>
                         <CardMedia
                             component="img"
                             image={item.productId.image || "/placeholder.jpg"}
@@ -204,7 +204,7 @@ const OrderDetails = () => {
                             <Typography sx={{ fontWeight: "bold" }}>₹{item.productId.price} x {item.productId.quantity}</Typography>
                         </CardContent>
                         <Button
-                            sx={{ color: "#0056B3" ,fontSize:"1.5rem"}}
+                            sx={{ color: "#0056B3", fontSize: "1.5rem" }}
                             onClick={() => { setSelectedItem(item.productId); setDialogOpen(true); }}
                         >
                             <FaEye />

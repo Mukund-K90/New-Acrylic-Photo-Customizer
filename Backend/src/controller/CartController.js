@@ -1,6 +1,6 @@
 const Cart = require("../Model/Cart");
 const cloudinary = require("../config/cloudinary");
-const { addCart, getCart, deleteCart, getCartById, removeItem, clearUserCart } = require("../dao/CartDao");
+const cartService = require("../Service/CartService");
 const { errorResponse, successResponse } = require('../utils/apiResponse');
 const { status } = require('http-status');
 const { getCloudinaryPublicId, destroyImage } = require("../utils/upload");
@@ -21,7 +21,7 @@ exports.addToCart = async (req, res) => {
             subTotal: details.price
         };
 
-        const addedCart = await addCart(cartItem);
+        const addedCart = await cartService.addCart(cartItem);
 
         if (!addedCart) {
             return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, "Error adding item to cart");
@@ -36,7 +36,7 @@ exports.addToCart = async (req, res) => {
 // Get all cart items for a user
 exports.getUserCart = async (req, res) => {
     try {
-        const cartItems = await getCart(req.user.id);
+        const cartItems = await cartService.getCart(req.user.id);
         if (!cartItems) {
             return errorResponse(req, res, status.NOT_FOUND, "Cart is empty");
         }
@@ -49,7 +49,7 @@ exports.getUserCart = async (req, res) => {
 // Delete a cart item
 exports.deleteCartItem = async (req, res) => {
     try {
-        const deletedCartItem = await deleteCart(req.params.cartItemId);
+        const deletedCartItem = await cartService.deleteCart(req.params.cartItemId);
 
         if (!deletedCartItem) {
             return errorResponse(req, res, status.NOT_FOUND, "Cart item not found");
@@ -63,7 +63,7 @@ exports.deleteCartItem = async (req, res) => {
 // Clear the entire cart for a user
 exports.clearCart = async (req, res) => {
     try {
-        const clearedCart = await clearUserCart(req.user.id);        
+        const clearedCart = await cartService.clearUserCart(req.user.id);        
         if (!clearedCart) {
             return errorResponse(req, res, status.BAD_REQUEST, "Clear Cart failed");
         }
@@ -78,7 +78,7 @@ exports.clearCart = async (req, res) => {
 // Increase quantity of a cart item
 exports.increaseQuantity = async (req, res) => {
     try {
-        const cartItem = await getCartById(req.params.id);
+        const cartItem = await cartService.getCartById(req.params.id);
         if (!cartItem) {
             return errorResponse(req, res, status.NOT_FOUND, "Item not found");
         }
@@ -87,7 +87,7 @@ exports.increaseQuantity = async (req, res) => {
         cartItem.subTotal = cartItem.quantity * cartItem.price;
         await cartItem.save();
 
-        const cartItems = await getCart(req.user.id);
+        const cartItems = await cartService.getCart(req.user.id);
         return successResponse(req, res, status.OK, "Quantity increased", cartItems);
     } catch (error) {
         return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
@@ -97,7 +97,7 @@ exports.increaseQuantity = async (req, res) => {
 // Decrease quantity of a cart item
 exports.decreaseQuantity = async (req, res) => {
     try {
-        const cartItem = await getCartById(req.params.id);
+        const cartItem = await cartService.getCartById(req.params.id);
         if (!cartItem) {
             return errorResponse(req, res, status.NOT_FOUND, "Item not found");
         }
@@ -108,7 +108,7 @@ exports.decreaseQuantity = async (req, res) => {
             await cartItem.save();
         }
 
-        const cartItems = await getCart(req.user.id);
+        const cartItems = await cartService.getCart(req.user.id);
         return successResponse(req, res, status.OK, "Quantity decreased", cartItems);
     } catch (error) {
         return errorResponse(req, res, status.INTERNAL_SERVER_ERROR, error.message);
@@ -117,7 +117,7 @@ exports.decreaseQuantity = async (req, res) => {
 
 exports.removeItem = async (req, res) => {
     try {
-        const removedItem = await removeItem(req.params.id);
+        const removedItem = await cartService.removeItem(req.params.id);
         if (!removedItem) {
             return errorResponse(req, res, status.NOT_FOUND, "Item not found");
         }

@@ -1,21 +1,22 @@
 const BillingDetails = require("../Model/BillingDetails");
 const Cart = require("../Model/Cart");
 const Products = require("../Model/Product");
-const { getOrderDetailsById } = require('../utils/razorpay');
+const razorpayService = require('../utils/razorpay');
 const { errorResponse, successResponse } = require('../utils/apiResponse');
 const { status } = require('http-status')
-const generateOrderNumber = require('../utils/orderNoGenerate')
+const generateOrderNumber = require('../utils/orderNoGenerate');
+const cartService = require("../Service/CartService");
+const billingService = require("../Service/billingService");
 
 const placeOrder = async (req, res) => {
     try {
         const { firstname, lastname, country, street_address, city, province, zipcode, phone, email, additional } = req.body;
-        const userId = req.user.id;
 
         if (!firstname || !lastname || !country || !street_address || !city || !province || !zipcode || !phone || !email) {
             return res.status(400).json({ success: false, message: "Please fill all required fields!" });
         }
 
-        const cartItems = await Cart.find({ user: userId });
+        const cartItems = await cartService.getCart(req.user.id);
         if (!cartItems.length) {
             return res.status(400).json({ success: false, message: "Cart is empty!" });
         }
@@ -34,10 +35,10 @@ const placeOrder = async (req, res) => {
             subTotal: item.subTotal
         }));
 
-        const savedProducts = await Products.insertMany(productsData);
+        const savedProducts = await billingService.addProducts(productsData);
 
         const orderNo = await generateOrderNumber();
-        const order = new BillingDetails({
+        const billingDetails = {
             firstname,
             lastname,
             country,
@@ -52,11 +53,14 @@ const placeOrder = async (req, res) => {
             total: cartItems.reduce((sum, item) => sum + item.subTotal, 0),
             userId,
             orderNo
-        });
+        };
+        const savedBilling = await billingService.addBillingDetails(billingDetails);
 
-        await order.save();
+        if (!savedBilling) {
+            return res.status(400).json({ success: false, message: "Failed to save billing" });
+        }
 
-        await Cart.deleteMany({ user: userId });
+        await cartService.clearUserCart({ user: userId });
 
         return res.status(201).json({ success: true, message: "Order placed successfully!", order });
     } catch (error) {
@@ -67,8 +71,7 @@ const placeOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
     try {
-        const orders = await BillingDetails.find({ userId: req.user.id }).sort({ createdAt: -1 })
-            .populate('products.productId');
+        const orders = await billingService.getUserOrders(req.user.id);
         return res.status(200).json({ success: true, message: "Orders retrieved successfully!", orders });
     } catch (error) {
         console.error("Error retrieving orders:", error);
@@ -76,18 +79,18 @@ const getUserOrders = async (req, res) => {
     }
 }
 
-const getOrderDetails = async (req, res) => {
+const getBillingDetails = async (req, res) => {
     try {
-        const order = await BillingDetails.findById(req.params.orderId).populate('products.productId');
-        const paymentDetails = await getOrderDetailsById(order.orderId);
-        if (!order) {
+        const billingData = await billingService.getBillingData(req.params.orderId);        
+        const paymentDetails = await razorpayService.getOrderDetailsById(billingData.orderId);
+        if (!billingData) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
-        return successResponse(req, res, status.OK, "Order Details Fetched!!", { order, paymentDetails })
+        return successResponse(req, res, status.OK, "Billing Details Fetched!!", { billingData, paymentDetails })
     } catch (error) {
         console.error("Error retrieving orders:", error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
 
-module.exports = { placeOrder, getUserOrders, getOrderDetails };
+module.exports = { placeOrder, getUserOrders, getBillingDetails };

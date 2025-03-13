@@ -16,6 +16,7 @@ import { Toaster, toast } from 'sonner'
 import CheckoutScreen from "./components/CheckoutScreen";
 import MyOrders from "./components/MyOrders";
 import OrderDetails from "./components/OrderDetails";
+import Thankyou from './components/ThanksPage';
 
 function App() {
   const location = useLocation();
@@ -45,6 +46,7 @@ function App() {
           <Route path="/checkout" element={<CheckoutScreen />} />
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/order/:orderId" element={<OrderDetails />} />
+          <Route path="/thanks" element={<Thankyou />} />
         </Routes>
       </div>
     </>
