@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 import {
     Box,
     Typography,
@@ -14,6 +15,7 @@ import {
     Step,
     StepLabel,
     Button,
+    Dialog
 } from "@mui/material";
 import { IoImages } from "react-icons/io5";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -22,11 +24,12 @@ import axios from "axios";
 import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
-import { FaDownload } from 'react-icons/fa6';
 
 const OrderDetails = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -70,7 +73,6 @@ const OrderDetails = () => {
     };
     const activeStep = statusMapping[orderData.status] || 0;
 
-    // Custom Step Icon Component
     const CustomStepIcon = ({ active, completed }) => {
         return completed || activeStep == 2 ? (
             <CheckCircleIcon sx={{ color: "#0056B3" }} />
@@ -113,99 +115,135 @@ const OrderDetails = () => {
         });
     };
 
+    const handleImageClick = (image) => {
+        setSelectedImage(image);
+        setOpenDialog(true);
+    };
 
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setSelectedImage(null);
+    };
     return (
-        <Box sx={{ maxWidth: "100%", margin: "auto", mt: 4, p: 3 }}>
-            {/* Amazon-like Status Tracker */}
-            <Box sx={{ my: 3 }}>
-                <Stepper activeStep={activeStep} alternativeLabel>
-                    {statusSteps.map((label, index) => (
-                        <Step key={label}>
-                            <StepLabel StepIconComponent={CustomStepIcon}>
-                                {label}
-                            </StepLabel>
-                        </Step>
-                    ))}
-                </Stepper>
-            </Box>
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
-                Order Details
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                    Order placed{" "}
-                    {new Date(orderData.createdAt).toLocaleDateString("en-IN", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                    })}{" "}
-                    | Order number <strong>{orderData.orderNo} | {orderData.orderId}</strong>
+        <>
+            <Box sx={{ maxWidth: "100%", margin: "auto", mt: 4, p: 3 }}>
+                {/* Amazon-like Status Tracker */}
+                <Box sx={{ my: 3 }}>
+                    <Stepper activeStep={activeStep} alternativeLabel>
+                        {statusSteps.map((label, index) => (
+                            <Step key={label}>
+                                <StepLabel StepIconComponent={CustomStepIcon}>
+                                    {label}
+                                </StepLabel>
+                            </Step>
+                        ))}
+                    </Stepper>
+                </Box>
+                <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+                    Order Details
                 </Typography>
-                <Button variant="text" sx={{ fontSize: "1rem", fontWeight: "bold", textDecoration: "underline" }} onClick={() => downloadInvoice(orderData, paymentDetails)}>Invoice</Button>
-            </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                        Order placed{" "}
+                        {new Date(orderData.createdAt).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                        })}{" "}
+                        | Order number <strong>{orderData.orderNo} | {orderData.orderId}</strong>
+                    </Typography>
+                    <Button variant="text" sx={{ fontSize: "1rem", fontWeight: "bold", textDecoration: "underline" }} onClick={() => downloadInvoice(orderData, paymentDetails)}>Invoice</Button>
+                </Box>
 
 
-            {/* Shipping Address, Payment, and Summary */}
-            <Card sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-                <Grid container spacing={10}>
-                    <Grid item xs={12} md={5}>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                            Billing Address
-                        </Typography>
-                        <Typography>{orderData.firstname} {orderData.lastname}</Typography>
-                        <Typography>{orderData.street_address}</Typography>
-                        <Typography>{orderData.city}</Typography>
-                        <Typography>{orderData.zipcode}</Typography>
-                        <Typography>Phone: {orderData.phone}</Typography>
-                        <Typography>Email: {orderData.email}</Typography>
+                {/* Shipping Address, Payment, and Summary */}
+                <Card sx={{ p: 2, mb: 3, borderRadius: 2 }}>
+                    <Grid container spacing={10}>
+                        <Grid item xs={12} md={5}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                                Billing Address
+                            </Typography>
+                            <Typography>{orderData.firstname} {orderData.lastname}</Typography>
+                            <Typography>{orderData.street_address}</Typography>
+                            <Typography>{orderData.city}</Typography>
+                            <Typography>{orderData.zipcode}</Typography>
+                            <Typography>Phone: {orderData.phone}</Typography>
+                            <Typography>Email: {orderData.email}</Typography>
+                        </Grid>
+
+                        {/* Payment Method */}
+                        <Grid item xs={12} md={3}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                                Payment Methods
+                            </Typography>
+                            <Typography>{paymentDetails?.items[0]?.method?.toUpperCase() || "N/A"}</Typography>
+                        </Grid>
+
+                        {/* Order Summary */}
+                        <Grid item xs={12} md={4}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                                Order Summary
+                            </Typography>
+                            <Typography>Item(s) Subtotal: ₹{orderData.total.toFixed(2)}</Typography>
+                            <Typography>Shipping: ₹40.00</Typography>
+                            <Typography>Total: ₹{(orderData.total + 40).toFixed(2)}</Typography>
+                            <Typography sx={{ color: "green" }}>Promotion Applied: -₹40.00</Typography>
+                            <Divider sx={{ my: 1 }} />
+                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                Grand Total: ₹{orderData.total.toFixed(2)}
+                            </Typography>
+                        </Grid>
                     </Grid>
-
-                    {/* Payment Method */}
-                    <Grid item xs={12} md={3}>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                            Payment Methods
-                        </Typography>
-                        <Typography>{paymentDetails?.items[0]?.method?.toUpperCase() || "N/A"}</Typography>
-                    </Grid>
-
-                    {/* Order Summary */}
-                    <Grid item xs={12} md={4}>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                            Order Summary
-                        </Typography>
-                        <Typography>Item(s) Subtotal: ₹{orderData.total.toFixed(2)}</Typography>
-                        <Typography>Shipping: ₹40.00</Typography>
-                        <Typography>Total: ₹{(orderData.total + 40).toFixed(2)}</Typography>
-                        <Typography sx={{ color: "green" }}>Promotion Applied: -₹40.00</Typography>
-                        <Divider sx={{ my: 1 }} />
-                        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                            Grand Total: ₹{orderData.total.toFixed(2)}
-                        </Typography>
-                    </Grid>
-                </Grid>
-            </Card>
-
-            {/* Ordered Products */}
-            {orderData.products.map((item) => (
-                <Card key={item.productId._id} sx={{ mb: 2, display: "flex", alignItems: "center", p: 2 }}>
-                    <CardMedia
-                        component="img"
-                        image={item.productId.image || "/placeholder.jpg"}
-                        sx={{ width: 120, height: 120, objectFit: "cover", borderRadius: 2 }}
-                    />
-                    <CardContent sx={{ flex: 1 }}>
-                        <Typography variant="h6" sx={{ color: "#0073bb" }}>
-                            {item.productId.name}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: "gray" }}>
-                            Sold by: Acylic Image Customizer
-                        </Typography>
-                        <Typography sx={{ fontWeight: "bold" }}>₹{item.productId.price} x {item.productId.quantity}</Typography>
-                    </CardContent>
                 </Card>
-            ))}
 
-        </Box>
+                {/* Ordered Products */}
+                {orderData.products.map((item) => (
+                    <Card key={item.productId._id} sx={{ mb: 2, display: "flex", alignItems: "center", p: 2 }}>
+                        <CardMedia
+                            component="img"
+                            image={item.productId.image || "/placeholder.jpg"}
+                            sx={{ width: 120, height: 120, objectFit: "cover", borderRadius: 2 }}
+                            onClick={() => handleImageClick(item.productId.image)}
+                        />
+                        <CardContent sx={{ flex: 1 }}>
+                            <Typography variant="h6" sx={{ color: "#0073bb" }}>
+                                {item.productId.name}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "gray" }}>
+                                Sold by: Acylic Image Customizer
+                            </Typography>
+                            <Typography sx={{ fontWeight: "bold" }}>₹{item.productId.price} x {item.productId.quantity}</Typography>
+                        </CardContent>
+                    </Card>
+                ))}
+            </Box>
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <IconButton
+                    onClick={handleCloseDialog}
+                    sx={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        color: "white",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+                <img
+                    src={selectedImage}
+                    alt="Product"
+                    style={{
+                        maxWidth: "300px",
+                        objectFit: "contain",
+                        display: "block",
+                        margin: "auto",
+                        padding: ".5rem",
+                    }}
+                />
+            </Dialog>
+        </>
     );
 };
 
