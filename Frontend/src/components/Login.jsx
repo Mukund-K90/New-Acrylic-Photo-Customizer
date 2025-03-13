@@ -101,9 +101,8 @@ const UserAuthPage = () => {
 
 
     return (
-        <div style={containerStyle}>
+        <div style={containerStyle} >
             <div style={cardStyle}>
-                {/* Lock Icon */}
                 <div
                     style={{
                         display: "inline-flex",
@@ -216,10 +215,6 @@ const UserAuthPage = () => {
 
                     <ToastContainer />
                 </form>
-
-                <p style={{ fontSize: "12px", color: "#666", marginTop: "15px" }}>
-                    © {new Date().getFullYear()} User Panel. All rights reserved.
-                </p>
             </div>
         </div>
     );

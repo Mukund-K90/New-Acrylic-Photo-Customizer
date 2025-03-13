@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import CloseIcon from "@mui/icons-material/Close";
-import IconButton from "@mui/material/IconButton";
 import {
     Box,
     Typography,
@@ -15,7 +13,6 @@ import {
     Step,
     StepLabel,
     Button,
-    Dialog
 } from "@mui/material";
 import { IoImages } from "react-icons/io5";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -28,8 +25,6 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 const OrderDetails = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState(null);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -115,15 +110,6 @@ const OrderDetails = () => {
         });
     };
 
-    const handleImageClick = (image) => {
-        setSelectedImage(image);
-        setOpenDialog(true);
-    };
-
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
-        setSelectedImage(null);
-    };
     return (
         <>
             <Box sx={{ maxWidth: "100%", margin: "auto", mt: 4, p: 3 }}>
@@ -202,8 +188,7 @@ const OrderDetails = () => {
                         <CardMedia
                             component="img"
                             image={item.productId.image || "/placeholder.jpg"}
-                            sx={{ width: 120, height: 120, objectFit: "cover", borderRadius: 2 }}
-                            onClick={() => handleImageClick(item.productId.image)}
+                            sx={{ width: 120,objectFit: "cover", borderRadius: 2 }}
                         />
                         <CardContent sx={{ flex: 1 }}>
                             <Typography variant="h6" sx={{ color: "#0073bb" }}>
@@ -217,32 +202,7 @@ const OrderDetails = () => {
                     </Card>
                 ))}
             </Box>
-            <Dialog open={openDialog} onClose={handleCloseDialog}>
-                <IconButton
-                    onClick={handleCloseDialog}
-                    sx={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        color: "white",
-                        backgroundColor: "rgba(0,0,0,0.5)",
-                        "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
-                    }}
-                >
-                    <CloseIcon />
-                </IconButton>
-                <img
-                    src={selectedImage}
-                    alt="Product"
-                    style={{
-                        maxWidth: "300px",
-                        objectFit: "contain",
-                        display: "block",
-                        margin: "auto",
-                        padding: ".5rem",
-                    }}
-                />
-            </Dialog>
+            
         </>
     );
 };

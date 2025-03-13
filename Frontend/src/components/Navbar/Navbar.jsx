@@ -34,9 +34,11 @@ export default function Navbar() {
     handleMenuClose();
   };
 
-  useEffect(() => {
-
-  })
+  const handleLogout = (path) => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate(path);
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -96,7 +98,7 @@ export default function Navbar() {
             <Divider />
 
             {/* Logout */}
-            <MenuItem onClick={() => console.log("Logout function here")}>
+            <MenuItem onClick={() => handleLogout("/")}>
               <ListItemIcon>
                 <LogoutIcon fontSize="small" />
               </ListItemIcon>

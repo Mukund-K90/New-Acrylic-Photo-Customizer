@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
+import CustomizePage from './Fridge Magnet/CustomizePage';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -130,7 +131,7 @@ const Home = () => {
               style={buttonStyle(hoveredIndex === index)}
               onClick={() => handleClick(card.path)}
             >
-              Shop Now
+              Customize Now
             </button>
           </div>
         ))}
