@@ -93,7 +93,6 @@ app.get('/home', (req, res) => {
 app.post("/download-invoice", async (req, res) => {
     try {
         const { order, paymentDetails } = req.body;
-        console.log(order,paymentDetails);
         
         if (!order || !order.products || !Array.isArray(order.products)) {
             return res.status(400).json({ error: "Invalid order data" });
@@ -101,8 +100,19 @@ app.post("/download-invoice", async (req, res) => {
 
         const htmlContent = generateInvoiceHTML(order, paymentDetails);
         const pdfPath = path.join(__dirname, `invoice-${order.orderNo}.pdf`);
-
-        pdf.create(htmlContent).toFile(pdfPath, (err, result) => {
+        const options = {
+            format: "A4", // Ensures full A4 size
+            orientation: "portrait", // Portrait mode
+            border: {
+                top: "20px",
+                right: "20px",
+                bottom: "20px",
+                left: "20px",
+            },
+            zoomFactor: 1.4, // Enlarges content to fill page
+        };
+        
+        pdf.create(htmlContent,options).toFile(pdfPath, (err, result) => {
             if (err) {
                 console.error("Error generating PDF:", err);
                 return res.status(500).json({ error: "Failed to generate invoice" });
@@ -122,6 +132,7 @@ app.post("/download-invoice", async (req, res) => {
         res.status(500).json({ error: "Failed to generate invoice" });
     }
 });
+
 //Routes
 app.use('/user', require('./src/Routes/UserRoutes'));
 app.use('/cart', require('./src/Routes/CartRoutes'));

@@ -13,6 +13,7 @@ import {
     Stepper,
     Step,
     StepLabel,
+    Button,
 } from "@mui/material";
 import { IoImages } from "react-icons/io5";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -21,6 +22,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
+import { FaDownload } from 'react-icons/fa6';
 
 const OrderDetails = () => {
     const { orderId } = useParams();
@@ -79,21 +81,41 @@ const OrderDetails = () => {
         );
     };
 
+    const downloadInvoice = async (order, paymentDetails) => {
+        const promise = new Promise((resolve, reject) => {
+            fetch("http://localhost:8080/download-invoice", {
+                method: "POST",
+                body: JSON.stringify({ order, paymentDetails }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.blob())
+                .then((blob) => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `invoice-${order.orderNo}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+
+        toast.promise(promise, {
+            loading: 'Downloading invoice...',
+            success: 'Invoice downloaded successfully!',
+            error: 'Download failed. Please try again.',
+        });
+    };
+
+
     return (
         <Box sx={{ maxWidth: "100%", margin: "auto", mt: 4, p: 3 }}>
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
-                Order Details
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
-                Order placed{" "}
-                {new Date(orderData.createdAt).toLocaleDateString("en-IN", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                })}{" "}
-                | Order number <strong>{orderData.orderNo} | {orderData.orderId}</strong>
-            </Typography>
-
             {/* Amazon-like Status Tracker */}
             <Box sx={{ my: 3 }}>
                 <Stepper activeStep={activeStep} alternativeLabel>
@@ -106,13 +128,29 @@ const OrderDetails = () => {
                     ))}
                 </Stepper>
             </Box>
+            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+                Order Details
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                    Order placed{" "}
+                    {new Date(orderData.createdAt).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                    })}{" "}
+                    | Order number <strong>{orderData.orderNo} | {orderData.orderId}</strong>
+                </Typography>
+                <Button variant="text" sx={{ fontSize: "1rem", fontWeight: "bold", textDecoration: "underline" }} onClick={() => downloadInvoice(orderData, paymentDetails)}>Invoice</Button>
+            </Box>
+
 
             {/* Shipping Address, Payment, and Summary */}
             <Card sx={{ p: 2, mb: 3, borderRadius: 2 }}>
                 <Grid container spacing={10}>
                     <Grid item xs={12} md={5}>
                         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                            Shipping Address
+                            Billing Address
                         </Typography>
                         <Typography>{orderData.firstname} {orderData.lastname}</Typography>
                         <Typography>{orderData.street_address}</Typography>
@@ -166,6 +204,7 @@ const OrderDetails = () => {
                     </CardContent>
                 </Card>
             ))}
+
         </Box>
     );
 };

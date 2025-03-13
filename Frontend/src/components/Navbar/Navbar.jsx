@@ -16,7 +16,6 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [user, SetUser] = useState(JSON.parse(localStorage.getItem('user')));
-  console.log(user);
 
   const navigate = useNavigate();
 

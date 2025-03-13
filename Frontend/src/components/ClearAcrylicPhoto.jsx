@@ -11,6 +11,7 @@ import axios from "axios";
 import { ImSpinner2 } from "react-icons/im";
 
 const ClearAcrylic = () => {
+    const [cartLoading, setCartLoading] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const { addCart } = useCartStore();
@@ -43,6 +44,8 @@ const ClearAcrylic = () => {
     }, []);
 
     const handleAddToCart = async () => {
+        setCartLoading(true);
+
         const promise = new Promise(async (resolve, reject) => {
             try {
                 const formData = await window.shareImage();
@@ -52,6 +55,7 @@ const ClearAcrylic = () => {
                 if (!token) {
                     console.error("User is not authenticated");
                     reject("User is not authenticated.");
+                    setCartLoading(false);
                     return;
                 }
 
@@ -81,13 +85,9 @@ const ClearAcrylic = () => {
             } catch (error) {
                 console.error("Error adding product to cart:", error);
                 reject("Failed to add product. Please try again.");
+            } finally {
+                setCartLoading(false);
             }
-        });
-
-        toast.promise(promise, {
-            loading: "Adding product to cart...",
-            success: (data) => `${data.name} added to cart!`,
-            error: (errMsg) => errMsg,
         });
     };
 
@@ -181,8 +181,9 @@ const ClearAcrylic = () => {
                         title: "Customized Acrylic Clear Photo",
                         price: 899
                     })}
+                    disabled={cartLoading}
                 >
-                    <MdAddShoppingCart />
+                    {cartLoading ? <ImSpinner2 className="spin" /> : <MdAddShoppingCart />}
                 </button>
                 <p>Size:</p>
 

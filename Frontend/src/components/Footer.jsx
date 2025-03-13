@@ -16,7 +16,7 @@ const Footer = () => {
     >
       <Container>
         <Typography variant="body2">
-          &copy; {new Date().getFullYear()} Sughosh. All Rights Reserved.
+          &copy; {new Date().getFullYear()} Sughosh Technolab. All Rights Reserved.
         </Typography>
       </Container>
     </Box>
