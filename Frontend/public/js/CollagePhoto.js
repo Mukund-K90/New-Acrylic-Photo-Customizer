@@ -224,39 +224,47 @@ function attachHandles(element) {
 
 function makeDraggable(element, handle) {
     let isDragging = false;
-    let offsetX, offsetY;
+    let offsetX = 0, offsetY = 0, startX, startY;
+    let rotation = 0; // Store rotation angle
 
-    element.addEventListener('click', function (e) {
+    element.addEventListener('click', function () {
         const resizeHandle = document.querySelector(`.${handle.resize}`);
         const rotateHandle = document.querySelector(`.${handle.rotate}`);
 
-        if (resizeHandle && rotateHandle) {
-            resizeHandle.style.display = 'block';
-            rotateHandle.style.display = 'block';
-        }
+        if (resizeHandle) resizeHandle.style.display = 'block';
+        if (rotateHandle) rotateHandle.style.display = 'block';
 
         element.style.border = '2px dashed #248EE6';
-    })
+    });
+
     element.addEventListener('mousedown', function (e) {
         const resizeHandle = document.querySelector(`.${handle.resize}`);
         const rotateHandle = document.querySelector(`.${handle.rotate}`);
 
-        if (resizeHandle && rotateHandle) {
-            resizeHandle.style.display = 'block';
-            rotateHandle.style.display = 'block';
-        }
+        if (resizeHandle) resizeHandle.style.display = 'block';
+        if (rotateHandle) rotateHandle.style.display = 'block';
+
         isDragging = true;
-        offsetX = e.clientX - element.offsetLeft;
-        offsetY = e.clientY - element.offsetTop;
+        startX = e.clientX - offsetX;
+        startY = e.clientY - offsetY;
         element.style.cursor = 'grabbing';
 
+        // Get current rotation from transform
+        const transform = window.getComputedStyle(element).transform;
+        if (transform !== 'none') {
+            const matrix = new DOMMatrix(transform);
+            rotation = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI); // Convert radians to degrees
+        }
     });
 
     document.addEventListener('mousemove', function (e) {
-        if (isDragging) {
-            element.style.left = e.clientX - offsetX + 'px';
-            element.style.top = e.clientY - offsetY + 'px';
-        }
+        if (!isDragging) return;
+
+        offsetX = e.clientX - startX;
+        offsetY = e.clientY - startY;
+
+        // Preserve rotation while dragging
+        element.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotation}deg)`;
     });
 
     document.addEventListener('mouseup', function () {

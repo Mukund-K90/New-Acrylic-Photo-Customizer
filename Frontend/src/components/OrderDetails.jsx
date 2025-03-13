@@ -62,7 +62,7 @@ const OrderDetails = () => {
 
     const { order: orderData, paymentDetails } = order;
 
-    const statusSteps = ["Pending", "Processing", "Completed"];
+    const statusSteps = ["Order Accepted", "Processing", "Order Completed"];
     const statusMapping = {
         "Pending": 0,
         "Processing": 1,

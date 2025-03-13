@@ -93,7 +93,7 @@ app.get('/home', (req, res) => {
 app.post("/download-invoice", async (req, res) => {
     try {
         const { order, paymentDetails } = req.body;
-        
+
         if (!order || !order.products || !Array.isArray(order.products)) {
             return res.status(400).json({ error: "Invalid order data" });
         }
@@ -111,8 +111,8 @@ app.post("/download-invoice", async (req, res) => {
             },
             zoomFactor: 1.4, // Enlarges content to fill page
         };
-        
-        pdf.create(htmlContent,options).toFile(pdfPath, (err, result) => {
+
+        pdf.create(htmlContent, options).toFile(pdfPath, (err, result) => {
             if (err) {
                 console.error("Error generating PDF:", err);
                 return res.status(500).json({ error: "Failed to generate invoice" });
