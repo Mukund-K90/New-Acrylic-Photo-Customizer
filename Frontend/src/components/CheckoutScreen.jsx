@@ -107,9 +107,9 @@ const CheckoutPage = () => {
                 key: "rzp_test_uzGTmLb6xkyeHP",
                 amount: amount,
                 currency: "INR",
-                name: "furniro",
-                image: "/Assets/Meubel House_Logos-05.png",
-                description: "Purchase Order",
+                name: "Acylic Image",
+                // image: "/Assets/Meubel House_Logos-05.png",
+                description: billingResponse.data.order.orderNo,
                 order_id: orderId,
                 handler: async function (response) {
                     console.log(`Payment ID: ${response.razorpay_payment_id}`);

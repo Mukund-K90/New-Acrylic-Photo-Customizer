@@ -106,7 +106,9 @@ const MyOrders = () => {
                   >
                     <strong style={{color:'black'}}>Status:</strong> {order.status}
                   </Typography>
-
+                  <Typography variant="body1">
+                    <strong>Items:</strong> {order.products.length}
+                  </Typography>
                   <Typography variant="body2" sx={{ color: "gray" }}>
                     Ordered on:{" "}
                     {new Date(order.createdAt).toLocaleDateString("en-IN", {

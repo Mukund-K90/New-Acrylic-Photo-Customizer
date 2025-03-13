@@ -26,9 +26,10 @@ app.set("view engine", 'ejs');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views/pages'));
 app.use('/src', express.static(path.join(__dirname, 'src')));
-
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(bodyParser.json({ limit: "1gb" })); 
+app.use(bodyParser.urlencoded({ limit: "1gb", extended: true }));
+app.use(express.json({ limit: '1gb' }));
+app.use(express.urlencoded({ limit: '1gb', extended: true }));
 app.post('/change-bg', async (req, res) => {
     try {
         const { imageBlob, backgroundUrl } = req.body;

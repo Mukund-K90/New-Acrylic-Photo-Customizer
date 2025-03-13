@@ -53,7 +53,6 @@ const AcrylicPhoto = () => {
       if (!token) {
         console.error("User is not authenticated");
         toast.error("User is not authenticated.");
-        setCartLoading(false);
         return;
       }
 
