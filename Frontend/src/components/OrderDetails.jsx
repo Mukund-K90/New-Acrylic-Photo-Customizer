@@ -19,6 +19,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import axios from "axios";
 import { toast } from "sonner";
+import ProductDetailsDialog from "./ProductDetailsDialog";
+import { FaEye } from "react-icons/fa";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -26,6 +28,8 @@ const OrderDetails = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
@@ -188,7 +192,7 @@ const OrderDetails = () => {
                         <CardMedia
                             component="img"
                             image={item.productId.image || "/placeholder.jpg"}
-                            sx={{ width: 120,objectFit: "cover", borderRadius: 2 }}
+                            sx={{ width: 120, objectFit: "cover", borderRadius: 2 }}
                         />
                         <CardContent sx={{ flex: 1 }}>
                             <Typography variant="h6" sx={{ color: "#0073bb" }}>
@@ -199,10 +203,16 @@ const OrderDetails = () => {
                             </Typography>
                             <Typography sx={{ fontWeight: "bold" }}>₹{item.productId.price} x {item.productId.quantity}</Typography>
                         </CardContent>
+                        <Button
+                            sx={{ color: "#0056B3" ,fontSize:"1.5rem"}}
+                            onClick={() => { setSelectedItem(item.productId); setDialogOpen(true); }}
+                        >
+                            <FaEye />
+                        </Button>
                     </Card>
                 ))}
             </Box>
-            
+            <ProductDetailsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} productDetails={selectedItem} />
         </>
     );
 };

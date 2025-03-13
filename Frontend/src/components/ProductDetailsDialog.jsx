@@ -17,12 +17,9 @@ import { TbBrandDatabricks } from "react-icons/tb";
 
 const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
     if (!productDetails) return null;
-    console.log(productDetails);
-    // const isCollagePhoto = productDetails?.name == "Acrylic Collage";
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            {/* Dialog Title with Close Icon */}
             <DialogTitle
                 sx={{
                     bgcolor: "#0056B3",
@@ -61,8 +58,8 @@ const ProductDetailsDialog = ({ open, onClose, productDetails }) => {
                             src={productDetails.image}
                             alt={productDetails.name}
                             style={{
-                                maxWidth: "100%",
-                                maxHeight: "400px",
+                                width: "70%",
+                                // maxHeight: "400px",
                                 borderRadius: "8px",
                                 border: "1px solid #ddd",
                                 padding: "8px",
